@@ -1,6 +1,7 @@
-package com.nedelu.juntada;
+package com.nedelu.juntada.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,9 +19,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.nedelu.juntada.R;
+import com.nedelu.juntada.manager.GroupManager;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.User;
 import com.squareup.picasso.Picasso;
@@ -31,6 +33,8 @@ import java.util.List;
 
 public class GroupsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private GroupAdapter groupAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +47,11 @@ public class GroupsActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "This button will be used to create new groups.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "This button will be used to create new groups.", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+
+                Intent main = new Intent(GroupsActivity.this, NewGroupActivity.class);
+                startActivity(main);
             }
         });
 
@@ -52,14 +59,28 @@ public class GroupsActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
+
         toggle.syncState();
 
+        GroupManager.getInstance().setGroups(generateMockGroups());
 
+        groupAdapter = new GroupAdapter(GroupsActivity.this);
         GridView gridView = (GridView) findViewById(R.id.groupList);
-        gridView.setAdapter(new GroupAdapter(generateMockGroups(), GroupsActivity.this));
+        gridView.setAdapter(groupAdapter);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Bundle inBundle = getIntent().getExtras();
+        String name = inBundle.get("name").toString();
+        String surname = inBundle.get("surname").toString();
+        String imageUrl = inBundle.get("imageUrl").toString();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        groupAdapter.notifyDataSetChanged();
     }
 
     /*
@@ -163,28 +184,25 @@ public class GroupsActivity extends AppCompatActivity
     }
 
     private class GroupAdapter extends BaseAdapter{
-
-        private List<Group> groups;
         private Context context;
 
-        public GroupAdapter(List<Group> groups, Context context){
-            this.groups = groups;
+        public GroupAdapter(Context context){
             this.context = context;
         }
 
         @Override
         public int getCount() {
-            return groups.size();
+            return GroupManager.getInstance().getGroups().size();
         }
 
         @Override
         public Object getItem(int i) {
-            return groups.get(i);
+            return GroupManager.getInstance().getGroups().get(i);
         }
 
         @Override
         public long getItemId(int i) {
-            return groups.get(i).getId();
+            return GroupManager.getInstance().getGroups().get(i).getId();
         }
 
         @Override
@@ -198,12 +216,12 @@ public class GroupsActivity extends AppCompatActivity
                 v = convertView;
             }
 
-            ImageView image = v.findViewById(R.id.groupImage);
-            String url = groups.get(i).getImageUrl();
+            ImageView image = (ImageView) v.findViewById(R.id.groupImage);
+            String url = GroupManager.getInstance().getGroups().get(i).getImageUrl();
             Picasso.with(context).load(url).into(image);
 
-            TextView text = v.findViewById(R.id.groupName);
-            text.setText(groups.get(i).getName());
+            TextView text = (TextView) v.findViewById(R.id.groupName);
+            text.setText(GroupManager.getInstance().getGroups().get(i).getName());
 
             return v;
         }

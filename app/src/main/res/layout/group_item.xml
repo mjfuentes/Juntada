@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.nedelu.juntada.SquareImageView
+    <com.nedelu.juntada.view.SquareImageView
         android:id="@+id/groupImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

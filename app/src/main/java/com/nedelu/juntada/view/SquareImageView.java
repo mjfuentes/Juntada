@@ -1,8 +1,7 @@
-package com.nedelu.juntada;
+package com.nedelu.juntada.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
