@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -68,6 +69,17 @@ public class GroupsActivity extends AppCompatActivity
         GridView gridView = (GridView) findViewById(R.id.groupList);
         gridView.setAdapter(groupAdapter);
 
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent main = new Intent(GroupsActivity.this, GroupActivity.class);
+//                main.putExtra("name", profile.getFirstName());
+//                main.putExtra("surname", profile.getLastName());
+//                main.putExtra("imageUrl", profile.getProfilePictureUri(200,200).toString());
+                startActivity(main);
+            }
+        });
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -94,10 +106,10 @@ public class GroupsActivity extends AppCompatActivity
         group1.setName("Facu");
         group1.setImageUrl("http://estaticos.tonterias.com/wp-content/uploads/2009/10/20090929033537_borrachos-dinero-cartera-mano.jpg");
 
-        User user1 = new User("Matias", "Fuentes");
-        User user2 = new User("Maria", "Mardon");
-        User user3 = new User("Pedro", "Perez");
-        User user4 = new User("Alejandro", "Gutierrez");
+        User user1 = new User("Matias", "Fuentes","http://www.uni-regensburg.de/Fakultaeten/phil_Fak_II/Psychologie/Psy_II/beautycheck/english/durchschnittsgesichter/m(01-32)_gr.jpg");
+        User user2 = new User("Maria", "Mardon","http://www.uni-regensburg.de/Fakultaeten/phil_Fak_II/Psychologie/Psy_II/beautycheck/english/durchschnittsgesichter/m(01-32)_gr.jpg");
+        User user3 = new User("Pedro", "Perez","http://www.uni-regensburg.de/Fakultaeten/phil_Fak_II/Psychologie/Psy_II/beautycheck/english/durchschnittsgesichter/m(01-32)_gr.jpg");
+        User user4 = new User("Alejandro", "Gutierrez","http://www.uni-regensburg.de/Fakultaeten/phil_Fak_II/Psychologie/Psy_II/beautycheck/english/durchschnittsgesichter/m(01-32)_gr.jpg");
 
         group1.getUsers().add(user1);
         group1.getUsers().add(user2);

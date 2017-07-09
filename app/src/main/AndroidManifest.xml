@@ -18,16 +18,15 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
         <activity
             android:name=".activity.GroupsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".activity.NewGroupActivity" />
         <activity
             android:name=".activity.LoginActivity"
@@ -38,10 +37,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
-            android:authorities="com.facebook.app.FacebookContentProvider"
             android:name="com.facebook.FacebookContentProvider"
-            android:exported="true"/>
+            android:authorities="com.facebook.app.FacebookContentProvider"
+            android:exported="true" />
+
+        <activity
+            android:name=".activity.GroupActivity"
+            android:label="@string/title_activity_group"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

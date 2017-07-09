@@ -14,10 +14,12 @@ public class User {
     private String lastName;
     private String facebookId;
     private List<Group> groups = new ArrayList<>();
+    private String imageUrl;
 
-    public User (String firstName, String lastName){
+    public User (String firstName, String lastName, String imageUrl){
         this.firstName=firstName;
         this.setLastName(lastName);
+        this.setImageUrl(imageUrl);
     }
     public String getFirstName() {
         return firstName;
@@ -49,6 +51,22 @@ public class User {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 }

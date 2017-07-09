@@ -14,6 +14,8 @@ public class Group {
     private String name;
     private Date creationDate;
     private List<User> users = new ArrayList<>();
+    private List<Poll> activePolls;
+    private List<Event> futureEvents;
     private String imageUrl;
 
     public Long getId() {
