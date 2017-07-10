@@ -26,6 +26,7 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.manager.GroupManager;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class GroupsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private GroupAdapter groupAdapter;
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,8 @@ public class GroupsActivity extends AppCompatActivity
         setContentView(R.layout.activity_groups);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        userService = new UserService(GroupsActivity.this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +88,15 @@ public class GroupsActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Bundle inBundle = getIntent().getExtras();
+        String facebookId = inBundle.get("facebookId").toString();
         String name = inBundle.get("name").toString();
         String surname = inBundle.get("surname").toString();
         String imageUrl = inBundle.get("imageUrl").toString();
+
+        User currentUser = userService.getUser(facebookId);
+        if (currentUser == null){
+            currentUser = userService.createUser(facebookId,name, surname,imageUrl);
+        }
     }
 
     @Override

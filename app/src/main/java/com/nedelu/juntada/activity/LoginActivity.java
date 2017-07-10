@@ -16,6 +16,7 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.service.UserService;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
         accessTokenTracker.startTracking();
         profileTracker.startTracking();
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -75,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
     private void nextActivity(Profile profile){
         if(profile != null){
             Intent main = new Intent(LoginActivity.this, GroupsActivity.class);
+            main.putExtra("facebookId", profile.getId());
             main.putExtra("name", profile.getFirstName());
             main.putExtra("surname", profile.getLastName());
             main.putExtra("imageUrl", profile.getProfilePictureUri(200,200).toString());
