@@ -8,18 +8,23 @@
     tools:context="com.nedelu.juntada.activity.GroupsActivity"
     tools:showIn="@layout/app_bar_groups">
 
-    <GridView
-        android:id="@+id/groupList"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/groups_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:horizontalSpacing="0dp"
-        android:numColumns="2"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />/>
+        android:layout_height="match_parent"/>
+
+    <!--<GridView-->
+        <!--android:id="@+id/groupList"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:horizontalSpacing="0dp"-->
+        <!--android:numColumns="2"-->
+        <!--android:stretchMode="columnWidth"-->
+        <!--android:verticalSpacing="0dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.0"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />/>-->
 
 </android.support.constraint.ConstraintLayout>

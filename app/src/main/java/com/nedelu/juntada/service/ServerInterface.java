@@ -2,6 +2,7 @@ package com.nedelu.juntada.service;
 
 import com.nedelu.juntada.model.User;
 
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
@@ -11,7 +12,7 @@ import retrofit2.http.POST;
 
 public interface ServerInterface {
 
-    @POST("/users")
-    User createUser(@Body User user);
+    @POST("users")
+    Call<Long> createUser(@Body User user);
 
 }

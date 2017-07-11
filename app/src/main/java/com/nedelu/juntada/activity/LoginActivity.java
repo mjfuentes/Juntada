@@ -16,13 +16,17 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.UserService;
+
+import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
 
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-                nextActivity(newProfile);
+                checkUser(newProfile);
             }
         };
 
@@ -50,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        userService = new UserService(LoginActivity.this);
+
 
         LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
@@ -57,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 AccessToken accessToken = loginResult.getAccessToken();
                 Profile profile = Profile.getCurrentProfile();
-                nextActivity(profile);
+                checkUser(profile);
                 Toast.makeText(getApplicationContext(), "Logging in...", Toast.LENGTH_SHORT).show();
             }
 
@@ -74,24 +80,36 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void nextActivity(Profile profile){
+    private void checkUser(Profile profile){
         if(profile != null){
-            Intent main = new Intent(LoginActivity.this, GroupsActivity.class);
-            main.putExtra("facebookId", profile.getId());
-            main.putExtra("name", profile.getFirstName());
-            main.putExtra("surname", profile.getLastName());
-            main.putExtra("imageUrl", profile.getProfilePictureUri(200,200).toString());
-            startActivity(main);
+            User currentUser = userService.getUser(profile.getId());
+            if (currentUser == null) {
+                try {
+                    userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "Error during user creation", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                nextActivity(currentUser);
+            }
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Facebook login
-        Profile profile = Profile.getCurrentProfile();
-        nextActivity(profile);
+    public void nextActivity(User user){
+        Intent main = new Intent(LoginActivity.this, GroupsActivity.class);
+        main.putExtra("id", user.getId());
+        main.putExtra("name", user.getFirstName());
+        main.putExtra("surname", user.getLastName());
+        main.putExtra("imageUrl", user.getImageUrl());
+        startActivity(main);
     }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Profile profile = Profile.getCurrentProfile();
+//        checkUser(profile);
+//    }
 
     @Override
     protected void onPause() {
