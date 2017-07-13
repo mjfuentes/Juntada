@@ -69,8 +69,6 @@ public class GroupActivity extends AppCompatActivity
 
     private List<User> generateMockUsers() {
         List<User> users = new ArrayList<>();
-        users.add(new User("Matias","Fuentes","http://www3.pictures.zimbio.com/mp/Bl5sChBTmDgx.jpg"));
-        users.add(new User("Maria", "Mardon","https://s-media-cache-ak0.pinimg.com/736x/67/67/cb/6767cb763f747099c99835dd583f06ac--pretty-faces-beautiful-faces.jpg"));
         return users;
 
     }
