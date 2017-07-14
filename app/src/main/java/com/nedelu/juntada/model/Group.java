@@ -12,7 +12,7 @@ public class Group {
 
     private Long id;
     private String name;
-    private Date creationDate;
+//    private Date creationDate;
     private List<User> users = new ArrayList<>();
     private List<Poll> activePolls;
     private List<Event> futureEvents;
@@ -34,13 +34,13 @@ public class Group {
         this.name = name;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
+//    public Date getCreationDate() {
+//        return creationDate;
+//    }
+//
+//    public void setCreationDate(Date creationDate) {
+//        this.creationDate = creationDate;
+//    }
 
     public List<User> getUsers() {
         return users;

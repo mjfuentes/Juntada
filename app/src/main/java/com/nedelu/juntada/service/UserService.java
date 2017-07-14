@@ -6,7 +6,9 @@ import android.widget.Toast;
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
 import com.nedelu.juntada.activity.LoginActivity;
+import com.nedelu.juntada.model.Participant;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 import java.io.IOException;
 
@@ -26,16 +28,6 @@ public class UserService {
 
     public UserService(Context context) {
         this.context = context;
-    }
-
-    public User getUser(String facebookId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findFirst(User.class, "facebook_id = ?", new String[]{facebookId});
-    }
-
-    public void saveUser(User user){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(user);
     }
 
     public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {
@@ -70,5 +62,27 @@ public class UserService {
         });
 
         return user;
+    }
+
+
+    public User getUser(String facebookId){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        return adapter.findFirst(User.class, "facebook_id = ?", new String[]{facebookId});
+    }
+
+    public void saveUser(User user){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        adapter.store(user);
+    }
+
+    public void saveUserGroup(Long userId, Long groupId) {
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        Participant Participant = adapter.findFirst(Participant.class, "user_id = ? AND group_id = ? ", new String[]{userId.toString(),groupId.toString()});
+        if (Participant == null){
+        Participant participant = new Participant();
+            participant.setGroupId(groupId);
+            participant.setUserId(userId);
+            adapter.store(participant);
+        }
     }
 }

@@ -14,7 +14,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DatabaseSpec database = PersistenceConfig.registerSpec(1);
-        database.match(Group.class, User.class);
+        DatabaseSpec database = PersistenceConfig.registerSpec(4);
+        database.matchNotAutoIncrement(Group.class, User.class, Participant.class);
+//        database.match();
     }
 }

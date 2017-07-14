@@ -27,9 +27,11 @@ import android.widget.Toast;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.manager.GroupManager;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.nedelu.juntada.util.SpacesItemDecoration;
 import com.squareup.picasso.Picasso;
@@ -39,10 +41,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GroupsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener {
 
     private GroupAdapter groupAdapter;
+    private RecyclerView recyclerView;
+    private GroupService groupService;
+    private Long userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +63,16 @@ public class GroupsActivity extends AppCompatActivity
 //                        .setAction("Action", null).show();
 
                 Intent main = new Intent(GroupsActivity.this, NewGroupActivity.class);
+                main.putExtra("id", userId);
                 startActivity(main);
             }
         });
+
+        Bundle inBundle = getIntent().getExtras();
+        String name = inBundle.get("name").toString();
+        String surname = inBundle.get("surname").toString();
+        String imageUrl = inBundle.get("imageUrl").toString();
+        userId = Long.valueOf(inBundle.get("id").toString());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -71,26 +82,39 @@ public class GroupsActivity extends AppCompatActivity
         toggle.syncState();
 
         GroupManager.getInstance().setGroups(generateMockGroups());
+        groupService = GroupService.getInstance(GroupsActivity.this);
 
-        groupAdapter = new GroupAdapter(GroupsActivity.this, generateMockGroups());
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.groups_view);
+        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(Long.valueOf(userId)));
+
+        recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(groupAdapter);
+
+        groupService.registerClient(this);
+        groupService.loadGroups(userId);
+
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Bundle inBundle = getIntent().getExtras();
-        String name = inBundle.get("name").toString();
-        String surname = inBundle.get("surname").toString();
-        String imageUrl = inBundle.get("imageUrl").toString();
-        String userId = inBundle.get("id").toString();
+    }
+
+    public void updateGroups(){
+        groupAdapter.setData(groupService.getUserGroups(userId));
+        recyclerView.removeAllViews();
+        groupAdapter.notifyItemRangeRemoved(0,groupAdapter.getItemCount());
+        groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+        groupAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        groupAdapter.setData(groupService.getUserGroups(userId));
+        recyclerView.removeAllViews();
+        groupAdapter.notifyItemRangeRemoved(0,groupAdapter.getItemCount());
+        groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
         groupAdapter.notifyDataSetChanged();
     }
 
@@ -100,21 +124,18 @@ public class GroupsActivity extends AppCompatActivity
     private List<Group> generateMockGroups() {
         //Mock group 1
         Group group1 = new Group();
-        group1.setCreationDate(new Date());
         group1.setId(1l);
         group1.setName("Facu");
         group1.setImageUrl("http://estaticos.tonterias.com/wp-content/uploads/2009/10/20090929033537_borrachos-dinero-cartera-mano.jpg");
 
         //Mock group 2
         Group group2 = new Group();
-        group2.setCreationDate(new Date());
         group2.setId(2l);
         group2.setName("Futbol");
         group2.setImageUrl("http://www.bocalista.com/wp-content/uploads/2017/02/vuelven-los-Supercampeones-en-2018.jpg");
 
         //Mock group 3
         Group group3 = new Group();
-        group3.setCreationDate(new Date());
         group3.setId(3l);
         group3.setName("Barrio");
         group3.setImageUrl("http://cdn.glamour.mx/uploads/images/thumbs/201547/fiesta_1247_980x560.jpg");
@@ -188,65 +209,5 @@ public class GroupsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
-        private Context mContext;
-        private List<Group> mData = new ArrayList<>();
-        private LayoutInflater mInflater;
-
-        // data is passed into the constructor
-        public GroupAdapter(Context context, List<Group> data) {
-            this.mInflater = LayoutInflater.from(context);
-            this.mData = data;
-            this.mContext = context;
-        }
-
-        // inflates the cell layout from xml when needed
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = mInflater.inflate(R.layout.group_item, parent, false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            return viewHolder;
-        }
-
-        // binds the data to the textview in each cell
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            String groupName = mData.get(position).getName();
-            String groupImage = mData.get(position).getImageUrl();
-            holder.groupName.setText(groupName);
-            Picasso.with(mContext).load(groupImage).into(holder.imageView);
-        }
-
-        // total number of cells
-        @Override
-        public int getItemCount() {
-            return mData.size();
-        }
-
-        // stores and recycles views as they are scrolled off screen
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            public TextView groupName;
-            public ImageView imageView;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                groupName = (TextView) itemView.findViewById(R.id.group_name_text);
-                imageView = (ImageView) itemView.findViewById(R.id.group_image);
-                itemView.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View view) {
-//                if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-            }
-        }
-
-        // convenience method for getting data at click position
-        public String getItem(int id) {
-            return mData.get(id).getId().toString();
-        }
-
     }
 }
