@@ -29,7 +29,8 @@
             android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activity.NewGroupActivity" />
+        <activity android:name=".activity.NewGroupActivity"
+            android:label="Nuevo Grupo"/>
         <activity
             android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -50,6 +51,8 @@
             android:name=".activity.GroupActivity"
             android:label="@string/title_activity_group"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+
     </application>
 
 </manifest>

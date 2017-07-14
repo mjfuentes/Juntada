@@ -66,10 +66,9 @@ public class NewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText editTextName = (EditText) findViewById(R.id.editTextName);
-                EditText editTextDescription = (EditText) findViewById(R.id.editTextDescription);
 //                EditText editTextImage = (EditText) findViewById(R.id.editTextImage);
 
-                if (verifyFields(editTextName, editTextDescription)){
+                if (verifyFields(editTextName)){
                     Group group = new Group();
                     group.setName(editTextName.getText().toString());
                     group.setImageUrl("http://thomrainer.com/wp-content/uploads/2013/10/Start-New-Groups.jpg");
@@ -111,8 +110,8 @@ public class NewGroupActivity extends AppCompatActivity {
         }
     }
 
-    private boolean verifyFields(EditText editTextName, EditText editTextDescription) {
-        return !editTextName.getText().toString().equals("") && !editTextDescription.getText().toString().equals("");
+    private boolean verifyFields(EditText editTextName) {
+        return !editTextName.getText().toString().equals("");
     }
 
     public void groupCreated(){
