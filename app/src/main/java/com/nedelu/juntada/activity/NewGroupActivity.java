@@ -2,22 +2,27 @@ package com.nedelu.juntada.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nedelu.juntada.R;
@@ -25,14 +30,22 @@ import com.nedelu.juntada.manager.GroupManager;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.service.GroupService;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Objects;
 
 public class NewGroupActivity extends AppCompatActivity {
 
     private Long userId;
     private ImageView imageView;
+    private Uri imageUri;
     private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int REQUEST_CROP_ICON = 2;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,27 +53,20 @@ public class NewGroupActivity extends AppCompatActivity {
 
         Bundle inBundle = getIntent().getExtras();
         userId = Long.valueOf(inBundle.get("id").toString());
-
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
         imageView = (ImageView) findViewById(R.id.upload_image);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= 23) {
-                    int permissionCheck = ContextCompat.checkSelfPermission(NewGroupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
-                    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(NewGroupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                    } else {
-                        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
-                    }
-                }
+                CropImage.activity().setAspectRatio(1,1)
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(NewGroupActivity.this);
 
             }
         });
 
-
-
-        Button createButton = (Button) findViewById(R.id.create_button);
+        FloatingActionButton createButton = (FloatingActionButton) findViewById(R.id.create_button);
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,49 +75,42 @@ public class NewGroupActivity extends AppCompatActivity {
 //                EditText editTextImage = (EditText) findViewById(R.id.editTextImage);
 
                 if (verifyFields(editTextName)){
+                    View v = NewGroupActivity.this.getCurrentFocus();
+                    if (v != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
+                    progressBar.setVisibility(View.VISIBLE);
                     Group group = new Group();
                     group.setName(editTextName.getText().toString());
                     group.setImageUrl("http://thomrainer.com/wp-content/uploads/2013/10/Start-New-Groups.jpg");
-
-                    GroupService.getInstance(NewGroupActivity.this).createGroup(userId, group, NewGroupActivity.this);
+                    GroupService.getInstance(NewGroupActivity.this).createGroup(NewGroupActivity.this, userId, group,imageUri, NewGroupActivity.this);
                 } else {
                     Snackbar.make(view, "All fields must be completed!.", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
             }
         });
+
+
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-                // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
-                } else {
-
-                }
-        }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                imageUri = result.getUri();
+                Picasso.with(NewGroupActivity.this).load(imageUri).into(imageView);
 
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
         }
     }
 
     private boolean verifyFields(EditText editTextName) {
-        return !editTextName.getText().toString().equals("");
+        return !editTextName.getText().toString().equals("") && imageUri != null;
     }
 
     public void groupCreated(){

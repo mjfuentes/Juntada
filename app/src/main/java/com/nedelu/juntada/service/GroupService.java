@@ -3,25 +3,34 @@ package com.nedelu.juntada.service;
 import android.app.Activity;
 import android.content.Context;
 import android.icu.text.MessagePattern;
+import android.net.Uri;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.Participant;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Multipart;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -56,7 +65,7 @@ public class GroupService extends Observable {
 
     // SERVER
 
-    public void createGroup(Long userId, Group group, final NewGroupActivity newGroupActivity){
+    public void createGroup(final Context context, Long userId, Group group, Uri fileUri, final NewGroupActivity newGroupActivity){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.1.1.16:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -64,7 +73,23 @@ public class GroupService extends Observable {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        final Call<Group> call = server.createGroup(userId, group);
+        File file = FileUtils.getFile(context, fileUri);
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse(getMimeType(fileUri.toString())),
+                        file
+                );
+        RequestBody groupName =
+                RequestBody.create(
+                        okhttp3.MultipartBody.FORM, group.getName());
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+
+        final Call<Group> call = server.createGroup(userId, groupName, body);
         call.enqueue(new Callback<Group>() {
             @Override
             public void onResponse(Call<Group> call, Response<Group> response) {
@@ -80,6 +105,15 @@ public class GroupService extends Observable {
         });
     }
 
+    public String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+
     public void loadGroups(final Long userId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.1.1.16:8080/")
@@ -92,9 +126,13 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<List<Group>>() {
             @Override
             public void onResponse(Call<List<Group>> call, Response<List<Group>> response) {
-                List<Group> groups = response.body();
-                updateGroups(userId, groups);
-                activity.updateGroups();
+                if (response.code() != 404) {
+                    List<Group> groups = response.body();
+                    updateGroups(userId, groups);
+                    activity.updateGroups();
+                } else {
+                    Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -135,9 +173,13 @@ public class GroupService extends Observable {
     public void saveGroup(Group group){
         SqlAdapter adapter = Persistence.getAdapter(context);
         adapter.store(group);
-        for (User user : group.getUsers()){
-            userService.saveUser(user);
-            userService.saveUserGroup(user.getId(), group.getId());
+        try {
+            for (User user : group.getUsers()) {
+                userService.saveUser(user);
+                userService.saveUserGroup(user.getId(), group.getId());
+            }
+        } catch (Exception e){
+            //todo // FIXME: 17/07/17
         }
     }
 
