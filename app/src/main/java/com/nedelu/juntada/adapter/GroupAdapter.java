@@ -1,6 +1,7 @@
 package com.nedelu.juntada.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.activity.GroupActivity;
+import com.nedelu.juntada.activity.GroupsActivity;
+import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.model.Group;
 import com.squareup.picasso.Picasso;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +31,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     private Context mContext;
     private List<Group> mData = new ArrayList<>();
     private LayoutInflater mInflater;
+    private static ClickListener mClickListener;
 
     // data is passed into the constructor
     public GroupAdapter(Context context, List<Group> data) {
@@ -46,7 +53,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         String groupName = mData.get(position).getName();
         String groupImage = mData.get(position).getImageUrl();
-        holder.groupName.setText(groupName);
+        holder.groupName.setText(StringEscapeUtils.unescapeJava(groupName));
         Picasso.with(mContext).load(groupImage).into(holder.imageView);
     }
 
@@ -54,6 +61,14 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        mClickListener = clickListener;
     }
 
     @Override
@@ -75,7 +90,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-//                if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+                if (mClickListener != null) mClickListener.onItemClick(getAdapterPosition(), view);
         }
     }
 
@@ -84,8 +99,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     }
 
     // convenience method for getting data at click position
-    public String getItem(int id) {
-        return mData.get(id).getId().toString();
+    public Group getItem(int position) {
+        return mData.get(position);
     }
 
 }

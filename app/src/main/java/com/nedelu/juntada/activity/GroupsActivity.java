@@ -2,6 +2,7 @@ package com.nedelu.juntada.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener {
+public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
 
     private GroupAdapter groupAdapter;
     private RecyclerView recyclerView;
@@ -59,20 +60,14 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "This button will be used to create new groups.", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
                 Intent main = new Intent(GroupsActivity.this, NewGroupActivity.class);
                 main.putExtra("id", userId);
                 startActivity(main);
             }
         });
 
-        Bundle inBundle = getIntent().getExtras();
-        String name = inBundle.get("name").toString();
-        String surname = inBundle.get("surname").toString();
-        String imageUrl = inBundle.get("imageUrl").toString();
-        userId = Long.valueOf(inBundle.get("id").toString());
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        userId = userPref.getLong("id", 0L);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -81,11 +76,10 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
         toggle.syncState();
 
-        GroupManager.getInstance().setGroups(generateMockGroups());
         groupService = GroupService.getInstance(GroupsActivity.this);
 
         groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(Long.valueOf(userId)));
-
+        groupAdapter.setOnItemClickListener(this);
         recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(groupAdapter);
@@ -116,42 +110,6 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         groupAdapter.notifyItemRangeRemoved(0,groupAdapter.getItemCount());
         groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
         groupAdapter.notifyDataSetChanged();
-    }
-
-    /*
-        This method mocks some groups for testing the ui in early stages
-    */
-    private List<Group> generateMockGroups() {
-        //Mock group 1
-        Group group1 = new Group();
-        group1.setId(1l);
-        group1.setName("Facu");
-        group1.setImageUrl("http://estaticos.tonterias.com/wp-content/uploads/2009/10/20090929033537_borrachos-dinero-cartera-mano.jpg");
-
-        //Mock group 2
-        Group group2 = new Group();
-        group2.setId(2l);
-        group2.setName("Futbol");
-        group2.setImageUrl("http://www.bocalista.com/wp-content/uploads/2017/02/vuelven-los-Supercampeones-en-2018.jpg");
-
-        //Mock group 3
-        Group group3 = new Group();
-        group3.setId(3l);
-        group3.setName("Barrio");
-        group3.setImageUrl("http://cdn.glamour.mx/uploads/images/thumbs/201547/fiesta_1247_980x560.jpg");
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(group1);
-        groups.add(group2);
-        groups.add(group3);
-        groups.add(group3);
-        groups.add(group3);
-        groups.add(group3);
-        groups.add(group3);
-        groups.add(group3);
-
-
-        return groups;
     }
 
     @Override
@@ -209,5 +167,15 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onItemClick(int position, View v) {
+        Intent main = new Intent(GroupsActivity.this, GroupActivity.class);
+        Group group = groupAdapter.getItem(position);
+        main.putExtra("userId", userId);
+        main.putExtra("groupId", group.getId());
+        main.putExtra("image_url", group.getImageUrl());
+        startActivity(main);
     }
 }

@@ -24,14 +24,15 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.0'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
+
+
+    compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.codeslap:persistence:0.9.24'
     compile 'com.facebook.android:facebook-android-sdk:4.18.0'
-    testCompile 'junit:junit:4.12'
     compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
     compile 'org.lucasr.twowayview:layouts:1.0.0-SNAPSHOT@aar'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -39,6 +40,9 @@ dependencies {
     compile 'com.makeramen:roundedimageview:2.3.0'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
     compile 'andhradroid.dev:aFilechooser:1.0.1'
-
-
+    compile 'com.github.ksoichiro:android-observablescrollview:1.6.0'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    testCompile 'junit:junit:4.12'
 }

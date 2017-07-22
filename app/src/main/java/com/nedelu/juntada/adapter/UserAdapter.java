@@ -26,7 +26,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
     private final Context mContext;
     private final RecyclerView mRecyclerView;
     private final List<User> mItems;
-    private final int mLayoutId;
     private int mCurrentItemId = 0;
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
@@ -38,7 +37,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
         }
     }
 
-    public UserAdapter(Context context,List<User> users, RecyclerView recyclerView, int layoutId) {
+    public UserAdapter(Context context,List<User> users, RecyclerView recyclerView) {
         mContext = context;
         mItems = new ArrayList<User>(users.size());
         for (int i = 0; i < users.size(); i++) {
@@ -46,7 +45,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
         }
 
         mRecyclerView = recyclerView;
-        mLayoutId = layoutId;
     }
 
     public void addItem(int position, User user) {
@@ -67,7 +65,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
 
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, int position) {
-
         String url = mItems.get(position).getImageUrl();
         Picasso.with(mContext).load(url).into(holder.userImage);
     }

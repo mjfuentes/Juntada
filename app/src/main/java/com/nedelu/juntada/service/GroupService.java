@@ -32,6 +32,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Multipart;
 
+import static com.nedelu.juntada.R.menu.groups;
+
 /**
  * Created by matiasj.fuentes@gmail.com.
  */
@@ -95,7 +97,7 @@ public class GroupService extends Observable {
             public void onResponse(Call<Group> call, Response<Group> response) {
                 Group group = response.body();
                 saveGroup(group);
-                newGroupActivity.groupCreated();
+                newGroupActivity.groupCreated(group.getId());
             }
 
             @Override
@@ -192,6 +194,22 @@ public class GroupService extends Observable {
         participant.setUserId(userId);
 
         adapter.delete(participant);
+    }
+
+    public Group getGroupData(Long groupId){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        Group group = new Group();
+        group.setId(groupId);
+        group = adapter.findFirst(group);
+
+        List<Participant> participants = adapter.findAll(Participant.class, "group_id= ? ", new String[]{groupId.toString()});
+        for (Participant participant : participants){
+            User user = new User();
+            user.setId(participant.getUserId());
+            group.getUsers().add(adapter.findFirst(user));
+        }
+
+        return group;
     }
 
     public interface Callbacks{

@@ -5,15 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.nedelu.juntada.activity.GroupsActivity"
-    tools:showIn="@layout/app_bar_groups">
+    tools:context="com.nedelu.juntada.activity.GroupActivity"
+    tools:showIn="@layout/app_bar_group">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/groups_view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <com.github.ksoichiro.android.observablescrollview.ObservableListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/list"
+        android:layout_width="368dp"
+        android:layout_height="495dp"
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="8dp" />
 

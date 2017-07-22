@@ -33,6 +33,8 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Objects;
@@ -60,6 +62,7 @@ public class NewGroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CropImage.activity().setAspectRatio(1,1)
+                        .setRequestedSize(400,400)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .start(NewGroupActivity.this);
 
@@ -82,8 +85,7 @@ public class NewGroupActivity extends AppCompatActivity {
                     }
                     progressBar.setVisibility(View.VISIBLE);
                     Group group = new Group();
-                    group.setName(editTextName.getText().toString());
-                    group.setImageUrl("http://thomrainer.com/wp-content/uploads/2013/10/Start-New-Groups.jpg");
+                    group.setName(StringEscapeUtils.escapeJava(editTextName.getText().toString()));
                     GroupService.getInstance(NewGroupActivity.this).createGroup(NewGroupActivity.this, userId, group,imageUri, NewGroupActivity.this);
                 } else {
                     Snackbar.make(view, "All fields must be completed!.", Snackbar.LENGTH_SHORT)
@@ -113,7 +115,13 @@ public class NewGroupActivity extends AppCompatActivity {
         return !editTextName.getText().toString().equals("") && imageUri != null;
     }
 
-    public void groupCreated(){
+    public void groupCreated(Long groupId){
+
+        Intent main = new Intent(NewGroupActivity.this, NewGroupTwoActivity.class);
+        main.putExtra("userId", userId);
+        main.putExtra("groupId", groupId);
+        startActivity(main);
+
         finish();
     }
 }
