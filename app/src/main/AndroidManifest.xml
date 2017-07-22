@@ -18,9 +18,9 @@
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="Juntada"
+        android:largeHeap="true"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -60,9 +60,10 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
             android:name=".activity.GroupActivity"
-            android:screenOrientation="portrait"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.NewEventActivity"></activity>
     </application>
 
 </manifest>

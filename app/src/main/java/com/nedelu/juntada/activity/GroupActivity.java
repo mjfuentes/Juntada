@@ -2,6 +2,7 @@ package com.nedelu.juntada.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -185,8 +186,10 @@ public class GroupActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.create_event) {
+            Intent main = new Intent(GroupActivity.this, NewEventActivity.class);
+            startActivity(main);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
