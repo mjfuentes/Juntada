@@ -44,6 +44,7 @@ import com.nedelu.juntada.adapter.UserAdapter;
 import com.nedelu.juntada.fragment.EventFragment;
 import com.nedelu.juntada.fragment.EventUnconfirmedFragment;
 import com.nedelu.juntada.fragment.dummy.DummyContent;
+import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.pager.EventPager;
 import com.nedelu.juntada.service.GroupService;
@@ -188,6 +189,8 @@ public class GroupActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.create_event) {
             Intent main = new Intent(GroupActivity.this, NewEventActivity.class);
+            main.putExtra("userId", userId);
+            main.putExtra("groupId", groupId);
             startActivity(main);
             finish();
         }
@@ -234,6 +237,12 @@ public class GroupActivity extends AppCompatActivity
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
     }
 
+
+    @Override
+    public void onListFragmentInteraction(Event item) {
+
+    }
+
     @Override
     public void onListFragmentInteraction(DummyContent.DummyItem item) {
 
@@ -251,7 +260,7 @@ public class GroupActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return new EventFragment();
+                    return EventFragment.newInstance(groupService.getEvents(groupId));
                 case 1:
                     return new EventUnconfirmedFragment();
                 default:

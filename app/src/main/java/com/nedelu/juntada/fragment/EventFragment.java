@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.fragment.dummy.DummyContent;
 import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
+import com.nedelu.juntada.model.Event;
 
 import java.util.List;
 
@@ -27,15 +28,15 @@ public class EventFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private List<Event> events;
 
     public EventFragment() {
     }
 
-    public static EventFragment newInstance(int columnCount) {
+    public static EventFragment newInstance(List<Event> events) {
         EventFragment fragment = new EventFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
+        fragment.setEvents(events);
+
         return fragment;
     }
 
@@ -62,7 +63,8 @@ public class EventFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+
+            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(events, mListener));
             recyclerView.setHasFixedSize(true);
             recyclerView .setNestedScrollingEnabled(false);
 
@@ -88,6 +90,10 @@ public class EventFragment extends Fragment {
         mListener = null;
     }
 
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -100,6 +106,6 @@ public class EventFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Event item);
     }
 }

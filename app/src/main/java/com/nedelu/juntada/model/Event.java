@@ -12,23 +12,24 @@ import static android.R.attr.id;
 public class Event {
 
     private Long id;
-    private Group group;
+    private Group ownerGroup;
     private User creator;
     private List<User> confirmedUsers;
     private List<User> doNotKnowUsers;
     private List<User> notGoingUsers;
-    private Date startingDate;
-    private Date endingDate;
+    private String date;
+    private String time;
     private String title;
     private String description;
+
+
+    private String location;
 
     public static Event createFromPoll(Poll poll, Long pollOptionId){
         for (PollOption option : poll.getOptions()){
             if (option.getId().equals(pollOptionId)){
                 Event event = new Event();
                 event.setGroup(poll.getGroup());
-                event.setStartingDate(option.getStartingDate());
-                event.setEndingDate(option.getEndingDate());
                 event.setTitle(poll.getTitle());
                 event.setCreator(poll.getCreator());
                 for (PollOptionVote vote : option.getVotes()){
@@ -50,11 +51,11 @@ public class Event {
 
 
     public Group getGroup() {
-        return group;
+        return ownerGroup;
     }
 
     public void setGroup(Group group) {
-        this.group = group;
+        this.ownerGroup = group;
     }
 
     public List<User> getConfirmedUsers() {
@@ -81,22 +82,6 @@ public class Event {
         this.notGoingUsers = notGoingUsers;
     }
 
-    public Date getStartingDate() {
-        return startingDate;
-    }
-
-    public void setStartingDate(Date startingDate) {
-        this.startingDate = startingDate;
-    }
-
-    public Date getEndingDate() {
-        return endingDate;
-    }
-
-    public void setEndingDate(Date endingDate) {
-        this.endingDate = endingDate;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -112,6 +97,47 @@ public class Event {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Group getOwnerGroup() {
+        return ownerGroup;
+    }
+
+    public void setOwnerGroup(Group ownerGroup) {
+        this.ownerGroup = ownerGroup;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
 
 
 }

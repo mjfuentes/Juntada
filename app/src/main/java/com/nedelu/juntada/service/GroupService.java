@@ -10,8 +10,13 @@ import android.widget.Toast;
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
+import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.model.PollOption;
+import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.Participant;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
@@ -107,6 +112,53 @@ public class GroupService extends Observable {
         });
     }
 
+    public void createEvent(PollRequest request, final NewEventActivity newEventActivity){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.1.1.16:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        final Call<Event> call = server.createEvent(request);
+        call.enqueue(new Callback<Event>() {
+            @Override
+            public void onResponse(Call<Event> call, Response<Event> response) {
+                Event event = response.body();
+                saveEvent(event);
+                newEventActivity.eventCreated(event);
+            }
+
+            @Override
+            public void onFailure(Call<Event> call, Throwable t) {
+                Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void createPoll(PollRequest request, final NewEventActivity newEventActivity){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.1.1.16:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        final Call<Poll> call = server.createPoll(request);
+        call.enqueue(new Callback<Poll>() {
+            @Override
+            public void onResponse(Call<Poll> call, Response<Poll> response) {
+                Poll poll = response.body();
+                savePoll(poll);
+            }
+
+            @Override
+            public void onFailure(Call<Poll> call, Throwable t) {
+                Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     public String getMimeType(String url) {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
@@ -183,6 +235,33 @@ public class GroupService extends Observable {
         } catch (Exception e){
             //todo // FIXME: 17/07/17
         }
+    }
+
+    public void savePoll(Poll poll){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        adapter.store(poll);
+        try {
+            for (PollOption option : poll.getOptions()) {
+                adapter.store(option);
+            }
+        } catch (Exception e){
+        }
+    }
+
+    public void saveEvent(Event event){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        adapter.store(event);
+    }
+
+    public List<Event> getEvents(Long groupId){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        return adapter.findAll(Event.class);
+    }
+
+    public PollRequest savePollRequest(PollRequest request){
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        adapter.store(request);
+        return adapter.findFirst(request);
     }
 
     public void deleteGroup(Long userId, Group group){

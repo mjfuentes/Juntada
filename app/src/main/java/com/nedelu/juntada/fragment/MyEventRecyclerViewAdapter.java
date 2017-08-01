@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.fragment.EventFragment.OnListFragmentInteractionListener;
 import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
+import com.nedelu.juntada.model.Event;
 
 import java.util.List;
 
@@ -19,10 +20,10 @@ import java.util.List;
  */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Event> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyEventRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -31,12 +32,25 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_event, parent, false);
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
+
+
+        TextView eventName = (TextView) holder.mView.findViewById(R.id.event_name);
+        TextView eventDate = (TextView) holder.mView.findViewById(R.id.event_date);
+        TextView eventTime = (TextView) holder.mView.findViewById(R.id.event_time);
+        TextView eventLocation = (TextView) holder.mView.findViewById(R.id.event_location);
+
+
+        eventName.setText(mValues.get(position).getTitle());
+        eventDate.setText(mValues.get(position).getDate());
+        eventTime.setText(mValues.get(position).getTime());
+        eventLocation.setText(mValues.get(position).getLocation());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +71,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public DummyItem mItem;
+        public Event mItem;
 
         public ViewHolder(View view) {
             super(view);

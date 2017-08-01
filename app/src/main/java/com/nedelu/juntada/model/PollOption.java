@@ -10,8 +10,8 @@ import java.util.List;
 public class PollOption {
 
     private Long id;
-    private Date startingDate;
-    private Date endingDate;
+    private Date date;
+    private String time;
     private List<PollOptionVote> votes;
 
     public Long getId() {
@@ -22,29 +22,28 @@ public class PollOption {
         this.id = id;
     }
 
-    public Date getEndingDate() {
-        return endingDate;
-    }
-
-    public void setEndingDate(Date endingDate) {
-        this.endingDate = endingDate;
-    }
-
-
-    public Date getStartingDate() {
-        return startingDate;
-    }
-
-    public void setStartingDate(Date startingDate) {
-        this.startingDate = startingDate;
-    }
-
     public List<PollOptionVote> getVotes() {
         return votes;
     }
 
     public void setVotes(List<PollOptionVote> votes) {
         this.votes = votes;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
 }

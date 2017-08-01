@@ -15,8 +15,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DatabaseSpec database = PersistenceConfig.registerSpec(4);
-        database.matchNotAutoIncrement(Group.class, User.class, Participant.class);
+        DatabaseSpec database = PersistenceConfig.registerSpec(7);
+        database.matchNotAutoIncrement(Group.class, User.class, Participant.class, Event.class);
+        database.match(PollRequest.class);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());

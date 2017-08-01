@@ -12,10 +12,9 @@ public class Group {
 
     private Long id;
     private String name;
-//    private Date creationDate;
     private List<User> users = new ArrayList<>();
     private List<Poll> activePolls;
-    private List<Event> futureEvents;
+    private List<Event> events;
     private String imageUrl;
 
     public Long getId() {
@@ -34,13 +33,13 @@ public class Group {
         this.name = name;
     }
 
-//    public Date getCreationDate() {
-//        return creationDate;
-//    }
-//
-//    public void setCreationDate(Date creationDate) {
-//        this.creationDate = creationDate;
-//    }
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
 
     public List<User> getUsers() {
         return users;

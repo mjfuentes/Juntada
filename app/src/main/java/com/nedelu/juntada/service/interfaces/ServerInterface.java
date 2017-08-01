@@ -1,6 +1,9 @@
 package com.nedelu.juntada.service.interfaces;
 
+import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
 
 import java.util.List;
@@ -24,6 +27,12 @@ public interface ServerInterface {
 
     @POST("users")
     Call<Long> createUser(@Body User user);
+
+    @POST("polls")
+    Call<Poll> createPoll(@Body PollRequest request);
+
+    @POST("events")
+    Call<Event> createEvent(@Body PollRequest request);
 
     @GET("users/{userID}/groups")
     Call<List<Group>> getGroups(@Path("userID") Long id);
