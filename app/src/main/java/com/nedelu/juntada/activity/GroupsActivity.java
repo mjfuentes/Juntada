@@ -153,9 +153,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     public void onItemClick(int position, View v) {
         Intent main = new Intent(GroupsActivity.this, GroupActivity.class);
         Group group = groupAdapter.getItem(position);
-        main.putExtra("userId", userId);
-        main.putExtra("groupId", group.getId());
-        main.putExtra("image_url", group.getImageUrl());
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences.Editor editor = userPref.edit();
+        editor.putLong("userId", userId);
+        editor.putLong("groupId", group.getId());
+        editor.putString("image_url", group.getImageUrl());
+        editor.apply();
         startActivity(main);
     }
 }

@@ -5,7 +5,7 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="DialogTheme" parent="AppTheme">
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 

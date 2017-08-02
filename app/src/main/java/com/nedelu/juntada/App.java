@@ -15,12 +15,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DatabaseSpec database = PersistenceConfig.registerSpec(7);
+        DatabaseSpec database = PersistenceConfig.registerSpec(8);
         database.matchNotAutoIncrement(Group.class, User.class, Participant.class, Event.class);
         database.match(PollRequest.class);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-//        database.match();
     }
 }

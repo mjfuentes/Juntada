@@ -21,8 +21,6 @@ public class Event {
     private String time;
     private String title;
     private String description;
-
-
     private String location;
 
     public static Event createFromPoll(Poll poll, Long pollOptionId){

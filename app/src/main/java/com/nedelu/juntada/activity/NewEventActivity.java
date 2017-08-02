@@ -2,6 +2,7 @@ package com.nedelu.juntada.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
@@ -61,9 +62,13 @@ public class NewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_event);
 
-        Bundle inBundle = getIntent().getExtras();
-        userId = Long.valueOf(inBundle.get("userId").toString());
-        groupId = Long.valueOf(inBundle.get("groupId").toString());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        userId = userPref.getLong("userId", 0L);
+        groupId =  userPref.getLong("groupId", 0L);
 
         editTime = (Spinner) findViewById(R.id.edit_time);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,

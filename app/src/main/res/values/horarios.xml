@@ -3,7 +3,6 @@
     <string-array name="horarios">
         <item>Mañana</item>
         <item>Mediodia</item>
-        <item>Mediatarde</item>
         <item>Tarde</item>
         <item>Noche</item>
     </string-array>

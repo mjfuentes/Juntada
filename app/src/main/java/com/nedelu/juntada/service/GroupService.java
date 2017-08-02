@@ -12,6 +12,7 @@ import com.codeslap.persistence.SqlAdapter;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
+import com.nedelu.juntada.activity.NewPollActivity;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
@@ -131,12 +132,12 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<Event> call, Throwable t) {
-                Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Event creation failed!", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    public void createPoll(PollRequest request, final NewEventActivity newEventActivity){
+    public void createPoll(PollRequest request, final NewPollActivity newPollActivity){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.1.1.16:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -150,11 +151,13 @@ public class GroupService extends Observable {
             public void onResponse(Call<Poll> call, Response<Poll> response) {
                 Poll poll = response.body();
                 savePoll(poll);
+
+                newPollActivity.pollCreated(poll);
             }
 
             @Override
             public void onFailure(Call<Poll> call, Throwable t) {
-                Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Poll creation failed!", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -289,6 +292,13 @@ public class GroupService extends Observable {
         }
 
         return group;
+    }
+
+    public PollRequest getPollRequest(Long pollRequestId) {
+        SqlAdapter adapter = Persistence.getAdapter(context);
+        PollRequest request = new PollRequest();
+        request.setId(pollRequestId);
+        return adapter.findFirst(request);
     }
 
     public interface Callbacks{

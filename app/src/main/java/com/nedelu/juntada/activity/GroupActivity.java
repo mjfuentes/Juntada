@@ -77,10 +77,10 @@ public class GroupActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Bundle inBundle = getIntent().getExtras();
-        userId = Long.valueOf(inBundle.get("userId").toString());
-        groupId = Long.valueOf(inBundle.get("groupId").toString());
-        image_url = inBundle.get("image_url").toString();
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        userId = userPref.getLong("userId", 0L);
+        groupId =  userPref.getLong("groupId", 0L);
+        image_url =  userPref.getString("image_url", "");
 
         groupService = GroupService.getInstance(GroupActivity.this);
         group = groupService.getGroupData(groupId);
@@ -99,15 +99,6 @@ public class GroupActivity extends AppCompatActivity
 
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         userList.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -192,7 +183,6 @@ public class GroupActivity extends AppCompatActivity
             main.putExtra("userId", userId);
             main.putExtra("groupId", groupId);
             startActivity(main);
-            finish();
         }
 
         return super.onOptionsItemSelected(item);

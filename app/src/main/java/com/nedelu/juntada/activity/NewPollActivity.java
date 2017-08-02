@@ -2,6 +2,9 @@ package com.nedelu.juntada.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,10 +16,19 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.model.PollOption;
+import com.nedelu.juntada.model.PollRequest;
+import com.nedelu.juntada.service.GroupService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,14 +39,19 @@ import java.util.Locale;
 
 public class NewPollActivity extends AppCompatActivity {
 
+    private GroupService groupService;
     private DateAdapter dateAdapter;
     private GridView dateList;
     private Calendar myCalendar;
     private EditText editDate;
+    private ImageView dateImage;
     private Long userId;
     private Long groupId;
     private Long pollRequestId;
+    private PollRequest request;
     private Spinner editTime;
+    private FloatingActionButton button;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +59,23 @@ public class NewPollActivity extends AppCompatActivity {
         setContentView(R.layout.activity_poll);
 
         Bundle inBundle = getIntent().getExtras();
-        userId = Long.valueOf(inBundle.get("userId").toString());
-        groupId = Long.valueOf(inBundle.get("groupId").toString());
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        userId = userPref.getLong("userId", 0L);
+        groupId =  userPref.getLong("groupId", 0L);
         pollRequestId = Long.valueOf(inBundle.get("pollRequestId").toString());
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        groupService = GroupService.getInstance(NewPollActivity.this);
+        request = groupService.getPollRequest(pollRequestId);
+
+        getSupportActionBar().setTitle(request.getTitle());
 
         editDate = (EditText) findViewById(R.id.edit_date);
         editTime = (Spinner) findViewById(R.id.edit_time);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        dateImage = (ImageView) findViewById(R.id.date_image);
+        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.horarios, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         editTime.setAdapter(adapter);
@@ -71,23 +98,48 @@ public class NewPollActivity extends AppCompatActivity {
 
         };
 
-        Button addDate = (Button) findViewById(R.id.add_date);
+        final ImageButton addDate = (ImageButton) findViewById(R.id.add_date);
         addDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dateAdapter.addDate(myCalendar.getTime());
+                if (checkFields() && dateAdapter.getCount() < 4) {
+                    PollOption option = new PollOption();
+                    option.setDate(myCalendar.getTime());
+                    option.setTime(editTime.getSelectedItem().toString());
+                    dateAdapter.addDate(option);
+
+                    if (dateAdapter.getCount() == 4){
+                        addDate.setVisibility(View.INVISIBLE);
+                    }
+
+                    button.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        editDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        button = (FloatingActionButton) findViewById(R.id.add_event);
+        button.setVisibility(View.INVISIBLE);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
+                request.setOptions(dateAdapter.getItems());
+                groupService.createPoll(request, NewPollActivity.this);
+            }
+        });
+
+        dateImage.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onFocusChange(View view, boolean focused) {
-                if (focused) {
-                    new DatePickerDialog(NewPollActivity.this, date, myCalendar
-                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                }
+            public void onClick(View view) {
+                DatePickerDialog dialog = new DatePickerDialog(NewPollActivity.this,R.style.DialogTheme, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+
+                dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+                dialog.show();
             }
         });
     }
@@ -100,29 +152,33 @@ public class NewPollActivity extends AppCompatActivity {
         editDate.setText(sdf.format(myCalendar.getTime()));
     }
 
+    public void pollCreated(Poll poll) {
+        this.finish();
+    }
+
     private class DateAdapter extends BaseAdapter {
 
         private Context context;
-        private List<Date> dates = new ArrayList<>();
+        private List<PollOption> options = new ArrayList<>();
 
         public DateAdapter(Context context){
             this.context = context;
         }
 
-        public void addDate(Date date) {
-            this.dates.add(date);
+        public void addDate(PollOption date) {
+            this.options.add(date);
             this.notifyDataSetChanged();
         }
 
 
         @Override
         public int getCount() {
-            return dates.size();
+            return options.size();
         }
 
         @Override
         public Object getItem(int i) {
-            return dates.get(i);
+            return options.get(i);
         }
 
         @Override
@@ -136,15 +192,27 @@ public class NewPollActivity extends AppCompatActivity {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            View rowView = inflater.inflate(R.layout.date_item, viewGroup, false);
-            TextView textView = (TextView) rowView.findViewById(R.id.date_text);
+            View rowView = inflater.inflate(R.layout.poll_item, viewGroup, false);
+            TextView dateText = (TextView) rowView.findViewById(R.id.text_date);
+            TextView timeText = (TextView) rowView.findViewById(R.id.text_time);
 
-            String myFormat = "dd/MM/yy";
+            String myFormat = "dd/MM";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
-            textView.setText(sdf.format(dates.get(i)));
+            timeText.setText(options.get(i).getTime());
+            dateText.setText(sdf.format(options.get(i).getDate()));
 
-            return textView;
+            return rowView;
         }
+
+        public List<PollOption> getItems() {
+            return options;
+        }
+    }
+
+    private boolean checkFields() {
+
+        return !editDate.getText().toString().equals("") &&
+                !(editTime.getSelectedItem() == null);
     }
 }
