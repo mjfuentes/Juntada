@@ -1,5 +1,8 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,12 +13,26 @@ import java.util.List;
 
 public class Group {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "name")
     private String name;
-    private List<User> users = new ArrayList<>();
-    private List<Poll> activePolls;
+
+    @ForeignCollectionField(columnName = "polls", eager = true)
+    private List<Poll> polls;
+
+    @ForeignCollectionField(columnName = "events", eager = true)
     private List<Event> events;
+
+    @DatabaseField(columnName = "image_url")
     private String imageUrl;
+
+    private List<User> users = new ArrayList<>();
+
+    public Group(){
+
+    }
 
     public Long getId() {
         return id;
@@ -55,6 +72,13 @@ public class Group {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+    public List<Poll> getPolls() {
+        return polls;
+    }
+
+    public void setPolls(List<Poll> polls) {
+        this.polls = polls;
     }
 
 }

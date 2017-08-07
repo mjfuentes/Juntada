@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.fragment.dummy.DummyContent;
-import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
 import com.nedelu.juntada.model.Event;
 
 import java.util.List;

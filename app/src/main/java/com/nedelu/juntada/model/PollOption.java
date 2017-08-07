@@ -1,5 +1,8 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+
 import java.util.Date;
 import java.util.List;
 
@@ -9,10 +12,24 @@ import java.util.List;
 
 public class PollOption {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "date")
     private Date date;
+
+    @DatabaseField(columnName = "time")
     private String time;
+
+    @DatabaseField(columnName = "poll", foreign = true, foreignAutoRefresh = true)
+    private Poll poll;
+
+    @ForeignCollectionField(columnName = "votes", eager = true)
     private List<PollOptionVote> votes;
+
+    public PollOption(){
+
+    }
 
     public Long getId() {
         return id;
@@ -44,6 +61,14 @@ public class PollOption {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
     }
 
 }

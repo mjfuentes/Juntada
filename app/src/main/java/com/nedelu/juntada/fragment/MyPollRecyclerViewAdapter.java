@@ -6,21 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
+import com.nedelu.juntada.model.Poll;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
-public class MyEventUnconfirmedRecyclerViewAdapter extends RecyclerView.Adapter<MyEventUnconfirmedRecyclerViewAdapter.ViewHolder> {
+public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final EventUnconfirmedFragment.OnListFragmentInteractionListener mListener;
+    private final List<Poll> mValues;
+    private final PollFragment.OnListFragmentInteractionListener mListener;
 
-    public MyEventUnconfirmedRecyclerViewAdapter(List<DummyItem> items, EventUnconfirmedFragment.OnListFragmentInteractionListener listener) {
+    public MyPollRecyclerViewAdapter(List<Poll> items, PollFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -55,7 +50,7 @@ public class MyEventUnconfirmedRecyclerViewAdapter extends RecyclerView.Adapter<
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public DummyItem mItem;
+        public Poll mItem;
 
         public ViewHolder(View view) {
             super(view);

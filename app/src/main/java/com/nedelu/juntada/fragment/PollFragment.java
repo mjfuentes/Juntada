@@ -11,8 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.fragment.dummy.DummyContent;
-import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
+import com.nedelu.juntada.model.Poll;
+
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -20,20 +21,20 @@ import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventUnconfirmedFragment extends Fragment {
+public class PollFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private PollFragment.OnListFragmentInteractionListener mListener;
+    private List<Poll> polls;
 
-    public EventUnconfirmedFragment() {
+    public PollFragment() {
     }
 
-    public static EventUnconfirmedFragment newInstance(int columnCount) {
-        EventUnconfirmedFragment fragment = new EventUnconfirmedFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
+    public static PollFragment newInstance(List<Poll> polls) {
+        PollFragment fragment = new PollFragment();
+        fragment.setEvents(polls);
+
         return fragment;
     }
 
@@ -60,7 +61,8 @@ public class EventUnconfirmedFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyEventUnconfirmedRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+
+            recyclerView.setAdapter(new MyPollRecyclerViewAdapter(polls, mListener));
             recyclerView.setHasFixedSize(true);
             recyclerView .setNestedScrollingEnabled(false);
 
@@ -72,8 +74,8 @@ public class EventUnconfirmedFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof EventFragment.OnListFragmentInteractionListener) {
+            mListener = (PollFragment.OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
@@ -86,18 +88,12 @@ public class EventUnconfirmedFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    public void setEvents(List<Poll> polls) {
+        this.polls = polls;
+    }
+
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Poll item);
     }
 }

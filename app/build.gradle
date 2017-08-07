@@ -45,5 +45,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.android.gms:play-services:11.0.2'
+    compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
     testCompile 'junit:junit:4.12'
 }

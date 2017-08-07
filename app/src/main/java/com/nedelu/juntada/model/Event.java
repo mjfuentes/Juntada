@@ -1,9 +1,8 @@
 package com.nedelu.juntada.model;
 
-import java.util.Date;
-import java.util.List;
+import com.j256.ormlite.field.DatabaseField;
 
-import static android.R.attr.id;
+import java.util.List;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -11,17 +10,37 @@ import static android.R.attr.id;
 
 public class Event {
 
+    @DatabaseField(generatedId = false, columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "owner_group", foreign = true, foreignAutoRefresh = true)
     private Group ownerGroup;
+
+    @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true)
     private User creator;
+
+    @DatabaseField(columnName = "date")
+    private String date;
+
+    @DatabaseField(columnName = "time")
+    private String time;
+
+    @DatabaseField(columnName = "title")
+    private String title;
+
+    @DatabaseField(columnName = "description")
+    private String description;
+
+    @DatabaseField(columnName = "location")
+    private String location;
+
     private List<User> confirmedUsers;
     private List<User> doNotKnowUsers;
     private List<User> notGoingUsers;
-    private String date;
-    private String time;
-    private String title;
-    private String description;
-    private String location;
+
+    public Event(){
+
+    }
 
     public static Event createFromPoll(Poll poll, Long pollOptionId){
         for (PollOption option : poll.getOptions()){

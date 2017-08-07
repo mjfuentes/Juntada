@@ -1,5 +1,8 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+
 import java.util.List;
 
 /**
@@ -8,12 +11,27 @@ import java.util.List;
 
 public class Poll {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true)
     private User creator;
+
+    @DatabaseField(columnName = "group", foreign = true, foreignAutoRefresh = true)
     private Group group;
+
+    @DatabaseField(columnName = "title")
     private String title;
+
+    @DatabaseField(columnName = "location")
     private String location;
+
+    @ForeignCollectionField(columnName = "options", eager = true)
     private List<PollOption> options;
+
+    public Poll(){
+
+    }
 
     public User getCreator() {
         return creator;

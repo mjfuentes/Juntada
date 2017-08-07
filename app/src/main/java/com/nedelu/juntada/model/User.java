@@ -1,5 +1,7 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +11,24 @@ import java.util.List;
 
 public class User {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "first_name")
     private String firstName;
+
+    @DatabaseField(columnName = "last_name")
     private String lastName;
+
+    @DatabaseField(columnName = "facebook_id")
     private String facebookId;
+
+    @DatabaseField(columnName = "image_url")
     private String imageUrl;
+
+    public User(){
+
+    }
 
     public String getFirstName() {
         return firstName;

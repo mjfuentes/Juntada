@@ -8,16 +8,10 @@ import android.widget.TextView;
 
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.fragment.EventFragment.OnListFragmentInteractionListener;
-import com.nedelu.juntada.fragment.dummy.DummyContent.DummyItem;
 import com.nedelu.juntada.model.Event;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
     private final List<Event> mValues;

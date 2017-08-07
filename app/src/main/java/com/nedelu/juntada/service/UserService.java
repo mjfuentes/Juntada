@@ -6,7 +6,7 @@ import android.widget.Toast;
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
 import com.nedelu.juntada.activity.LoginActivity;
-import com.nedelu.juntada.model.Participant;
+import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
@@ -25,9 +25,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class UserService {
 
     private Context context;
+    private UserDao userDao;
 
-    public UserService(Context context) {
+    public UserService(Context context)
+    {
         this.context = context;
+        this.userDao = new UserDao(context);
     }
 
     public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {
@@ -50,7 +53,7 @@ public class UserService {
             public void onResponse(Call<Long> call, Response<Long> response) {
                 Long userId = response.body();
                 user.setId(userId);
-                saveUser(user);
+                userDao.saveUser(user);
                 activity.nextActivity(user);
 
             }
@@ -64,25 +67,16 @@ public class UserService {
         return user;
     }
 
+    public void saveUser(User user){
+        userDao.saveUser(user);
+    }
 
     public User getUser(String facebookId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findFirst(User.class, "facebook_id = ?", new String[]{facebookId});
+        return userDao.getUser(facebookId);
     }
 
-    public void saveUser(User user){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(user);
-    }
 
     public void saveUserGroup(Long userId, Long groupId) {
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        Participant Participant = adapter.findFirst(Participant.class, "user_id = ? AND group_id = ? ", new String[]{userId.toString(),groupId.toString()});
-        if (Participant == null){
-        Participant participant = new Participant();
-            participant.setGroupId(groupId);
-            participant.setUserId(userId);
-            adapter.store(participant);
-        }
+        userDao.saveUserGroup(userId, groupId);
     }
 }

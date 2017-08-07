@@ -1,5 +1,8 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.nedelu.juntada.model.User;
+
 import java.util.Date;
 
 /**
@@ -8,9 +11,21 @@ import java.util.Date;
 
 public class PollOptionVote {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "user", foreign = true, foreignAutoRefresh = true)
     private User user;
+
+    @DatabaseField(columnName = "creation_date")
     private Date creationDate;
+
+    @DatabaseField(columnName = "poll_option", foreign = true, foreignAutoRefresh = true)
+    private PollOption pollOption;
+
+    public PollOptionVote(){
+
+    }
 
     public User getUser() {
         return user;
@@ -26,6 +41,22 @@ public class PollOptionVote {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public PollOption getPollOption() {
+        return pollOption;
+    }
+
+    public void setPollOption(PollOption pollOption) {
+        this.pollOption = pollOption;
     }
 
 }

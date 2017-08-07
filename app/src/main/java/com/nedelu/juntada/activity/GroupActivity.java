@@ -3,24 +3,15 @@ package com.nedelu.juntada.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,35 +21,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.adapter.UserAdapter;
 import com.nedelu.juntada.fragment.EventFragment;
-import com.nedelu.juntada.fragment.EventUnconfirmedFragment;
-import com.nedelu.juntada.fragment.dummy.DummyContent;
+import com.nedelu.juntada.fragment.PollFragment;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.pager.EventPager;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.nedelu.juntada.util.SpacesItemDecoration;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.util.ArrayList;
-
 public class GroupActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ObservableScrollViewCallbacks, EventFragment.OnListFragmentInteractionListener, EventUnconfirmedFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ObservableScrollViewCallbacks, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
     private Long userId;
     private Long groupId;
     private String image_url;
@@ -83,7 +68,7 @@ public class GroupActivity extends AppCompatActivity
         image_url =  userPref.getString("image_url", "");
 
         groupService = GroupService.getInstance(GroupActivity.this);
-        group = groupService.getGroupData(groupId);
+        group = groupService.loadGroupData(groupId, GroupActivity.this);
 
         ImageView groupImageView = (ImageView) findViewById(R.id.group_image);
         Picasso.with(GroupActivity.this).load(group.getImageUrl()).into(groupImageView);
@@ -234,7 +219,7 @@ public class GroupActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(Poll item) {
 
     }
 
@@ -250,9 +235,9 @@ public class GroupActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return EventFragment.newInstance(groupService.getEvents(groupId));
+                    return EventFragment.newInstance(group.getEvents());
                 case 1:
-                    return new EventUnconfirmedFragment();
+                    return PollFragment.newInstance(group.getPolls());
                 default:
                     return new EventFragment();
             }
@@ -274,5 +259,9 @@ public class GroupActivity extends AppCompatActivity
                     return "ERROR";
             }
         }
+    }
+
+    public void refreshGroup(Group group){
+        mEventPagerAdapter.notifyDataSetChanged();
     }
 }

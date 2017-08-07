@@ -37,6 +37,9 @@ public interface ServerInterface {
     @GET("users/{userID}/groups")
     Call<List<Group>> getGroups(@Path("userID") Long id);
 
+    @GET("groups/{groupId}")
+    Call<Group> getGroup(@Path("groupId") Long groupId);
+
     @Multipart
     @POST("users/{userID}/groups")
     Call<Group> createGroup(@Path("userID") Long id, @Part("name") RequestBody name, @Part MultipartBody.Part file);

@@ -1,5 +1,7 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.field.DatabaseField;
+
 import java.util.List;
 
 /**
@@ -8,12 +10,28 @@ import java.util.List;
 
 public class PollRequest {
 
+    @DatabaseField(columnName = "id")
     private Long id;
+
+    @DatabaseField(columnName = "creator_id")
     private Long creatorId;
+
+    @DatabaseField(columnName = "group_id")
     private Long groupId;
+
+    @DatabaseField(columnName = "title")
     private String title;
+
+    @DatabaseField(columnName = "description")
     private String description;
+
+    @DatabaseField(columnName = "location")
     private String location;
+
+    public PollRequest(){
+
+    }
+
     private List<PollOption> options;
 
     public Long getId() {

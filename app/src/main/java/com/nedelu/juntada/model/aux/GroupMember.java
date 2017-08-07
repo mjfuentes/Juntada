@@ -1,10 +1,10 @@
-package com.nedelu.juntada.model;
+package com.nedelu.juntada.model.aux;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
  */
 
-public class Participant {
+public class GroupMember {
 
     private Long id;
     private Long userId;

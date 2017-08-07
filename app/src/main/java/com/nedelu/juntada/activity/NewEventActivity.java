@@ -27,7 +27,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.Event;
-import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.service.GroupService;
@@ -206,9 +206,6 @@ public class NewEventActivity extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
     private boolean checkFields() {
@@ -245,7 +242,6 @@ public class NewEventActivity extends AppCompatActivity {
         finish();
 
     }
-
 
 
 }

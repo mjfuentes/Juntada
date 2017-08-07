@@ -2,29 +2,24 @@ package com.nedelu.juntada.service;
 
 import android.app.Activity;
 import android.content.Context;
-import android.icu.text.MessagePattern;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.codeslap.persistence.Persistence;
-import com.codeslap.persistence.SqlAdapter;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
+import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
-import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
-import com.nedelu.juntada.model.User;
-import com.nedelu.juntada.model.Participant;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
@@ -36,9 +31,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Multipart;
-
-import static com.nedelu.juntada.R.menu.groups;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -46,14 +38,18 @@ import static com.nedelu.juntada.R.menu.groups;
 
 public class GroupService extends Observable {
 
+    private static GroupService instance;
     private Context context;
     private UserService userService;
-    private static GroupService instance;
     private Callbacks activity;
+    private GroupDao groupDao;
+    private EventService eventService;
 
     private GroupService(Context context) {
         this.context = context;
         this.userService = new UserService(context);
+        this.eventService = new EventService(context);
+        this.groupDao = new GroupDao(context);
     }
 
     private Context getContext(){
@@ -72,7 +68,6 @@ public class GroupService extends Observable {
     }
 
     // SERVER
-
     public void createGroup(final Context context, Long userId, Group group, Uri fileUri, final NewGroupActivity newGroupActivity){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.1.1.16:8080/")
@@ -126,7 +121,7 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<Event> call, Response<Event> response) {
                 Event event = response.body();
-                saveEvent(event);
+                eventService.saveEvent(event);
                 newEventActivity.eventCreated(event);
             }
 
@@ -150,7 +145,7 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<Poll> call, Response<Poll> response) {
                 Poll poll = response.body();
-                savePoll(poll);
+                eventService.savePoll(poll);
 
                 newPollActivity.pollCreated(poll);
             }
@@ -199,106 +194,76 @@ public class GroupService extends Observable {
         });
     }
 
+    public void loadGroup(final Long groupId, final GroupActivity groupActivity){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.1.1.16:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        Call<Group> call = server.getGroup(groupId);
+        call.enqueue(new Callback<Group>() {
+            @Override
+            public void onResponse(Call<Group> call, Response<Group> response) {
+                if (response.code() != 404) {
+                    Group group = response.body();
+                    saveGroup(group);
+                    groupActivity.refreshGroup(group);
+                } else {
+                    Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Group> call, Throwable t) {
+                Toast.makeText(context,"Registration failed!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     // DATABASE
 
     public List<Group> getUserGroups(Long userId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        List<Group> groups = new ArrayList<>();
-
-        List<Participant> participants = adapter.findAll(Participant.class, "user_id= ? ", new String[]{userId.toString()});
-        for (Participant participant : participants){
-            Group group = new Group();
-            group.setId(participant.getGroupId());
-            Group savedGroup = adapter.findFirst(group);
-            if (savedGroup != null) groups.add(savedGroup);
-        }
-        return groups;
+        return groupDao.getUserGroups(userId);
     }
 
-    public void updateGroups(Long userId, List<Group> groups){
-        for (Group savedGroup : getUserGroups(userId)){
-            if (!groups.contains(savedGroup)) {
-                deleteGroup(userId, savedGroup);
-            }
-        }
-        for (Group group : groups){
-            saveGroup(group);
-        }
+    private void updateGroups(Long userId, List<Group> groups){
+        groupDao.updateGroups(userId,groups);
     }
 
-    public void saveGroup(Group group){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(group);
-        try {
-            for (User user : group.getUsers()) {
-                userService.saveUser(user);
-                userService.saveUserGroup(user.getId(), group.getId());
-            }
-        } catch (Exception e){
-            //todo // FIXME: 17/07/17
-        }
-    }
-
-    public void savePoll(Poll poll){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(poll);
-        try {
-            for (PollOption option : poll.getOptions()) {
-                adapter.store(option);
-            }
-        } catch (Exception e){
-        }
-    }
-
-    public void saveEvent(Event event){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(event);
+    private void saveGroup(Group group){
+       groupDao.saveGroup(group);
     }
 
     public List<Event> getEvents(Long groupId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findAll(Event.class);
+        return groupDao.getEvents(groupId);
+    }
+
+    public List<Poll> getPolls(Long groupId){
+        return groupDao.getPolls(groupId);
     }
 
     public PollRequest savePollRequest(PollRequest request){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(request);
-        return adapter.findFirst(request);
+        return groupDao.savePollRequest(request);
     }
 
     public void deleteGroup(Long userId, Group group){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.delete(group);
-
-        Participant participant = new Participant();
-        participant.setGroupId(group.getId());
-        participant.setUserId(userId);
-
-        adapter.delete(participant);
+       groupDao.deleteGroup(userId,group);
     }
 
-    public Group getGroupData(Long groupId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        Group group = new Group();
-        group.setId(groupId);
-        group = adapter.findFirst(group);
+    public Group loadGroupData(Long groupId, GroupActivity groupActivity){
 
-        List<Participant> participants = adapter.findAll(Participant.class, "group_id= ? ", new String[]{groupId.toString()});
-        for (Participant participant : participants){
-            User user = new User();
-            user.setId(participant.getUserId());
-            group.getUsers().add(adapter.findFirst(user));
-        }
+       Group group = groupDao.loadGroupData(groupId);
+
+        loadGroup(groupId, groupActivity);
 
         return group;
     }
 
     public PollRequest getPollRequest(Long pollRequestId) {
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        PollRequest request = new PollRequest();
-        request.setId(pollRequestId);
-        return adapter.findFirst(request);
+        return groupDao.getPollRequest(pollRequestId);
     }
 
     public interface Callbacks{

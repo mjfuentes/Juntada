@@ -1,26 +1,13 @@
 package com.nedelu.juntada.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.facebook.Profile;
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.model.Group;
-import com.nedelu.juntada.service.GroupService;
-import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 public class NewGroupTwoActivity extends AppCompatActivity {
 
