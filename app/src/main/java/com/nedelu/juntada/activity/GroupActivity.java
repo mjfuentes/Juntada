@@ -42,6 +42,8 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.ArrayList;
+
 public class GroupActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ObservableScrollViewCallbacks, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
     private Long userId;
@@ -235,9 +237,9 @@ public class GroupActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return EventFragment.newInstance(group.getEvents());
+                    return EventFragment.newInstance(new ArrayList<>(group.getEvents()));
                 case 1:
-                    return PollFragment.newInstance(group.getPolls());
+                    return PollFragment.newInstance(new ArrayList<>(group.getPolls()));
                 default:
                     return new EventFragment();
             }
@@ -262,6 +264,8 @@ public class GroupActivity extends AppCompatActivity
     }
 
     public void refreshGroup(Group group){
+        userAdapter.setItems(group.getUsers());
+        userList.getAdapter().notifyDataSetChanged();
         mEventPagerAdapter.notifyDataSetChanged();
     }
 }

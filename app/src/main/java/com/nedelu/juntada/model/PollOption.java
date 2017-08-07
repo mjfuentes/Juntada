@@ -1,5 +1,6 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class PollOption {
 
-    @DatabaseField(columnName = "id")
+    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
     @DatabaseField(columnName = "date")
@@ -25,7 +26,7 @@ public class PollOption {
     private Poll poll;
 
     @ForeignCollectionField(columnName = "votes", eager = true)
-    private List<PollOptionVote> votes;
+    private ForeignCollection<PollOptionVote> votes;
 
     public PollOption(){
 
@@ -39,11 +40,11 @@ public class PollOption {
         this.id = id;
     }
 
-    public List<PollOptionVote> getVotes() {
+    public ForeignCollection<PollOptionVote> getVotes() {
         return votes;
     }
 
-    public void setVotes(List<PollOptionVote> votes) {
+    public void setVotes(ForeignCollection<PollOptionVote> votes) {
         this.votes = votes;
     }
 

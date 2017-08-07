@@ -10,13 +10,13 @@ import java.util.List;
 
 public class Event {
 
-    @DatabaseField(generatedId = false, columnName = "id")
+    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
-    @DatabaseField(columnName = "owner_group", foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(columnName = "owner_group", foreign = true, foreignAutoRefresh = true,foreignAutoCreate = true)
     private Group ownerGroup;
 
-    @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true,foreignAutoCreate = true)
     private User creator;
 
     @DatabaseField(columnName = "date")

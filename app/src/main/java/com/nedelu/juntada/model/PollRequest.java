@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PollRequest {
 
-    @DatabaseField(columnName = "id")
+    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
     @DatabaseField(columnName = "creator_id")

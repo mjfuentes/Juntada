@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class PollOptionVote {
 
-    @DatabaseField(columnName = "id")
+    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
     @DatabaseField(columnName = "user", foreign = true, foreignAutoRefresh = true)

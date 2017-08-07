@@ -45,7 +45,7 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
 
     @Override
     public int getItemCount() {
-        return 3;
+        return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -1,6 +1,8 @@
 package com.nedelu.juntada.model;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 
 public class User {
 
-    @DatabaseField(columnName = "id")
+    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
     @DatabaseField(columnName = "first_name")
@@ -25,6 +27,9 @@ public class User {
 
     @DatabaseField(columnName = "image_url")
     private String imageUrl;
+
+    @ForeignCollectionField(columnName = "owned_events", eager = true)
+    private ForeignCollection<Event> ownedEvents;
 
     public User(){
 
@@ -68,6 +73,14 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public ForeignCollection<Event> getOwnedEvents() {
+        return ownedEvents;
+    }
+
+    public void setOwnedEvents(ForeignCollection<Event> ownedEvents) {
+        this.ownedEvents = ownedEvents;
     }
 
 }

@@ -52,6 +52,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
         notifyItemInserted(position);
     }
 
+    public void setItems(List<User> users) {
+        mItems.clear();
+        mItems.addAll(users);
+    }
+
     public void removeItem(int position) {
         mItems.remove(position);
         notifyItemRemoved(position);

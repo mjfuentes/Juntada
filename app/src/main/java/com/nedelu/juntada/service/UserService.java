@@ -11,6 +11,7 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,7 +54,7 @@ public class UserService {
             public void onResponse(Call<Long> call, Response<Long> response) {
                 Long userId = response.body();
                 user.setId(userId);
-                userDao.saveUser(user);
+                saveUser(user);
                 activity.nextActivity(user);
 
             }
@@ -68,11 +69,19 @@ public class UserService {
     }
 
     public void saveUser(User user){
-        userDao.saveUser(user);
+        try {
+            userDao.saveUser(user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public User getUser(String facebookId){
-        return userDao.getUser(facebookId);
+        try {
+            return userDao.getUser(facebookId);
+        } catch (Exception e){
+            return null;
+        }
     }
 
 

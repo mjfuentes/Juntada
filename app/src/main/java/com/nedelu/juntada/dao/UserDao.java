@@ -1,11 +1,15 @@
 package com.nedelu.juntada.dao;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.util.DatabaseHelper;
+
+import java.sql.SQLException;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -14,18 +18,21 @@ import com.nedelu.juntada.model.User;
 public class UserDao {
 
     private Context context;
+    private DatabaseHelper helper;
+
     public UserDao(Context context){
         this.context = context;
+        this.helper = new DatabaseHelper(context);
     }
 
-    public User getUser(String facebookId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findFirst(User.class, "facebook_id = ?", new String[]{facebookId});
+    public User getUser(String facebookId) throws SQLException {
+        return helper.getUserDao().queryBuilder()
+                .where()
+                .eq("facebook_id",facebookId).query().get(0);
     }
 
-    public void saveUser(User user){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        adapter.store(user);
+    public void saveUser(User user) throws SQLException {
+        helper.getUserDao().create(user);
     }
 
     public void saveUserGroup(Long userId, Long groupId) {
