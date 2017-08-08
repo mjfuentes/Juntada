@@ -126,4 +126,12 @@ public class GroupDao {
         return adapter.findFirst(request);
     }
 
+    public Group getGroup(Long groupId) {
+        try {
+            return helper.getGroupDao().queryForId(groupId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

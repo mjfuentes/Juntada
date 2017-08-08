@@ -5,6 +5,7 @@ import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.dto.GroupDTO;
 
 import java.util.List;
 
@@ -38,10 +39,10 @@ public interface ServerInterface {
     Call<List<Group>> getGroups(@Path("userID") Long id);
 
     @GET("groups/{groupId}")
-    Call<Group> getGroup(@Path("groupId") Long groupId);
+    Call<GroupDTO> getGroup(@Path("groupId") Long groupId);
 
     @Multipart
     @POST("users/{userID}/groups")
-    Call<Group> createGroup(@Path("userID") Long id, @Part("name") RequestBody name, @Part MultipartBody.Part file);
+    Call<GroupDTO> createGroup(@Path("userID") Long id, @Part("name") RequestBody name, @Part MultipartBody.Part file);
 
 }

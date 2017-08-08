@@ -25,10 +25,24 @@ public class UserDao {
         this.helper = new DatabaseHelper(context);
     }
 
-    public User getUser(String facebookId) throws SQLException {
-        return helper.getUserDao().queryBuilder()
-                .where()
-                .eq("facebook_id",facebookId).query().get(0);
+    public User getUser(Long id) {
+        try {
+            return helper.getUserDao().queryForId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public User getUserByFacebookId(String facebookId) {
+        try {
+            return helper.getUserDao().queryBuilder()
+                    .where()
+                    .eq("facebook_id",facebookId).query().get(0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void saveUser(User user) throws SQLException {

@@ -17,7 +17,7 @@ public class PollOption {
     private Long id;
 
     @DatabaseField(columnName = "date")
-    private Date date;
+    private String date;
 
     @DatabaseField(columnName = "time")
     private String time;
@@ -48,11 +48,11 @@ public class PollOption {
         this.votes = votes;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

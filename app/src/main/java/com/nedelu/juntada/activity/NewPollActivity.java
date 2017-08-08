@@ -104,7 +104,7 @@ public class NewPollActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (checkFields() && dateAdapter.getCount() < 4) {
                     PollOption option = new PollOption();
-                    option.setDate(myCalendar.getTime());
+                    option.setDate(myCalendar.getTime().toString());
                     option.setTime(editTime.getSelectedItem().toString());
                     dateAdapter.addDate(option);
 

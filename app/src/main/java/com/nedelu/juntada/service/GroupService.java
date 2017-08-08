@@ -11,11 +11,15 @@ import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
+import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollRequest;
+import com.nedelu.juntada.model.dto.EventDTO;
+import com.nedelu.juntada.model.dto.GroupDTO;
+import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 
@@ -43,6 +47,7 @@ public class GroupService extends Observable {
     private UserService userService;
     private Callbacks activity;
     private GroupDao groupDao;
+    private EventDao eventDao;
     private EventService eventService;
 
     private GroupService(Context context) {
@@ -50,6 +55,7 @@ public class GroupService extends Observable {
         this.userService = new UserService(context);
         this.eventService = new EventService(context);
         this.groupDao = new GroupDao(context);
+        this.eventDao = new EventDao(context);
     }
 
     private Context getContext(){
@@ -92,17 +98,17 @@ public class GroupService extends Observable {
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
 
-        final Call<Group> call = server.createGroup(userId, groupName, body);
-        call.enqueue(new Callback<Group>() {
+        final Call<GroupDTO> call = server.createGroup(userId, groupName, body);
+        call.enqueue(new Callback<GroupDTO>() {
             @Override
-            public void onResponse(Call<Group> call, Response<Group> response) {
-                Group group = response.body();
-                saveGroup(group);
+            public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
+                GroupDTO groupDTO = response.body();
+                Group group =saveGroup(groupDTO);
                 newGroupActivity.groupCreated(group.getId());
             }
 
             @Override
-            public void onFailure(Call<Group> call, Throwable t) {
+            public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
             }
         });
@@ -202,13 +208,13 @@ public class GroupService extends Observable {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        Call<Group> call = server.getGroup(groupId);
-        call.enqueue(new Callback<Group>() {
+        Call<GroupDTO> call = server.getGroup(groupId);
+        call.enqueue(new Callback<GroupDTO>() {
             @Override
-            public void onResponse(Call<Group> call, Response<Group> response) {
+            public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
                 if (response.code() != 404) {
-                    Group group = response.body();
-                    saveGroup(group);
+                    GroupDTO groupDTO = response.body();
+                    Group group = saveGroup(groupDTO);
                     groupActivity.refreshGroup(group);
                 } else {
                     Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
@@ -216,10 +222,18 @@ public class GroupService extends Observable {
             }
 
             @Override
-            public void onFailure(Call<Group> call, Throwable t) {
+            public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Registration failed!", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private Group fromDTO(GroupDTO groupDTO) {
+        Group group = new Group();
+        group.setId(groupDTO.getId());
+        group.setImageUrl(groupDTO.getImageUrl());
+        group.setName(groupDTO.getName());
+        return group;
     }
 
 
@@ -233,8 +247,18 @@ public class GroupService extends Observable {
         groupDao.updateGroups(userId,groups);
     }
 
-    private void saveGroup(Group group){
-       groupDao.saveGroup(group);
+    private Group saveGroup(GroupDTO groupDTO){
+        Group group = fromDTO(groupDTO);
+        groupDao.saveGroup(group);
+
+        for (PollDTO pollDTO: groupDTO.getPolls()){
+            eventService.savePoll(pollDTO);
+        }
+        for (EventDTO eventDTO: groupDTO.getEvents()){
+            eventService.saveEvent(eventDTO);
+        }
+
+        return groupDao.getGroup(group.getId());
     }
 
     public List<Event> getEvents(Long groupId){
@@ -268,5 +292,9 @@ public class GroupService extends Observable {
 
     public interface Callbacks{
         public void updateGroups();
+    }
+
+    public Group getGroup(Long groupId){
+        return groupDao.getGroup(groupId);
     }
 }

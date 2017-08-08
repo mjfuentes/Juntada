@@ -3,8 +3,6 @@ package com.nedelu.juntada.service;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.codeslap.persistence.Persistence;
-import com.codeslap.persistence.SqlAdapter;
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.User;
@@ -78,7 +76,7 @@ public class UserService {
 
     public User getUser(String facebookId){
         try {
-            return userDao.getUser(facebookId);
+            return userDao.getUserByFacebookId(facebookId);
         } catch (Exception e){
             return null;
         }

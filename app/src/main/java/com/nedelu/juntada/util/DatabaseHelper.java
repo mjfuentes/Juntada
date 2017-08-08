@@ -28,6 +28,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<User, Long> mUserDao = null;
     private Dao<Group, Long> mGroupDao = null;
     private Dao<GroupMember, Long> mGroupMemberDao = null;
+    private Dao<Event, Long> mEventDao = null;
+    private Dao<Poll, Long> mPollDao = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -89,6 +91,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
 
         return mGroupMemberDao ;
+    }
+
+    public Dao<Event, Long> getEventDao() throws SQLException {
+        if (mEventDao == null) {
+            mEventDao  = getDao(Event.class);
+        }
+
+        return mEventDao ;
+    }
+
+    public Dao<Poll, Long> getPollDao() throws SQLException {
+        if (mPollDao == null) {
+            mPollDao  = getDao(Poll.class);
+        }
+
+        return mPollDao ;
     }
 
     @Override

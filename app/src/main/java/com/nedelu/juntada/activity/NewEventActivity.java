@@ -174,7 +174,7 @@ public class NewEventActivity extends AppCompatActivity {
                     } else {
                         options = new ArrayList<>();
                         PollOption option = new PollOption();
-                        option.setDate(myCalendar.getTime());
+                        option.setDate(myCalendar.getTime().toString());
                         option.setTime(editTime.getSelectedItem().toString());
                         options.add(option);
                         request.setOptions(options);
