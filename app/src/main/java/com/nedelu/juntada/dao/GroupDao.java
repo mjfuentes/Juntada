@@ -68,17 +68,21 @@ public class GroupDao {
 
         try {
             helper.getGroupDao().createOrUpdate(group);
-            for (User user : group.getUsers()){
-                GroupMember member = new GroupMember();
-                member.setGroupId(group.getId());
-                member.setUserId(user.getId());
-                helper.getGroupMemberDao().create(member);
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public void saveGroupMember(Long groupId, Long userId){
+        GroupMember member = new GroupMember();
+        member.setGroupId(groupId);
+        member.setUserId(userId);
+        try {
+            helper.getGroupMemberDao().create(member);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<Event> getEvents(Long groupId){
         SqlAdapter adapter = Persistence.getAdapter(context);

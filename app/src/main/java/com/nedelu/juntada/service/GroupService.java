@@ -13,6 +13,7 @@ import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
+import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
@@ -20,6 +21,7 @@ import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
+import com.nedelu.juntada.model.dto.UserDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 
@@ -250,6 +252,10 @@ public class GroupService extends Observable {
     private Group saveGroup(GroupDTO groupDTO){
         Group group = fromDTO(groupDTO);
         groupDao.saveGroup(group);
+
+        for (UserDTO user : groupDTO.getUsers()){
+            groupDao.saveGroupMember(groupDTO.getId(), user.getId());
+        }
 
         for (PollDTO pollDTO: groupDTO.getPolls()){
             eventService.savePoll(pollDTO);
