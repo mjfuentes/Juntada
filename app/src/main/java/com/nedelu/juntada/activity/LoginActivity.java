@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkUser(Profile profile){
         if(profile != null){
-            User currentUser = userService.getUser(profile.getId());
+            User currentUser = userService.getUserByFacebookId(profile.getId());
             if (currentUser == null) {
                 try {
                     userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());

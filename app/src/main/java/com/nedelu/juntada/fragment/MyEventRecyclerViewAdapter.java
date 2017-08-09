@@ -10,7 +10,9 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.fragment.EventFragment.OnListFragmentInteractionListener;
 import com.nedelu.juntada.model.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
@@ -39,12 +41,13 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         TextView eventDate = (TextView) holder.mView.findViewById(R.id.event_date);
         TextView eventTime = (TextView) holder.mView.findViewById(R.id.event_time);
         TextView eventLocation = (TextView) holder.mView.findViewById(R.id.event_location);
-
+        TextView eventParticipants = (TextView) holder.mView.findViewById(R.id.users);
 
         eventName.setText(mValues.get(position).getTitle());
         eventDate.setText(mValues.get(position).getDate());
         eventTime.setText(mValues.get(position).getTime());
         eventLocation.setText(mValues.get(position).getLocation());
+        eventParticipants.setText(String.valueOf(mValues.get(position).getConfirmedUsers().size()));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

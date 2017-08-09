@@ -5,9 +5,15 @@ import android.content.Context;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
+import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.aux.ConfirmedUser;
+import com.nedelu.juntada.model.aux.DontKnowUsers;
+import com.nedelu.juntada.model.aux.NotGoingUsers;
 import com.nedelu.juntada.util.DatabaseHelper;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -52,6 +58,78 @@ public class EventDao {
     }
 
     public void savePollOption(PollOption option) {
+    }
+
+    public Event getEvent(Long id) {
+        try {
+            Event event = helper.getEventDao().queryForId(id);
+
+            List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
+
+            for (ConfirmedUser confirmedUser : confirmedUsers){
+                event.getConfirmedUsers().add(helper.getUserDao().queryForId(confirmedUser.getUserId()));
+            }
+
+            return event;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void saveConfirmedUser(ConfirmedUser confirmedUser) {
+        try {
+            helper.getConfirmedUsersDao().create(confirmedUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<User> getConfirmedUsers(Long id) {
+        List<User> users = new ArrayList<>();
+
+        try {
+            List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
+            for (ConfirmedUser confirmedUser: confirmedUsers){
+                users.add(helper.getUserDao().queryForId(confirmedUser.getUserId()));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+
+    }
+
+    public List<User> getNotGoingUsers(Long id) {
+        List<User> users = new ArrayList<>();
+
+        try {
+            List<NotGoingUsers> notGoingUsers = helper.getmNotGoingUsersDao().queryBuilder().where().eq("event", id).query();
+            for (NotGoingUsers notGoingUser: notGoingUsers){
+                users.add(helper.getUserDao().queryForId(notGoingUser.getUserId()));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+
+    }
+
+    public List<User> getDoNotKnowUsers(Long id) {
+        List<User> users = new ArrayList<>();
+        try {
+            List<DontKnowUsers> dontKnowUsers = helper.getDontKnowUsersDao().queryBuilder().where().eq("event", id).query();
+            for (DontKnowUsers dontKnowUser: dontKnowUsers){
+                users.add(helper.getUserDao().queryForId(dontKnowUser.getUserId()));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+
     }
 }
 

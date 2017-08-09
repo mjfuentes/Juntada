@@ -30,6 +30,7 @@ import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.service.GroupService;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,11 +53,13 @@ public class NewPollActivity extends AppCompatActivity {
     private Spinner editTime;
     private FloatingActionButton button;
     private ProgressBar progressBar;
+    private SimpleDateFormat sdf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poll);
+         sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
 
         Bundle inBundle = getIntent().getExtras();
         SharedPreferences userPref = getSharedPreferences("user", 0);
@@ -104,7 +107,7 @@ public class NewPollActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (checkFields() && dateAdapter.getCount() < 4) {
                     PollOption option = new PollOption();
-                    option.setDate(myCalendar.getTime().toString());
+                    option.setDate(sdf.format(myCalendar.getTime()));
                     option.setTime(editTime.getSelectedItem().toString());
                     dateAdapter.addDate(option);
 
@@ -195,12 +198,23 @@ public class NewPollActivity extends AppCompatActivity {
             View rowView = inflater.inflate(R.layout.poll_item, viewGroup, false);
             TextView dateText = (TextView) rowView.findViewById(R.id.text_date);
             TextView timeText = (TextView) rowView.findViewById(R.id.text_time);
+            TextView dayText = (TextView) rowView.findViewById(R.id.text_day);
 
             String myFormat = "dd/MM";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
-            timeText.setText(options.get(i).getTime());
-            dateText.setText(sdf.format(options.get(i).getDate()));
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            SimpleDateFormat formatDay = new SimpleDateFormat("EEE", new Locale("es_ES"));
+
+            try {
+                Date date = format.parse(options.get(i).getDate());
+                dateText.setText(sdf.format(date));
+                timeText.setText(options.get(i).getTime());
+                dayText.setText(formatDay.format(date));
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             return rowView;
         }

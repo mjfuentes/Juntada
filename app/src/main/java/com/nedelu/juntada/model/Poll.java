@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Poll {
 
+
     @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
@@ -74,4 +75,12 @@ public class Poll {
         this.options = options;
     }
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

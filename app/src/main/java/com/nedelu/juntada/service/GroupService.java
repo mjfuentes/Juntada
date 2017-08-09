@@ -13,11 +13,11 @@ import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
-import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollRequest;
+import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
@@ -124,17 +124,17 @@ public class GroupService extends Observable {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        final Call<Event> call = server.createEvent(request);
-        call.enqueue(new Callback<Event>() {
+        final Call<EventDTO> call = server.createEvent(request);
+        call.enqueue(new Callback<EventDTO>() {
             @Override
-            public void onResponse(Call<Event> call, Response<Event> response) {
-                Event event = response.body();
-                eventService.saveEvent(event);
+            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                EventDTO eventDTO = response.body();
+                Event event = eventService.saveEvent(eventDTO);
                 newEventActivity.eventCreated(event);
             }
 
             @Override
-            public void onFailure(Call<Event> call, Throwable t) {
+            public void onFailure(Call<EventDTO> call, Throwable t) {
                 Toast.makeText(context,"Event creation failed!", Toast.LENGTH_LONG).show();
             }
         });
@@ -148,18 +148,17 @@ public class GroupService extends Observable {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        final Call<Poll> call = server.createPoll(request);
-        call.enqueue(new Callback<Poll>() {
+        final Call<PollDTO> call = server.createPoll(request);
+        call.enqueue(new Callback<PollDTO>() {
             @Override
-            public void onResponse(Call<Poll> call, Response<Poll> response) {
-                Poll poll = response.body();
-                eventService.savePoll(poll);
-
+            public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
+                PollDTO pollDTO = response.body();
+                Poll poll = eventService.savePoll(pollDTO);
                 newPollActivity.pollCreated(poll);
             }
 
             @Override
-            public void onFailure(Call<Poll> call, Throwable t) {
+            public void onFailure(Call<PollDTO> call, Throwable t) {
                 Toast.makeText(context,"Poll creation failed!", Toast.LENGTH_LONG).show();
             }
         });
@@ -182,13 +181,15 @@ public class GroupService extends Observable {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        Call<List<Group>> call = server.getGroups(userId);
-        call.enqueue(new Callback<List<Group>>() {
+        Call<List<GroupDTO>> call = server.getGroups(userId);
+        call.enqueue(new Callback<List<GroupDTO>>() {
             @Override
-            public void onResponse(Call<List<Group>> call, Response<List<Group>> response) {
+            public void onResponse(Call<List<GroupDTO>> call, Response<List<GroupDTO>> response) {
                 if (response.code() != 404) {
-                    List<Group> groups = response.body();
-                    updateGroups(userId, groups);
+                    List<GroupDTO> groups = response.body();
+                    for (GroupDTO groupDTO:groups){
+                        saveGroup(groupDTO);
+                    }
                     activity.updateGroups();
                 } else {
                     Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
@@ -196,8 +197,8 @@ public class GroupService extends Observable {
             }
 
             @Override
-            public void onFailure(Call<List<Group>> call, Throwable t) {
-                Toast.makeText(context,"Registration failed!", Toast.LENGTH_LONG).show();
+            public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
+                Toast.makeText(context,"Error connecting to server!", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -254,6 +255,7 @@ public class GroupService extends Observable {
         groupDao.saveGroup(group);
 
         for (UserDTO user : groupDTO.getUsers()){
+            userService.saveUser(user);
             groupDao.saveGroupMember(groupDTO.getId(), user.getId());
         }
 
@@ -264,7 +266,7 @@ public class GroupService extends Observable {
             eventService.saveEvent(eventDTO);
         }
 
-        return groupDao.getGroup(group.getId());
+        return getGroup(group.getId());
     }
 
     public List<Event> getEvents(Long groupId){
@@ -287,7 +289,26 @@ public class GroupService extends Observable {
 
        Group group = groupDao.loadGroupData(groupId);
 
+        for (Event event : group.getEvents()){
+            eventService.populateUsers(event);
+        }
+
+        for (GroupMember member : groupDao.getGroupMembers(group.getId())){
+            group.getUsers().add(userService.getUser(member.getUserId()));
+        }
+
         loadGroup(groupId, groupActivity);
+
+        return group;
+    }
+
+    public Group getGroup(Long groupId){
+
+        Group group = groupDao.loadGroupData(groupId);
+
+        for (GroupMember member : groupDao.getGroupMembers(group.getId())){
+            group.getUsers().add(userService.getUser(member.getUserId()));
+        }
 
         return group;
     }
@@ -298,9 +319,5 @@ public class GroupService extends Observable {
 
     public interface Callbacks{
         public void updateGroups();
-    }
-
-    public Group getGroup(Long groupId){
-        return groupDao.getGroup(groupId);
     }
 }

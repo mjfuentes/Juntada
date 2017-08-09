@@ -74,11 +74,15 @@ public class GroupDao {
     }
 
     public void saveGroupMember(Long groupId, Long userId){
-        GroupMember member = new GroupMember();
-        member.setGroupId(groupId);
-        member.setUserId(userId);
+        GroupMember member = null;
         try {
-            helper.getGroupMemberDao().create(member);
+            member = helper.getGroupMemberDao().queryBuilder().where().eq("group_id",groupId).and().eq("user_id",userId).queryForFirst();
+            if (member == null) {
+                member = new GroupMember();
+                member.setGroupId(groupId);
+                member.setUserId(userId);
+                helper.getGroupMemberDao().createOrUpdate(member);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -136,6 +140,19 @@ public class GroupDao {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public List<GroupMember> getGroupMembers(Long groupId) {
+        try {
+
+            return helper.getGroupMemberDao().queryBuilder()
+                    .where()
+                    .eq("group_id", groupId)
+                    .query();
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

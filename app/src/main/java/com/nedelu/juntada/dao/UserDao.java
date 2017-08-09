@@ -46,7 +46,7 @@ public class UserDao {
     }
 
     public void saveUser(User user) throws SQLException {
-        helper.getUserDao().create(user);
+        helper.getUserDao().createOrUpdate(user);
     }
 
     public void saveUserGroup(Long userId, Long groupId) {

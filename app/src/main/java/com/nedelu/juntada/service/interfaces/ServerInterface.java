@@ -5,7 +5,9 @@ import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
+import com.nedelu.juntada.model.dto.PollDTO;
 
 import java.util.List;
 
@@ -30,13 +32,13 @@ public interface ServerInterface {
     Call<Long> createUser(@Body User user);
 
     @POST("polls")
-    Call<Poll> createPoll(@Body PollRequest request);
+    Call<PollDTO> createPoll(@Body PollRequest request);
 
     @POST("events")
-    Call<Event> createEvent(@Body PollRequest request);
+    Call<EventDTO> createEvent(@Body PollRequest request);
 
     @GET("users/{userID}/groups")
-    Call<List<Group>> getGroups(@Path("userID") Long id);
+    Call<List<GroupDTO>> getGroups(@Path("userID") Long id);
 
     @GET("groups/{groupId}")
     Call<GroupDTO> getGroup(@Path("groupId") Long groupId);

@@ -8,9 +8,11 @@ import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
+import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.PollOptionDTO;
+import com.nedelu.juntada.model.dto.UserDTO;
 
 /**
  * Created by matiasj.fuentes@gmail.com.
@@ -41,7 +43,7 @@ public class EventService {
         eventDao.savePoll(poll);
     }
 
-    public void savePoll(PollDTO pollDTO) {
+    public Poll savePoll(PollDTO pollDTO) {
         Poll poll = fromDTO(pollDTO);
         savePoll(poll);
 
@@ -50,19 +52,18 @@ public class EventService {
             option.setId(optionDTO.getId());
             option.setDate(optionDTO.getDate());
             option.setTime(optionDTO.getTime());
-            option.setPoll(getPoll(optionDTO.getPoll().getId()));
+            option.setPoll(getPoll(optionDTO.getPoll()));
 
             eventDao.savePollOption(option);
-//
-//            for (PollOptionVote vote : optionDTO.getVotingUsers()){
-//
-//            }
         }
+
+        return eventDao.getPoll(poll.getId());
     }
 
     private Poll fromDTO(PollDTO pollDTO) {
 
         Poll poll = new Poll();
+        poll.setId(pollDTO.getId());
         poll.setLocation(pollDTO.getLocation());
         poll.setTitle(pollDTO.getTitle());
         poll.setCreator(userDao.getUser(pollDTO.getCreator()));
@@ -71,7 +72,7 @@ public class EventService {
         return poll;
     }
 
-    public void saveEvent(EventDTO eventDTO) {
+    public Event saveEvent(EventDTO eventDTO) {
         Event event = new Event();
         event.setId(eventDTO.getId());
         event.setLocation(eventDTO.getLocation());
@@ -83,9 +84,28 @@ public class EventService {
         event.setCreator(userDao.getUser(eventDTO.getCreator()));
 
         eventDao.saveEvent(event);
+
+        Event newEvent = eventDao.getEvent(event.getId());
+
+        for (Long userId : eventDTO.getConfirmedUsers()){
+            ConfirmedUser confirmedUser = new ConfirmedUser();
+            confirmedUser.setEventId(newEvent.getId());
+            confirmedUser.setUserId(userId);
+            eventDao.saveConfirmedUser(confirmedUser);
+        }
+
+        return newEvent;
     }
 
     public Poll getPoll(Long pollId){
         return eventDao.getPoll(pollId);
+    }
+
+
+    public void populateUsers(Event event) {
+        event.setConfirmedUsers(eventDao.getConfirmedUsers(event.getId()));
+        event.setNotGoingUsers(eventDao.getNotGoingUsers(event.getId()));
+        event.setDoNotKnowUsers(eventDao.getDoNotKnowUsers(event.getId()));
+
     }
 }

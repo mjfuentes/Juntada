@@ -12,9 +12,9 @@ public class EventDTO {
 	private Long id;
     private Long ownerGroup;
     private Long creator;
-    private List<UserDTO> confirmedUsers;
-    private List<UserDTO> doNotKnowUsers;
-    private List<UserDTO> notGoingUsers;
+    private List<Long> confirmedUsers;
+    private List<Long> doNotKnowUsers;
+    private List<Long> notGoingUsers;
     private String date;
     private String time;
     private String title;
@@ -39,27 +39,27 @@ public class EventDTO {
     }
 
 
-    public List<UserDTO> getConfirmedUsers() {
+    public List<Long> getConfirmedUsers() {
         return confirmedUsers;
     }
 
-    public void setConfirmedUsers(List<UserDTO> confirmedUsers) {
+    public void setConfirmedUsers(List<Long> confirmedUsers) {
         this.confirmedUsers = confirmedUsers;
     }
 
-    public List<UserDTO> getDoNotKnowUsers() {
+    public List<Long> getDoNotKnowUsers() {
         return doNotKnowUsers;
     }
 
-    public void setDoNotKnowUsers(List<UserDTO> doNotKnowUsers) {
+    public void setDoNotKnowUsers(List<Long> doNotKnowUsers) {
         this.doNotKnowUsers = doNotKnowUsers;
     }
 
-    public List<UserDTO> getNotGoingUsers() {
+    public List<Long> getNotGoingUsers() {
         return notGoingUsers;
     }
 
-    public void setNotGoingUsers(List<UserDTO> notGoingUsers) {
+    public void setNotGoingUsers(List<Long> notGoingUsers) {
         this.notGoingUsers = notGoingUsers;
     }
 

@@ -12,8 +12,8 @@ public class PollOptionDTO {
 	private Long id;
 	private String date;
     private String time;
-    private PollDTO poll;
-    private List<UserDTO> votingUsers;
+    private Long poll;
+    private List<Long> votingUsers;
     
     public Long getId() {
 		return id;
@@ -39,19 +39,19 @@ public class PollOptionDTO {
 		this.time = time;
 	}
 
-	public List<UserDTO> getVotingUsers() {
+	public List<Long> getVotingUsers() {
 		return votingUsers;
 	}
 
-	public void setVotingUsers(List<UserDTO> votingUsers) {
+	public void setVotingUsers(List<Long> votingUsers) {
 		this.votingUsers = votingUsers;
 	}
 
-	public PollDTO getPoll() {
+	public Long getPoll() {
 		return poll;
 	}
 
-	public void setPoll(PollDTO poll) {
+	public void setPoll(Long poll) {
 		this.poll = poll;
 	}
 
