@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,7 @@ public class NewEventActivity extends AppCompatActivity {
     private Long groupId;
     private GroupService groupService;
     private ProgressBar progressBar;
+    private RelativeLayout blur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +138,9 @@ public class NewEventActivity extends AppCompatActivity {
         editLocation = (TextInputLayout) findViewById(R.id.edit_location);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        blur = (RelativeLayout) findViewById(R.id.blur_background);
         progressBar.setVisibility(View.INVISIBLE);
-
+        blur.setVisibility(View.INVISIBLE);
         editDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -180,6 +183,7 @@ public class NewEventActivity extends AppCompatActivity {
                         options.add(option);
                         request.setOptions(options);
                         progressBar.setVisibility(View.VISIBLE);
+                        blur.setVisibility(View.VISIBLE);
                         groupService.createEvent(request,NewEventActivity.this);
                     }
 

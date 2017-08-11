@@ -58,6 +58,11 @@ public class EventDao {
     }
 
     public void savePollOption(PollOption option) {
+        try {
+            helper.getPollOptionDao().create(option);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public Event getEvent(Long id) {

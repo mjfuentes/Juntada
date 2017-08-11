@@ -12,7 +12,7 @@
         android:background="@color/colorAccent"
         android:layout_height="40dp">
         <TextView
-            android:id="@+id/event_name"
+            android:id="@+id/poll_name"
             android:textSize="15dp"
             android:textColor="#ffffff"
             android:text="Despedida de Marta"
@@ -20,6 +20,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_margin="10dp" />
+
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="70dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/voto_white"/>
 
         <TextView
             android:id="@+id/textView4"
@@ -45,37 +52,214 @@
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="30dp">
-            <TextView
-                android:text="14/07/17"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
+            android:layout_height="45dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/option1"
+                android:visibility="invisible"
+                android:layout_height="wrap_content">
+            <LinearLayout
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_width="160dp"
+                android:layout_height="30dp">
+                <TextView
+                    android:text="LUN"
+                    android:textColor="@color/colorAccent"
+                    android:id="@+id/text_day1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <TextView
+                    android:text="30/06"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/text_date1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <ImageView
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/voto_red"/>
+                <TextView
+                    android:text="02"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/text_votes1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+
+            </LinearLayout>
+
+                <View
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:background="#FF002233" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:id="@+id/option2"
+                android:visibility="invisible"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+            <LinearLayout
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_width="160dp"
+                android:layout_height="30dp">
+                <TextView
+                    android:text="LUN"
+                    android:textColor="@color/colorAccent"
+                    android:id="@+id/text_day2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <TextView
+                    android:text="30/06"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/text_date2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <ImageView
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/voto_red"/>
+                <TextView
+                    android:text="02"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/text_votes2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+            </LinearLayout>
+
+            <View
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="#FF002233" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="30dp">
-            <TextView
-                android:text="20:30hs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
+            android:layout_height="45dp">
+            <LinearLayout
+                android:id="@+id/option3"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="160dp"
+                    android:layout_height="30dp">
+                    <TextView
+                        android:text="LUN"
+                        android:textColor="@color/colorAccent"
+                        android:id="@+id/text_day3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                    <TextView
+                        android:text="30/06"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/text_date3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/voto_red"/>
+                    <TextView
+                        android:text="02"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/text_votes3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:background="#FF002233" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/option4"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="160dp"
+                    android:layout_height="30dp">
+                    <TextView
+                        android:text="LUN"
+                        android:textColor="@color/colorAccent"
+                        android:id="@+id/text_day4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                    <TextView
+                        android:text="30/06"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/text_date4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/voto_red"/>
+                    <TextView
+                        android:text="02"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/text_votes4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:background="#FF002233" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:padding="5dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="30dp">
-            <TextView
-                android:text="5A 241 Santa Maria de Oro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
+            android:layout_height="30dp"></LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -33,6 +33,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<GroupMember, Long> mGroupMemberDao = null;
     private Dao<Event, Long> mEventDao = null;
     private Dao<Poll, Long> mPollDao = null;
+    private Dao<PollOption, Long> mPollOptionDao = null;
     private Dao<DontKnowUsers, Long> mDontKnowUsersDao = null;
     private Dao<ConfirmedUser, Long> mConfirmedUsersDao = null;
     private Dao<NotGoingUsers, Long> mNotGoingUsersDao = null;
@@ -121,6 +122,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
 
         return mPollDao ;
+    }
+
+    public Dao<PollOption, Long> getPollOptionDao() throws SQLException {
+        if (mPollOptionDao == null) {
+            mPollOptionDao  = getDao(PollOption.class);
+        }
+
+        return mPollOptionDao ;
     }
 
     public Dao<ConfirmedUser, Long> getConfirmedUsersDao() throws SQLException {

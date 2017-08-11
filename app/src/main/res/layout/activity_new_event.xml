@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context="com.nedelu.juntada.activity.NewEventActivity">
 
+
+
     <TextView
         android:id="@+id/time_view"
         android:layout_width="wrap_content"
@@ -24,6 +26,7 @@
         android:layout_width="150dp"
         android:layout_height="40dp"
         android:ems="10"
+        android:gravity="center"
         android:layout_marginTop="9dp"
         app:layout_constraintTop_toBottomOf="@+id/time_view"
         app:layout_constraintLeft_toRightOf="@+id/time_image">
@@ -39,7 +42,8 @@
         android:layout_marginTop="36dp"
         app:layout_constraintTop_toBottomOf="@+id/edit_location"
         app:layout_constraintLeft_toLeftOf="@+id/location_image"
-        android:layout_marginLeft="15dp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp" />
 
 
     <android.support.design.widget.TextInputLayout
@@ -51,7 +55,8 @@
         app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="31dp"
-        app:layout_constraintLeft_toRightOf="@+id/name_image">
+        app:layout_constraintLeft_toRightOf="@+id/name_image"
+        android:layout_marginStart="10dp">
 
         <EditText
             android:id="@+id/editText2"
@@ -82,7 +87,8 @@
         android:textColorHint="#757575"
         app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
         app:layout_constraintLeft_toRightOf="@+id/location_image"
-        app:layout_constraintTop_toBottomOf="@+id/edit_name">
+        app:layout_constraintTop_toBottomOf="@+id/edit_name"
+        android:layout_marginStart="10dp">
 
         <EditText
             android:id="@+id/editText3"
@@ -153,23 +159,6 @@ f
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:indeterminateOnly="true"
-        android:maxHeight="40dp"
-        android:minHeight="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/edit_type"
-        app:layout_constraintHorizontal_bias="0.166"
-        app:layout_constraintLeft_toLeftOf="@+id/edit_location"
-        app:layout_constraintRight_toRightOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_event"
@@ -188,7 +177,7 @@ f
         android:layout_width="30dp"
         android:layout_height="25dp"
         app:srcCompat="@drawable/calendar_gray"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="@+id/date_view"
         app:layout_constraintTop_toTopOf="@+id/edit_date"
         android:layout_marginTop="8dp"
@@ -215,7 +204,6 @@ f
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/edit_name"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintVertical_bias="0.341"
@@ -227,10 +215,39 @@ f
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/edit_date"
         app:layout_constraintLeft_toLeftOf="@+id/time_view"
         app:srcCompat="@drawable/time_grey" />
+
+    <RelativeLayout
+        android:id="@+id/blur_background"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#CCFFFFFF"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteX="8dp"></RelativeLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:indeterminateOnly="true"
+        android:maxHeight="40dp"
+        android:minHeight="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_type"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
