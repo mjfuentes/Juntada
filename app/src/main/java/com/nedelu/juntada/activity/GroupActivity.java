@@ -1,8 +1,11 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,6 +37,7 @@ import com.nedelu.juntada.fragment.PollFragment;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.pager.EventPager;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
@@ -56,6 +60,7 @@ public class GroupActivity extends AppCompatActivity
     private PagerAdapter mEventPagerAdapter;
     private EventPager mEventPager;
     private Group group;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +69,30 @@ public class GroupActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
+
+
+
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
         image_url =  userPref.getString("image_url", "");
 
+        userService = new UserService(GroupActivity.this);
+        user = userService.getUser(userId);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
+        user_name.setText(user.getFirstName() + " " + user.getLastName());
+
         groupService = GroupService.getInstance(GroupActivity.this);
         group = groupService.loadGroupData(groupId, GroupActivity.this);
-
-        ImageView groupImageView = (ImageView) findViewById(R.id.group_image);
-        Picasso.with(GroupActivity.this).load(group.getImageUrl()).into(groupImageView);
-
-        TextView groupNameText = (TextView) findViewById(R.id.group_name);
-        groupNameText.setText(StringEscapeUtils.unescapeJava(group.getName()));
 
         userList = (RecyclerView) findViewById(R.id.userList);
         userAdapter = new UserAdapter(GroupActivity.this, group.getUsers(), userList);
@@ -93,7 +109,6 @@ public class GroupActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         mEventPagerAdapter = new EventPagerAdapter(getSupportFragmentManager(), GroupActivity.this);
@@ -181,18 +196,8 @@ public class GroupActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.groups) {
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

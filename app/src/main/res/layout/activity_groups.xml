@@ -18,8 +18,11 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:itemTextColor="@drawable/navigation_drawer_item_text_selector"
+        app:itemIconTint="@drawable/navigation_drawer_item_text_selector"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_groups"
+        app:itemBackground="@drawable/navigation_drawer_item_selector"
+        app:headerLayout="@layout/nav_header"
         app:menu="@menu/activity_groups_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

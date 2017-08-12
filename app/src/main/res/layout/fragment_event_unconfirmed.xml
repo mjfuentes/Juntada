@@ -62,7 +62,7 @@
             <LinearLayout
                 android:padding="5dp"
                 android:orientation="horizontal"
-                android:layout_width="160dp"
+                android:layout_width="150dp"
                 android:layout_height="30dp">
                 <TextView
                     android:text="LUN"
@@ -111,7 +111,7 @@
             <LinearLayout
                 android:padding="5dp"
                 android:orientation="horizontal"
-                android:layout_width="160dp"
+                android:layout_width="150dp"
                 android:layout_height="30dp">
                 <TextView
                     android:text="LUN"
@@ -166,7 +166,7 @@
                 <LinearLayout
                     android:padding="5dp"
                     android:orientation="horizontal"
-                    android:layout_width="160dp"
+                    android:layout_width="150dp"
                     android:layout_height="30dp">
                     <TextView
                         android:text="LUN"
@@ -214,7 +214,7 @@
                 <LinearLayout
                     android:padding="5dp"
                     android:orientation="horizontal"
-                    android:layout_width="160dp"
+                    android:layout_width="150dp"
                     android:layout_height="30dp">
                     <TextView
                         android:text="LUN"

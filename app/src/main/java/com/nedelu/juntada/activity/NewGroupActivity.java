@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nedelu.juntada.R;
@@ -47,6 +48,7 @@ public class NewGroupActivity extends AppCompatActivity {
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int REQUEST_CROP_ICON = 2;
     private ProgressBar progressBar;
+    private RelativeLayout blur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class NewGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_group);
 
         Bundle inBundle = getIntent().getExtras();
+        blur = (RelativeLayout) findViewById(R.id.blur_background);
         userId = Long.valueOf(inBundle.get("id").toString());
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -69,7 +72,7 @@ public class NewGroupActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton createButton = (FloatingActionButton) findViewById(R.id.create_button);
+        final FloatingActionButton createButton = (FloatingActionButton) findViewById(R.id.create_button);
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +86,9 @@ public class NewGroupActivity extends AppCompatActivity {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
+                    createButton.setVisibility(View.INVISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
+                    blur.setVisibility(View.VISIBLE);
                     Group group = new Group();
                     group.setName(StringEscapeUtils.escapeJava(editTextName.getText().toString()));
                     GroupService.getInstance(NewGroupActivity.this).createGroup(NewGroupActivity.this, userId, group,imageUri, NewGroupActivity.this);
@@ -122,6 +127,10 @@ public class NewGroupActivity extends AppCompatActivity {
         main.putExtra("groupId", groupId);
         startActivity(main);
 
+        finish();
+    }
+
+    public void groupCreationFailed(){
         finish();
     }
 }

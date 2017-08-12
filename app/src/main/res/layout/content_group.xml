@@ -74,8 +74,9 @@
                 android:background="#FAFAFA"
                 android:src="@drawable/add_friend"
                 android:layout_marginRight="15dp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="25dp"
+                android:scaleType="fitCenter"
+                android:layout_height="25dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>

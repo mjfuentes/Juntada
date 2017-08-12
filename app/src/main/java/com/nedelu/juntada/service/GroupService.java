@@ -112,6 +112,7 @@ public class GroupService extends Observable {
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
+                newGroupActivity.groupCreationFailed();
             }
         });
     }
@@ -198,7 +199,7 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
-                Toast.makeText(context,"Error connecting to server!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -226,7 +227,7 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Registration failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
             }
         });
     }

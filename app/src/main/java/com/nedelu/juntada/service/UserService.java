@@ -101,6 +101,7 @@ public class UserService {
         user.setId(userDTO.getId());
         user.setFacebookId(userDTO.getFacebookId());
         user.setImageUrl(userDTO.getImageUrl());
+        user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
 
         saveUser(user);

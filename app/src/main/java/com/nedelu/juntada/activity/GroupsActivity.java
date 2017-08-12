@@ -1,7 +1,10 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -15,19 +18,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.GroupService;
+import com.nedelu.juntada.service.UserService;
 import com.nedelu.juntada.util.SpacesItemDecoration;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
 
     private GroupAdapter groupAdapter;
     private RecyclerView recyclerView;
     private GroupService groupService;
+    private UserService userService;
     private Long userId;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +48,13 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         setContentView(R.layout.activity_groups);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -45,9 +65,20 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
                 startActivity(main);
             }
         });
-
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("id", 0L);
+        userService = new UserService(GroupsActivity.this);
+        user = userService.getUser(userId);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
+        user_name.setText(user.getFirstName() + " " + user.getLastName());
+
+        ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
+        Picasso.with(GroupsActivity.this).load(user.getImageUrl()).into(user_image);
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -58,7 +89,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
         groupService = GroupService.getInstance(GroupsActivity.this);
 
-        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(Long.valueOf(userId)));
+        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(userId));
         groupAdapter.setOnItemClickListener(this);
         recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -69,27 +100,38 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.groups);
+        System.out.println("finished onCreate code");
 
     }
 
     public void updateGroups(){
-        groupAdapter.setData(groupService.getUserGroups(userId));
-        recyclerView.removeAllViews();
-        groupAdapter.notifyItemRangeRemoved(0,groupAdapter.getItemCount());
-        groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-        groupAdapter.notifyDataSetChanged();
+        System.out.println("update called");
+        List<Group> groups = groupService.getUserGroups(userId);
+        if (groupAdapter.getItemCount() != groups.size()) {
+            System.out.println("update called");
+            groupAdapter.setData(groupService.getUserGroups(userId));
+            recyclerView.removeAllViews();
+            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
+            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+            groupAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        groupAdapter.setData(groupService.getUserGroups(userId));
-        recyclerView.removeAllViews();
-        groupAdapter.notifyItemRangeRemoved(0,groupAdapter.getItemCount());
-        groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-        groupAdapter.notifyDataSetChanged();
+        System.out.println("on resume called");
+        List<Group> groups = groupService.getUserGroups(userId);
+        if (groupAdapter.getItemCount() != groups.size()) {
+            System.out.println("on resume called");
+            groupAdapter.setData(groupService.getUserGroups(userId));
+            recyclerView.removeAllViews();
+            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
+            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+            groupAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -130,17 +172,21 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.profile) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.groups) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.configuration) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.share) {
+//            Intent i = new Intent(Intent.ACTION_SEND);
+//            i.setType("text/plain");
+//            i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+//            String sAux = "\nTe invite a mi Grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
+//            sAux += "\n"+ url + "\n\n";
+//            i.putExtra(Intent.EXTRA_TEXT, sAux);
+//            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+        } else if (id == R.id.about) {
 
         }
 

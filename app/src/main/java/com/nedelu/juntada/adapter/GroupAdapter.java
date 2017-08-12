@@ -55,6 +55,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         String groupImage = mData.get(position).getImageUrl();
         holder.groupName.setText(StringEscapeUtils.unescapeJava(groupName));
         Picasso.with(mContext).load(groupImage).into(holder.imageView);
+        System.out.println("Group image requested");
     }
 
     // total number of cells
