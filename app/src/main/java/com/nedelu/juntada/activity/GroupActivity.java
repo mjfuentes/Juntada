@@ -91,8 +91,14 @@ public class GroupActivity extends AppCompatActivity
         TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
         user_name.setText(user.getFirstName() + " " + user.getLastName());
 
+        ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
+        Picasso.with(GroupActivity.this).load(user.getImageUrl()).into(user_image);
+
         groupService = GroupService.getInstance(GroupActivity.this);
         group = groupService.loadGroupData(groupId, GroupActivity.this);
+
+        ImageView groupImageView = (ImageView) findViewById(R.id.group_image);
+        Picasso.with(GroupActivity.this).load(group.getImageUrl()).into(groupImageView);
 
         userList = (RecyclerView) findViewById(R.id.userList);
         userAdapter = new UserAdapter(GroupActivity.this, group.getUsers(), userList);
@@ -227,7 +233,12 @@ public class GroupActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Poll item) {
-
+        Intent vote = new Intent(GroupActivity.this, VoteActivity.class);
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences.Editor editor = userPref.edit();
+        editor.putLong("pollId", item.getId());
+        editor.apply();
+        startActivity(vote);
     }
 
     public class EventPagerAdapter extends FragmentPagerAdapter {

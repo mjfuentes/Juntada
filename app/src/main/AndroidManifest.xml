@@ -66,11 +66,17 @@
             android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.NewEventActivity"
+        <activity
+            android:name=".activity.NewEventActivity"
             android:label="Nueva Juntada"
-            android:parentActivityName=".activity.GroupActivity"/>
-        <activity android:name=".activity.NewPollActivity"
-            android:parentActivityName=".activity.GroupActivity"></activity>
+            android:parentActivityName=".activity.GroupActivity" />
+        <activity
+            android:name=".activity.NewPollActivity"
+            android:parentActivityName=".activity.GroupActivity" />
+        <activity android:name=".activity.VoteActivity"
+            android:parentActivityName=".activity.GroupActivity"
+            android:label=""
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

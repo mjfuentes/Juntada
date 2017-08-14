@@ -113,6 +113,8 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
                     // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
                 }
+
+
             }
         });
     }

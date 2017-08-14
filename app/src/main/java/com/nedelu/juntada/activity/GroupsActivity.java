@@ -102,16 +102,13 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.groups);
-        System.out.println("finished onCreate code");
 
     }
 
     public void updateGroups(){
-        System.out.println("update called");
         List<Group> groups = groupService.getUserGroups(userId);
         if (groupAdapter.getItemCount() != groups.size()) {
-            System.out.println("update called");
-            groupAdapter.setData(groupService.getUserGroups(userId));
+            groupAdapter.setData(groups);
             recyclerView.removeAllViews();
             groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
             groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
@@ -122,11 +119,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("on resume called");
         List<Group> groups = groupService.getUserGroups(userId);
         if (groupAdapter.getItemCount() != groups.size()) {
-            System.out.println("on resume called");
-            groupAdapter.setData(groupService.getUserGroups(userId));
+            groupAdapter.setData(groups);
             recyclerView.removeAllViews();
             groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
             groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
@@ -142,28 +137,6 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.groups, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

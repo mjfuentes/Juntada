@@ -27,10 +27,13 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
 
 
+    compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
     compile 'com.codeslap:persistence:0.9.24'
     compile 'com.facebook.android:facebook-android-sdk:4.18.0'
     compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
@@ -45,6 +48,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.android.gms:play-services:11.0.2'
-    compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
     testCompile 'junit:junit:4.12'
 }

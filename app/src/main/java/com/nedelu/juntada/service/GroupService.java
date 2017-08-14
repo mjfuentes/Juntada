@@ -3,6 +3,7 @@ package com.nedelu.juntada.service;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class GroupService extends Observable {
     private GroupDao groupDao;
     private EventDao eventDao;
     private EventService eventService;
+    private String baseUrl = "http://10.1.1.16:8080";
 
     private GroupService(Context context) {
         this.context = context;
@@ -78,7 +80,7 @@ public class GroupService extends Observable {
     // SERVER
     public void createGroup(final Context context, Long userId, Group group, Uri fileUri, final NewGroupActivity newGroupActivity){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -119,7 +121,7 @@ public class GroupService extends Observable {
 
     public void createEvent(PollRequest request, final NewEventActivity newEventActivity){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -143,7 +145,7 @@ public class GroupService extends Observable {
 
     public void createPoll(PollRequest request, final NewPollActivity newPollActivity){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -176,7 +178,7 @@ public class GroupService extends Observable {
 
     public void loadGroups(final Long userId){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -187,11 +189,7 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<List<GroupDTO>> call, Response<List<GroupDTO>> response) {
                 if (response.code() != 404) {
-                    List<GroupDTO> groups = response.body();
-                    for (GroupDTO groupDTO:groups){
-                        saveGroup(groupDTO);
-                    }
-                    activity.updateGroups();
+                    new SaveGroupsTask().execute(response.body());
                 } else {
                     Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
                 }
@@ -206,7 +204,7 @@ public class GroupService extends Observable {
 
     public void loadGroup(final Long groupId, final GroupActivity groupActivity){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -217,9 +215,7 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
                 if (response.code() != 404) {
-                    GroupDTO groupDTO = response.body();
-                    Group group = saveGroup(groupDTO);
-                    groupActivity.refreshGroup(group);
+                    new SaveGroupTask().execute(response.body(), groupActivity);
                 } else {
                     Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
                 }
@@ -320,5 +316,39 @@ public class GroupService extends Observable {
 
     public interface Callbacks{
         public void updateGroups();
+    }
+
+    private class SaveGroupsTask extends AsyncTask<List<GroupDTO>, Void, Void> {
+        protected Void doInBackground(List<GroupDTO>... lists) {
+            List<GroupDTO> groups = lists[0];
+            for (GroupDTO groupDTO:groups){
+                System.out.println("running task");
+                saveGroup(groupDTO);
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void... params) {
+            activity.updateGroups();
+        }
+
+
+    }
+
+    private class SaveGroupTask extends AsyncTask<Object, Void, Void> {
+        private Group group;
+        private GroupActivity groupActivity;
+        protected Void doInBackground(Object... params) {
+            GroupDTO groupDTO = (GroupDTO) params[0];
+            groupActivity = (GroupActivity) params[1];
+            group = saveGroup(groupDTO);
+            return null;
+        }
+
+        protected void onPostExecute(Void... params) {
+            groupActivity.refreshGroup(group);
+        }
+
+
     }
 }

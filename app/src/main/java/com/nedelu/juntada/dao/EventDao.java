@@ -59,7 +59,7 @@ public class EventDao {
 
     public void savePollOption(PollOption option) {
         try {
-            helper.getPollOptionDao().create(option);
+            helper.getPollOptionDao().createOrUpdate(option);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -68,6 +68,7 @@ public class EventDao {
     public Event getEvent(Long id) {
         try {
             Event event = helper.getEventDao().queryForId(id);
+            event.setConfirmedUsers(new ArrayList<User>());
 
             List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
 
@@ -84,7 +85,7 @@ public class EventDao {
 
     public void saveConfirmedUser(ConfirmedUser confirmedUser) {
         try {
-            helper.getConfirmedUsersDao().create(confirmedUser);
+            helper.getConfirmedUsersDao().createOrUpdate(confirmedUser);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
     private UserService userService;
+    private Boolean loginClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         loginButton.setReadPermissions("user_friends");
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginClicked= true;
+            }
+        });
         loginButton.registerCallback(callbackManager, callback);
 
     }
@@ -114,8 +122,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Profile profile = Profile.getCurrentProfile();
-        checkUser(profile);
+
+        if (loginClicked) {
+            Profile profile = Profile.getCurrentProfile();
+            checkUser(profile);
+        }
     }
 
     @Override
