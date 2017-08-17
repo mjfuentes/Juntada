@@ -22,6 +22,17 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service android:name=".firebase.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".firebase.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD2sxeUIzLc4NlYl5sD7l_QxR3yHpjd2YI" />
@@ -32,12 +43,12 @@
         <activity
             android:name=".activity.GroupsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.NewGroupActivity"
             android:label="Nuevo Grupo"
             android:parentActivityName=".activity.GroupsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activity.NewGroupTwoActivity"
             android:label="Nuevo Grupo"
@@ -65,7 +76,9 @@
             android:name=".activity.GroupActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
         <activity
             android:name=".activity.NewEventActivity"
             android:label="Nueva Juntada"
@@ -73,10 +86,25 @@
         <activity
             android:name=".activity.NewPollActivity"
             android:parentActivityName=".activity.GroupActivity" />
-        <activity android:name=".activity.VoteActivity"
-            android:parentActivityName=".activity.GroupActivity"
+        <activity
+            android:name=".activity.VoteActivity"
             android:label=""
-            android:screenOrientation="portrait"></activity>
+            android:parentActivityName=".activity.GroupActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.JoinActivity">
+            <intent-filter android:label="Aceptar invitacion a grupo!">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data
+                    android:host="www.juntada.nedelu.com"
+                    android:pathPrefix="/join"
+                    android:scheme="http" />
+                <!-- note that the leading "/" is required for pathPrefix -->
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

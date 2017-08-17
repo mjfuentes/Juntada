@@ -40,6 +40,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     private GroupService groupService;
     private UserService userService;
     private Long userId;
+    ImageView firstGroup;
     private User user;
 
     @Override
@@ -66,9 +67,10 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
             }
         });
         SharedPreferences userPref = getSharedPreferences("user", 0);
-        userId = userPref.getLong("id", 0L);
+        userId = userPref.getLong("userId", 0L);
         userService = new UserService(GroupsActivity.this);
         user = userService.getUser(userId);
+        firstGroup = (ImageView) findViewById(R.id.first_group);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
@@ -89,7 +91,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
         groupService = GroupService.getInstance(GroupsActivity.this);
 
-        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(userId));
+        List<Group> groups = groupService.getUserGroups(userId);
+        if (groups.size() == 0){
+            firstGroup.setVisibility(View.VISIBLE);
+        }
+
+        groupAdapter = new GroupAdapter(GroupsActivity.this, groups);
         groupAdapter.setOnItemClickListener(this);
         recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -108,6 +115,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     public void updateGroups(){
         List<Group> groups = groupService.getUserGroups(userId);
         if (groupAdapter.getItemCount() != groups.size()) {
+            firstGroup.setVisibility(View.INVISIBLE);
             groupAdapter.setData(groups);
             recyclerView.removeAllViews();
             groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
@@ -121,6 +129,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         super.onResume();
         List<Group> groups = groupService.getUserGroups(userId);
         if (groupAdapter.getItemCount() != groups.size()) {
+            firstGroup.setVisibility(View.INVISIBLE);
             groupAdapter.setData(groups);
             recyclerView.removeAllViews();
             groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());

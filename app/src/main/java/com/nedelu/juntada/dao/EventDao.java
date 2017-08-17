@@ -5,6 +5,7 @@ import android.content.Context;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
+import com.nedelu.juntada.model.PollOptionVote;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
@@ -136,6 +137,23 @@ public class EventDao {
         }
         return users;
 
+    }
+
+    public PollOption getPollOption(Long id) {
+        try {
+            return helper.getPollOptionDao().queryForId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void savePollOptionVote(PollOptionVote vote) {
+        try {
+            helper.getmPollOptionVotesDao().createOrUpdate(vote);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 

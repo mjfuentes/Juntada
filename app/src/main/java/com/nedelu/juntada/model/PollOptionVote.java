@@ -11,14 +11,14 @@ import java.util.Date;
 
 public class PollOptionVote {
 
-    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
+    @DatabaseField(columnName = "id", generatedId = true)
     private Long id;
 
     @DatabaseField(columnName = "user", foreign = true, foreignAutoRefresh = true)
     private User user;
-
-    @DatabaseField(columnName = "creation_date")
-    private Date creationDate;
+//
+//    @DatabaseField(columnName = "creation_date")
+//    private Date creationDate;
 
     @DatabaseField(columnName = "poll_option", foreign = true, foreignAutoRefresh = true)
     private PollOption pollOption;
@@ -35,13 +35,13 @@ public class PollOptionVote {
         this.user = user;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
+//    public Date getCreationDate() {
+//        return creationDate;
+//    }
+//
+//    public void setCreationDate(Date creationDate) {
+//        this.creationDate = creationDate;
+//    }
 
     public Long getId() {
         return id;

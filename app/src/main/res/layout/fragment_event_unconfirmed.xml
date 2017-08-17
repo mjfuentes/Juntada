@@ -86,6 +86,7 @@
                     android:src="@drawable/voto_red"/>
                 <TextView
                     android:text="02"
+                    android:textStyle="bold"
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_votes1"
                     android:layout_width="wrap_content"
@@ -135,6 +136,7 @@
                     android:src="@drawable/voto_red"/>
                 <TextView
                     android:text="02"
+                    android:textStyle="bold"
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_votes2"
                     android:layout_width="wrap_content"
@@ -190,6 +192,7 @@
                         android:src="@drawable/voto_red"/>
                     <TextView
                         android:text="02"
+                        android:textStyle="bold"
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_votes3"
                         android:layout_width="wrap_content"
@@ -238,6 +241,7 @@
                         android:src="@drawable/voto_red"/>
                     <TextView
                         android:text="02"
+                        android:textStyle="bold"
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_votes4"
                         android:layout_width="wrap_content"

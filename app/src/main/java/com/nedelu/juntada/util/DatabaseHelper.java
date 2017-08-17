@@ -26,7 +26,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME    = "juntada2.db";
-    private static final int    DATABASE_VERSION = 26;
+    private static final int DATABASE_VERSION = 31;
 
     private Dao<User, Long> mUserDao = null;
     private Dao<Group, Long> mGroupDao = null;
@@ -37,6 +37,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<DontKnowUsers, Long> mDontKnowUsersDao = null;
     private Dao<ConfirmedUser, Long> mConfirmedUsersDao = null;
     private Dao<NotGoingUsers, Long> mNotGoingUsersDao = null;
+    private Dao<PollOptionVote, Long> mPollOptionVotesDao = null;
 
 
     public DatabaseHelper(Context context) {
@@ -56,6 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTableIfNotExists(connectionSource,NotGoingUsers.class);
             TableUtils.createTableIfNotExists(connectionSource,ConfirmedUser.class);
             TableUtils.createTableIfNotExists(connectionSource,DontKnowUsers.class);
+            TableUtils.createTableIfNotExists(connectionSource,PollOptionVote.class);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -76,6 +78,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, NotGoingUsers.class, true);
             TableUtils.dropTable(connectionSource, ConfirmedUser.class, true);
             TableUtils.dropTable(connectionSource, DontKnowUsers.class, true);
+            TableUtils.dropTable(connectionSource,PollOptionVote.class, true);
+
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -155,6 +159,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
         return mDontKnowUsersDao ;
     }
+
+    public Dao<PollOptionVote, Long> getmPollOptionVotesDao() throws SQLException {
+        if (mPollOptionVotesDao == null) {
+            mPollOptionVotesDao  = getDao(PollOptionVote.class);
+        }
+
+        return mPollOptionVotesDao ;
+    }
+
 
     @Override
     public void close() {

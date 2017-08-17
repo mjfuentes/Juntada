@@ -76,7 +76,7 @@ public class GroupActivity extends AppCompatActivity
             setTaskDescription(taskDesc);
         }
 
-
+       
 
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("userId", 0L);
@@ -145,18 +145,7 @@ public class GroupActivity extends AppCompatActivity
         addMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo get token from server
-                String GROUP_TOKEN = "ABCD1234";
-
-                String url = "http://10.1.1.16:8080/joinGroup/" + GROUP_TOKEN;
-
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-                String sAux = "\nTe invite a mi Grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-                sAux += "\n"+ url + "\n\n";
-                i.putExtra(Intent.EXTRA_TEXT, sAux);
-                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+                groupService.getGroupToken(groupId, GroupActivity.this);
             }
         });
     }
@@ -283,5 +272,18 @@ public class GroupActivity extends AppCompatActivity
         userAdapter.setItems(group.getUsers());
         userList.getAdapter().notifyDataSetChanged();
         mEventPagerAdapter.notifyDataSetChanged();
+    }
+
+    public void groupTokenResult(String token){
+
+        String url = "http://www.juntada.nedelu.com/join/" + token;
+
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+        String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
+        sAux += "\n"+ url;
+        i.putExtra(Intent.EXTRA_TEXT, sAux);
+        startActivity(Intent.createChooser(i, "Elegir aplicacion"));
     }
 }

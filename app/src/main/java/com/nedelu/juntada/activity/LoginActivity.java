@@ -17,6 +17,8 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.internal.ca;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.UserService;
@@ -64,9 +66,9 @@ public class LoginActivity extends AppCompatActivity {
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                AccessToken accessToken = loginResult.getAccessToken();
-                Profile profile = Profile.getCurrentProfile();
-                checkUser(profile);
+//                AccessToken accessToken = loginResult.getAccessToken();
+//                Profile profile = Profile.getCurrentProfile();
+//                checkUser(profile);
             }
 
             @Override
@@ -98,21 +100,28 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Error during user creation", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                nextActivity(currentUser);
+                nextActivity(currentUser, false);
             }
         }
     }
 
-    public void nextActivity(User user){
+    public void nextActivity(User user, Boolean newUser){
         Intent main = new Intent(LoginActivity.this, GroupsActivity.class);
         main.putExtra("id", user.getId());
         main.putExtra("name", user.getFirstName());
         main.putExtra("surname", user.getLastName());
         main.putExtra("imageUrl", user.getImageUrl());
+        if (newUser){
+            try {
+                userService.registerUserToken(user, FirebaseInstanceId.getInstance().getToken());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
         SharedPreferences userPref = getSharedPreferences("user", 0);
         SharedPreferences.Editor editor = userPref.edit();
-        editor.putLong("id", user.getId());
+        editor.putLong("userId", user.getId());
         editor.apply();
 
         startActivity(main);

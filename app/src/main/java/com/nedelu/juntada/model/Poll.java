@@ -28,6 +28,10 @@ public class Poll {
     @DatabaseField(columnName = "location")
     private String location;
 
+    public String getDescription(){
+        return "Test description";
+    }
+
     @ForeignCollectionField(columnName = "options", eager = true)
     private ForeignCollection<PollOption> options;
 

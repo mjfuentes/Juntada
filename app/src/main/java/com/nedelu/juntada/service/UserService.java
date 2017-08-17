@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.UserDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
@@ -52,14 +53,45 @@ public class UserService {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
                 Long userId = response.body();
-                user.setId(userId);
-                saveUser(user);
-                activity.nextActivity(user);
+
+                if (userId != null) {
+                    user.setId(userId);
+                    saveUser(user);
+                    activity.nextActivity(user, true);
+                }
 
             }
 
             @Override
             public void onFailure(Call<Long> call, Throwable t) {
+                Toast.makeText(context,"User creation failed!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return user;
+    }
+
+    public User registerUserToken(User user, String token) throws IOException {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.1.1.16:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        FirebaseRegistration registration = new FirebaseRegistration();
+        registration.setUserId(user.getId());
+        registration.setFirebaseId(token);
+        Call<UserDTO> call = server.registerFirebase(user.getId(), registration);
+        call.enqueue(new Callback<UserDTO>() {
+            @Override
+            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                UserDTO userDTO = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<UserDTO> call, Throwable t) {
                 Toast.makeText(context,"User creation failed!", Toast.LENGTH_LONG).show();
             }
         });

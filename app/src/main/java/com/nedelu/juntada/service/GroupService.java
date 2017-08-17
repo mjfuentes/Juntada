@@ -2,6 +2,8 @@ package com.nedelu.juntada.service;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.webkit.MimeTypeMap;
@@ -9,6 +11,8 @@ import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nedelu.juntada.activity.GroupActivity;
+import com.nedelu.juntada.activity.GroupsActivity;
+import com.nedelu.juntada.activity.JoinActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
@@ -21,6 +25,8 @@ import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
+import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.JoinGroupDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.UserDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
@@ -312,6 +318,73 @@ public class GroupService extends Observable {
 
     public PollRequest getPollRequest(Long pollRequestId) {
         return groupDao.getPollRequest(pollRequestId);
+    }
+
+    public void getGroupToken(Long groupId, final GroupActivity groupActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        Call<GroupTokenDTO> call = server.getGroupToken(groupId);
+
+        call.enqueue(new Callback<GroupTokenDTO>() {
+            @Override
+            public void onResponse(Call<GroupTokenDTO> call, Response<GroupTokenDTO> response) {
+                if (response.code() != 404) {
+                    groupActivity.groupTokenResult(response.body().getToken());
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupTokenDTO> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void joinGroup(final Long userId, String token, final JoinActivity joinActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        JoinGroupDTO joinGroup = new JoinGroupDTO();
+        joinGroup.setUserId(userId);
+        joinGroup.setGroupToken(token);
+
+        Call<GroupDTO> call = server.joinGroup(joinGroup);
+
+        call.enqueue(new Callback<GroupDTO>() {
+            @Override
+            public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
+                if (response.code() == 200) {
+                    Group group = saveGroup(response.body());
+
+                    Intent main = new Intent(joinActivity, GroupActivity.class);
+                    SharedPreferences userPref = joinActivity.getSharedPreferences("user", 0);
+                    SharedPreferences.Editor editor = userPref.edit();
+                    editor.putLong("userId", userId);
+                    editor.putLong("groupId", group.getId());
+                    editor.putString("image_url", group.getImageUrl());
+                    editor.apply();
+                    joinActivity.startActivity(main);
+                } else {
+                    Toast.makeText(context,"Error al ingresar al grupo", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupDTO> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public interface Callbacks{
