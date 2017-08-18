@@ -59,8 +59,15 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         optionsList.addItemDecoration(new SimpleDividerItemDecoration(this));
         List<PollOption> options = new ArrayList<>(poll.getOptions());
         List<VotingItem> items = new ArrayList<>();
+        TextView button = (TextView) findViewById(R.id.voting_button);
+
         for (PollOption option : options){
-            items.add(new VotingItem(option));
+            VotingItem item = new VotingItem(option);
+            if (option.isVotedByUser(userId)){
+                item.setVoted(true);
+                button.setText("VOTAR");
+            }
+            items.add(item);
         }
 
         TextView pollTitle = (TextView) findViewById(R.id.poll_title);

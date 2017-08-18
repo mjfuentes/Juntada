@@ -21,7 +21,6 @@
             android:id="@+id/group_image"
             android:layout_width="387dp"
             android:layout_height="match_parent"
-            android:foreground="@drawable/gradient"
             app:srcCompat="@drawable/com_facebook_profile_picture_blank_portrait"
             app:layout_constraintTop_toTopOf="parent"
             android:scaleType="centerCrop"

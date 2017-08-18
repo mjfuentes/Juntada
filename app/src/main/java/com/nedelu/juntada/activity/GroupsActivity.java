@@ -31,6 +31,8 @@ import com.nedelu.juntada.util.SpacesItemDecoration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
@@ -92,6 +94,13 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         groupService = GroupService.getInstance(GroupsActivity.this);
 
         List<Group> groups = groupService.getUserGroups(userId);
+        Collections.sort(groups, new Comparator<Group>() {
+            @Override
+            public int compare(Group group, Group t1) {
+                return t1.getId().compareTo(group.getId());
+            }
+        });
+
         if (groups.size() == 0){
             firstGroup.setVisibility(View.VISIBLE);
         }
@@ -114,6 +123,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
     public void updateGroups(){
         List<Group> groups = groupService.getUserGroups(userId);
+        Collections.sort(groups, new Comparator<Group>() {
+            @Override
+            public int compare(Group group, Group t1) {
+                return t1.getId().compareTo(group.getId());
+            }
+        });
         if (groupAdapter.getItemCount() != groups.size()) {
             firstGroup.setVisibility(View.INVISIBLE);
             groupAdapter.setData(groups);
@@ -128,6 +143,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     protected void onResume() {
         super.onResume();
         List<Group> groups = groupService.getUserGroups(userId);
+        Collections.sort(groups, new Comparator<Group>() {
+            @Override
+            public int compare(Group group, Group t1) {
+                return t1.getId().compareTo(group.getId());
+            }
+        });
         if (groupAdapter.getItemCount() != groups.size()) {
             firstGroup.setVisibility(View.INVISIBLE);
             groupAdapter.setData(groups);

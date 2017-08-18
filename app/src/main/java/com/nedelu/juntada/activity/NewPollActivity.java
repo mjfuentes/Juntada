@@ -1,6 +1,7 @@
 package com.nedelu.juntada.activity;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -22,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.nedelu.juntada.R;
@@ -50,10 +53,11 @@ public class NewPollActivity extends AppCompatActivity {
     private Long groupId;
     private Long pollRequestId;
     private PollRequest request;
-    private Spinner editTime;
+    private EditText editTime;
     private FloatingActionButton button;
     private ProgressBar progressBar;
     private SimpleDateFormat sdf;
+    private String selectedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class NewPollActivity extends AppCompatActivity {
         setContentView(R.layout.activity_poll);
          sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Bundle inBundle = getIntent().getExtras();
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("userId", 0L);
@@ -76,12 +81,19 @@ public class NewPollActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(request.getTitle());
 
         editDate = (EditText) findViewById(R.id.edit_date);
-        editTime = (Spinner) findViewById(R.id.edit_time);
+        editTime = (EditText) findViewById(R.id.edit_time);
+
+        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                String hour = i >= 10 ? String.valueOf(i) : 0 + String.valueOf(i);
+                String minutes = i1 >= 10 ? String.valueOf(i1) : 0 + String.valueOf(i1);
+                selectedTime = hour + ":" + minutes;
+                editTime.setText(selectedTime);
+            }
+        };
+
         dateImage = (ImageView) findViewById(R.id.date_image);
-        final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.horarios, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        editTime.setAdapter(adapter);
 
         dateAdapter = new DateAdapter(NewPollActivity.this);
         dateList = (GridView) findViewById(R.id.date_list);
@@ -108,7 +120,7 @@ public class NewPollActivity extends AppCompatActivity {
                 if (checkFields() && dateAdapter.getCount() < 4) {
                     PollOption option = new PollOption();
                     option.setDate(sdf.format(myCalendar.getTime()));
-                    option.setTime(editTime.getSelectedItem().toString());
+                    option.setTime(selectedTime);
                     dateAdapter.addDate(option);
 
                     if (dateAdapter.getCount() == 4){
@@ -122,6 +134,14 @@ public class NewPollActivity extends AppCompatActivity {
             }
         });
 
+        editTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new TimePickerDialog(NewPollActivity.this,R.style.DialogTheme, time,12,0,true).show();
+            }
+        });
+
+
         button = (FloatingActionButton) findViewById(R.id.add_event);
         button.setVisibility(View.INVISIBLE);
         button.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +153,7 @@ public class NewPollActivity extends AppCompatActivity {
             }
         });
 
-        dateImage.setOnClickListener(new View.OnClickListener() {
+        editDate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
@@ -227,6 +247,6 @@ public class NewPollActivity extends AppCompatActivity {
     private boolean checkFields() {
 
         return !editDate.getText().toString().equals("") &&
-                !(editTime.getSelectedItem() == null);
+                !(editTime.getText().toString().equals(""));
     }
 }

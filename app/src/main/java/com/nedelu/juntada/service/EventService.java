@@ -1,6 +1,7 @@
 package com.nedelu.juntada.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.nedelu.juntada.dao.EventDao;
@@ -47,6 +48,9 @@ public class EventService {
         this.eventDao = new EventDao(context);
         this.groupDao = new GroupDao(context);
         this.userDao = new UserDao(context);
+
+        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
     }
 
     public void votePoll(Long pollId, final PollVoteRequest voteRequest, final ResultListener listener){
@@ -62,10 +66,11 @@ public class EventService {
             @Override
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
                 if (response.code() != 404) {
-                    savePollVotes(voteRequest);
+                    savePoll(response.body());
                     listener.pollVoted();
                 } else {
-                    Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    listener.pollVoted();
                 }
             }
 
@@ -105,8 +110,10 @@ public class EventService {
             option.setPoll(getPoll(optionDTO.getPoll()));
 
             eventDao.savePollOption(option);
-
+            eventDao.removeVotes(optionDTO.getId());
             for (Long user : optionDTO.getVotingUsers()){
+//                PollOptionVote vote = eventDao.getPollOptionVote(user, optionDTO.getId());
+//                if (vote == null) {
                 PollOptionVote vote = new PollOptionVote();
                 vote.setPollOption(eventDao.getPollOption(option.getId()));
                 vote.setUser(userDao.getUser(user));
@@ -145,10 +152,14 @@ public class EventService {
         Event newEvent = eventDao.getEvent(event.getId());
 
         for (Long userId : eventDTO.getConfirmedUsers()){
-            ConfirmedUser confirmedUser = new ConfirmedUser();
-            confirmedUser.setEventId(newEvent.getId());
-            confirmedUser.setUserId(userId);
-            eventDao.saveConfirmedUser(confirmedUser);
+
+            ConfirmedUser confirmedUser = eventDao.getconfirmedUser(userId, event.getId());
+            if (confirmedUser == null) {
+                confirmedUser = new ConfirmedUser();
+                confirmedUser.setEventId(newEvent.getId());
+                confirmedUser.setUserId(userId);
+                eventDao.saveConfirmedUser(confirmedUser);
+            }
         }
 
         return newEvent;
@@ -164,6 +175,10 @@ public class EventService {
         event.setNotGoingUsers(eventDao.getNotGoingUsers(event.getId()));
         event.setDoNotKnowUsers(eventDao.getDoNotKnowUsers(event.getId()));
 
+    }
+
+    public Event getEvent(Long eventId) {
+        return eventDao.getEvent(eventId);
     }
 
     public interface ResultListener{

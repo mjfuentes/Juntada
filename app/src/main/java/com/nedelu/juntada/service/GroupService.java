@@ -33,6 +33,7 @@ import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
@@ -58,6 +59,7 @@ public class GroupService extends Observable {
     private GroupDao groupDao;
     private EventDao eventDao;
     private EventService eventService;
+    private Long userId;
     private String baseUrl = "http://10.1.1.16:8080";
 
     private GroupService(Context context) {
@@ -66,6 +68,10 @@ public class GroupService extends Observable {
         this.eventService = new EventService(context);
         this.groupDao = new GroupDao(context);
         this.eventDao = new EventDao(context);
+
+        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
+        userId = userPref.getLong("userId", 0l);
     }
 
     private Context getContext(){
@@ -144,7 +150,7 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
-                Toast.makeText(context,"Event creation failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -168,7 +174,8 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,"Poll creation failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                newPollActivity.finish();
             }
         });
     }
@@ -194,16 +201,16 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<List<GroupDTO>>() {
             @Override
             public void onResponse(Call<List<GroupDTO>> call, Response<List<GroupDTO>> response) {
-                if (response.code() != 404) {
+                if (response.code() == 200) {
                     new SaveGroupsTask().execute(response.body());
                 } else {
-                    Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
-                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -223,13 +230,13 @@ public class GroupService extends Observable {
                 if (response.code() != 404) {
                     new SaveGroupTask().execute(response.body(), groupActivity);
                 } else {
-                    Toast.makeText(context,"Error connecting to server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -376,13 +383,15 @@ public class GroupService extends Observable {
                     editor.apply();
                     joinActivity.startActivity(main);
                 } else {
-                    Toast.makeText(context,"Error al ingresar al grupo", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    joinActivity.finish();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                joinActivity.finish();
             }
         });
     }
@@ -394,9 +403,17 @@ public class GroupService extends Observable {
     private class SaveGroupsTask extends AsyncTask<List<GroupDTO>, Void, Void> {
         protected Void doInBackground(List<GroupDTO>... lists) {
             List<GroupDTO> groups = lists[0];
+            List<Long> groupIds = new ArrayList<>();
             for (GroupDTO groupDTO:groups){
                 System.out.println("running task");
                 saveGroup(groupDTO);
+                groupIds.add(groupDTO.getId());
+            }
+
+            for (Group group : getUserGroups(userId)){
+                if (!groupIds.contains(group.getId())){
+                    groupDao.deleteGroup(userId, group);
+                }
             }
             return null;
         }

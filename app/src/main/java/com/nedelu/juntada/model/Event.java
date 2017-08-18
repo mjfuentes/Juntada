@@ -2,6 +2,7 @@ package com.nedelu.juntada.model;
 
 import com.j256.ormlite.field.DatabaseField;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,9 +35,9 @@ public class Event {
     @DatabaseField(columnName = "location")
     private String location;
 
-    private List<User> confirmedUsers;
-    private List<User> doNotKnowUsers;
-    private List<User> notGoingUsers;
+    private List<User> confirmedUsers = new ArrayList<>();
+    private List<User> doNotKnowUsers = new ArrayList<>();
+    private List<User> notGoingUsers = new ArrayList<>();
 
     public Event(){
 

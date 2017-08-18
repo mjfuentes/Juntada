@@ -64,8 +64,8 @@ public class NewGroupActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CropImage.activity().setAspectRatio(1,1)
-                        .setRequestedSize(600,600)
+                CropImage.activity().setAspectRatio(4,3)
+                        .setRequestedSize(800,600)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .start(NewGroupActivity.this);
 

@@ -1,6 +1,7 @@
 package com.nedelu.juntada.activity;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -33,9 +35,12 @@ import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.service.GroupService;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,8 +56,9 @@ public class NewEventActivity extends AppCompatActivity {
     private ImageView calendarImage;
     private ImageView timeImage;
     private RadioGroup editType;
-    private Spinner editTime;
+    private TextView editTime;
     private Place selectedPlace;
+    private String timeSelected = "";
     private Long userId;
     private Long groupId;
     private GroupService groupService;
@@ -72,11 +78,17 @@ public class NewEventActivity extends AppCompatActivity {
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
 
-        editTime = (Spinner) findViewById(R.id.edit_time);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.horarios, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        editTime.setAdapter(adapter);
+        editTime = (TextView) findViewById(R.id.edit_time);
+
+        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                String hour = i >= 10 ? String.valueOf(i) : 0 + String.valueOf(i);
+                String minutes = i1 >= 10 ? String.valueOf(i1) : 0 + String.valueOf(i1);
+                timeSelected = hour + ":" + minutes;
+                editTime.setText(timeSelected);
+            }
+        };
 
         groupService = GroupService.getInstance(NewEventActivity.this);
 
@@ -141,15 +153,19 @@ public class NewEventActivity extends AppCompatActivity {
         blur = (RelativeLayout) findViewById(R.id.blur_background);
         progressBar.setVisibility(View.INVISIBLE);
         blur.setVisibility(View.INVISIBLE);
-        editDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
+        editDate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View view, boolean focused) {
-                if (focused) {
-                    new DatePickerDialog(NewEventActivity.this, R.style.DialogTheme,date, myCalendar
-                            .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                            myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                }
+            public void onClick(View view) {
+                new DatePickerDialog(NewEventActivity.this, R.style.DialogTheme,date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        editTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new TimePickerDialog(NewEventActivity.this,R.style.DialogTheme, time,12,0,true).show();
             }
         });
 
@@ -179,7 +195,7 @@ public class NewEventActivity extends AppCompatActivity {
                         PollOption option = new PollOption();
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
                         option.setDate(sdf.format(myCalendar.getTime()));
-                        option.setTime(editTime.getSelectedItem().toString());
+                        option.setTime(timeSelected);
                         options.add(option);
                         request.setOptions(options);
                         progressBar.setVisibility(View.VISIBLE);

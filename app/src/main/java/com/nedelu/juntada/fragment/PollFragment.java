@@ -1,6 +1,7 @@
 package com.nedelu.juntada.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,7 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.model.Poll;
+import com.nedelu.juntada.service.EventService;
+import com.nedelu.juntada.service.GroupService;
 
 import java.util.List;
 
@@ -26,14 +30,16 @@ public class PollFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private PollFragment.OnListFragmentInteractionListener mListener;
-    private List<Poll> polls;
+    private GroupService groupService;
+    private Context mContext;
 
     public PollFragment() {
     }
 
-    public static PollFragment newInstance(List<Poll> polls) {
+    public static PollFragment newInstance(Context context) {
         PollFragment fragment = new PollFragment();
-        fragment.setEvents(polls);
+        fragment.setContext(context);
+        fragment.setGroupService(GroupService.getInstance(context));
 
         return fragment;
     }
@@ -62,7 +68,10 @@ public class PollFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            recyclerView.setAdapter(new MyPollRecyclerViewAdapter(polls, mListener));
+            SharedPreferences userPref = context.getSharedPreferences("user", 0);
+            Long groupId =  userPref.getLong("groupId", 0L);
+
+            recyclerView.setAdapter(new MyPollRecyclerViewAdapter(groupService.getPolls(groupId), mListener));
             recyclerView.setHasFixedSize(true);
             recyclerView .setNestedScrollingEnabled(false);
 
@@ -87,9 +96,9 @@ public class PollFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
-    public void setEvents(List<Poll> polls) {
-        this.polls = polls;
+    public void setContext(Context context) {this.mContext = context; }
+    public void setGroupService(GroupService groupService) {
+        this.groupService = groupService;
     }
 
     public interface OnListFragmentInteractionListener {

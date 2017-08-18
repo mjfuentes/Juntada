@@ -76,7 +76,7 @@ public class GroupActivity extends AppCompatActivity
             setTaskDescription(taskDesc);
         }
 
-       
+
 
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("userId", 0L);
@@ -96,6 +96,7 @@ public class GroupActivity extends AppCompatActivity
 
         groupService = GroupService.getInstance(GroupActivity.this);
         group = groupService.loadGroupData(groupId, GroupActivity.this);
+        getSupportActionBar().setTitle(group.getName());
 
         ImageView groupImageView = (ImageView) findViewById(R.id.group_image);
         Picasso.with(GroupActivity.this).load(group.getImageUrl()).into(groupImageView);
@@ -135,8 +136,8 @@ public class GroupActivity extends AppCompatActivity
                 } else {
                     PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_title_strip);
                     pagerTabStrip.setDrawFullUnderline(true);
-                    pagerTabStrip.setTextColor(getResources().getColor(R.color.colorAccent));
-                    pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.colorAccent));
+                    pagerTabStrip.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    pagerTabStrip.setTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
                 }
             }
         });
@@ -217,7 +218,12 @@ public class GroupActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(Event item) {
-
+        Intent event = new Intent(GroupActivity.this, EventActivity.class);
+        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences.Editor editor = userPref.edit();
+        editor.putLong("eventId", item.getId());
+        editor.apply();
+        startActivity(event);
     }
 
     @Override
@@ -242,9 +248,9 @@ public class GroupActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return EventFragment.newInstance(new ArrayList<>(group.getEvents()));
+                    return EventFragment.newInstance(GroupActivity.this);
                 case 1:
-                    return PollFragment.newInstance(new ArrayList<>(group.getPolls()));
+                    return PollFragment.newInstance(GroupActivity.this);
                 default:
                     return new EventFragment();
             }
@@ -266,12 +272,28 @@ public class GroupActivity extends AppCompatActivity
                     return "ERROR";
             }
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+
+            return POSITION_NONE;
+        }
     }
 
     public void refreshGroup(Group group){
+        this.group = group;
         userAdapter.setItems(group.getUsers());
-        userList.getAdapter().notifyDataSetChanged();
-        mEventPagerAdapter.notifyDataSetChanged();
+
+        mEventPagerAdapter = new EventPagerAdapter(getSupportFragmentManager(), GroupActivity.this);
+        mEventPager.setAdapter(mEventPagerAdapter);
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshGroup(groupService.getGroup(groupId));
     }
 
     public void groupTokenResult(String token){

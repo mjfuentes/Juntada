@@ -122,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences userPref = getSharedPreferences("user", 0);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("userId", user.getId());
+        editor.putString("server_url", "http://10.1.1.16:8080");
         editor.apply();
 
         startActivity(main);
@@ -131,11 +132,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (loginClicked) {
-            Profile profile = Profile.getCurrentProfile();
-            checkUser(profile);
-        }
+        Profile profile = Profile.getCurrentProfile();
+        checkUser(profile);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.nedelu.juntada.dao;
 
 import android.content.Context;
 
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
@@ -151,6 +152,35 @@ public class EventDao {
     public void savePollOptionVote(PollOptionVote vote) {
         try {
             helper.getmPollOptionVotesDao().createOrUpdate(vote);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ConfirmedUser getconfirmedUser(Long userId, Long eventId) {
+        try {
+            return helper.getConfirmedUsersDao().queryBuilder().where().eq("user",userId).and().eq("event",eventId).queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public PollOptionVote getPollOptionVote(Long user, Long pollOptionId) {
+        try {
+            return helper.getmPollOptionVotesDao().queryBuilder().where().eq("poll_option",pollOptionId).and().eq("user", user).queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void removeVotes(Long id) {
+
+        try {
+            DeleteBuilder<PollOptionVote, Long> builder = helper.getmPollOptionVotesDao().deleteBuilder();
+            builder.where().eq("poll_option", id);
+            builder.delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }

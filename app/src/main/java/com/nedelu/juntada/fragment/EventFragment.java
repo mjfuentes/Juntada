@@ -1,6 +1,7 @@
 package com.nedelu.juntada.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,7 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.model.Event;
+import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.service.GroupService;
 
 import java.util.List;
 
@@ -26,15 +30,16 @@ public class EventFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private List<Event> events;
+    private Context mContext;
+    private GroupService groupService;
 
     public EventFragment() {
     }
 
-    public static EventFragment newInstance(List<Event> events) {
+    public static EventFragment newInstance(Context context) {
         EventFragment fragment = new EventFragment();
-        fragment.setEvents(events);
-
+        fragment.setGroupService(GroupService.getInstance(context));
+        fragment.setContext(context);
         return fragment;
     }
 
@@ -62,7 +67,10 @@ public class EventFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(events, mListener));
+            SharedPreferences userPref = context.getSharedPreferences("user", 0);
+            Long groupId =  userPref.getLong("groupId", 0L);
+
+            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(groupService.getEvents(groupId), mListener));
             recyclerView.setHasFixedSize(true);
             recyclerView .setNestedScrollingEnabled(false);
 
@@ -88,10 +96,10 @@ public class EventFragment extends Fragment {
         mListener = null;
     }
 
-    public void setEvents(List<Event> events) {
-        this.events = events;
+    public void setContext(Context context) {this.mContext = context; }
+    public void setGroupService(GroupService groupService) {
+        this.groupService = groupService;
     }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

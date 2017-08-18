@@ -1,6 +1,7 @@
 package com.nedelu.juntada.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.nedelu.juntada.activity.LoginActivity;
@@ -27,17 +28,20 @@ public class UserService {
 
     private Context context;
     private UserDao userDao;
+    private String baseUrl;
 
     public UserService(Context context)
     {
         this.context = context;
         this.userDao = new UserDao(context);
+        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
     }
 
     public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -64,7 +68,7 @@ public class UserService {
 
             @Override
             public void onFailure(Call<Long> call, Throwable t) {
-                Toast.makeText(context,"User creation failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -74,7 +78,7 @@ public class UserService {
     public User registerUserToken(User user, String token) throws IOException {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.1.1.16:8080/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -92,7 +96,7 @@ public class UserService {
 
             @Override
             public void onFailure(Call<UserDTO> call, Throwable t) {
-                Toast.makeText(context,"User creation failed!", Toast.LENGTH_LONG).show();
+//                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
 

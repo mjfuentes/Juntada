@@ -43,15 +43,16 @@
         <activity
             android:name=".activity.GroupsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.NewGroupActivity"
             android:label="Nuevo Grupo"
             android:parentActivityName=".activity.GroupsActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NewGroupTwoActivity"
             android:label="Nuevo Grupo"
+
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.LoginActivity"
@@ -76,22 +77,25 @@
             android:name=".activity.GroupActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.NewEventActivity"
             android:label="Nueva Juntada"
+            android:screenOrientation="portrait"
             android:parentActivityName=".activity.GroupActivity" />
         <activity
             android:name=".activity.NewPollActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
             android:parentActivityName=".activity.GroupActivity" />
         <activity
             android:name=".activity.VoteActivity"
             android:label=""
             android:parentActivityName=".activity.GroupActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.JoinActivity">
+        <activity android:name=".activity.JoinActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter android:label="Aceptar invitacion a grupo!">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -105,6 +109,10 @@
                 <!-- note that the leading "/" is required for pathPrefix -->
             </intent-filter>
         </activity>
+        <activity android:name=".activity.EventActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.GroupActivity"
+            ></activity>
     </application>
 
 </manifest>

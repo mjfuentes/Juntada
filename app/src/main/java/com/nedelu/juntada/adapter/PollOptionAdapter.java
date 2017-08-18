@@ -90,6 +90,14 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
         TextView time = (TextView) holder.mView.findViewById(R.id.option_time);
         TextView votes = (TextView) holder.mView.findViewById(R.id.option_votes);
 
+        ImageView checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
+
+        if (holder.mItem.getVoted()) {
+            checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.checked_green));
+        } else {
+            checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
+        }
+
         try {
             Date optionDate = completeFormat.parse(holder.mItem.getOption().getDate());
             weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0,3)));

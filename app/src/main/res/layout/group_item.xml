@@ -21,6 +21,7 @@
                 android:id="@+id/group_image"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
+                android:src="@drawable/com_facebook_profile_picture_blank_square"
                 android:scaleType="centerCrop"
                 app:riv_corner_radius_bottom_left="0dp"
                 app:riv_corner_radius_bottom_right="0dp"
@@ -36,22 +37,18 @@
                 android:layout_height="40dp"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_margin="15dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_favorite_black_24dp" />
-
                 <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:singleLine="true"
+                    android:lines="1"
                     android:id="@+id/group_name_text"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="group name"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/colorGroupsText"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

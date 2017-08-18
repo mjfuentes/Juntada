@@ -89,13 +89,21 @@ public class GroupDao {
     }
 
     public List<Event> getEvents(Long groupId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findAll(Event.class);
+        try {
+            return helper.getEventDao().queryBuilder().where().eq("owner_group", groupId).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public List<Poll> getPolls(Long groupId){
-        SqlAdapter adapter = Persistence.getAdapter(context);
-        return adapter.findAll(Poll.class);
+        try {
+            return helper.getPollDao().queryBuilder().where().eq("group", groupId).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public PollRequest savePollRequest(PollRequest request){
@@ -155,4 +163,5 @@ public class GroupDao {
             return new ArrayList<>();
         }
     }
+
 }
