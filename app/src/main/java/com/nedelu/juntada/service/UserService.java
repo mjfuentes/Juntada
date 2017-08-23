@@ -56,12 +56,17 @@ public class UserService {
         call.enqueue(new Callback<Long>() {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
-                Long userId = response.body();
 
-                if (userId != null) {
-                    user.setId(userId);
-                    saveUser(user);
-                    activity.nextActivity(user, true);
+                if (response.code() == 200) {
+                    Long userId = response.body();
+
+                    if (userId != null) {
+                        user.setId(userId);
+                        saveUser(user);
+                        activity.nextActivity(user, true);
+                    }
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -91,7 +96,9 @@ public class UserService {
         call.enqueue(new Callback<UserDTO>() {
             @Override
             public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
-                UserDTO userDTO = response.body();
+                if (response.code() == 200) {
+                    UserDTO userDTO = response.body();
+                }
             }
 
             @Override
@@ -123,6 +130,7 @@ public class UserService {
         try {
             return userDao.getUser(id);
         } catch (Exception e){
+            e.printStackTrace();
             return null;
         }
     }

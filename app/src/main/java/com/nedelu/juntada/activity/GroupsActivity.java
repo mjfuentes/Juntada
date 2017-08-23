@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GroupsActivity extends AppCompatActivity implements GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
+public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
 
     private GroupAdapter groupAdapter;
     private RecyclerView recyclerView;
@@ -44,13 +45,17 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
     private Long userId;
     ImageView firstGroup;
     private User user;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
@@ -114,28 +119,32 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         groupService.registerClient(this);
         groupService.loadGroups(userId);
 
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
-        recyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.groups);
 
     }
 
-    public void updateGroups(){
-        List<Group> groups = groupService.getUserGroups(userId);
-        Collections.sort(groups, new Comparator<Group>() {
-            @Override
-            public int compare(Group group, Group t1) {
-                return t1.getId().compareTo(group.getId());
+    public void updateGroups(Boolean result){
+        if (swipeRefreshLayout.isRefreshing()){
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        if (result) {
+            List<Group> groups = groupService.getUserGroups(userId);
+            Collections.sort(groups, new Comparator<Group>() {
+                @Override
+                public int compare(Group group, Group t1) {
+                    return t1.getId().compareTo(group.getId());
+                }
+            });
+            if (groupAdapter.getItemCount() != groups.size()) {
+                firstGroup.setVisibility(View.INVISIBLE);
+                groupAdapter.setData(groups);
+                recyclerView.removeAllViews();
+                groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
+                groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+                groupAdapter.notifyDataSetChanged();
             }
-        });
-        if (groupAdapter.getItemCount() != groups.size()) {
-            firstGroup.setVisibility(View.INVISIBLE);
-            groupAdapter.setData(groups);
-            recyclerView.removeAllViews();
-            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
-            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-            groupAdapter.notifyDataSetChanged();
         }
     }
 
@@ -176,7 +185,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         int id = item.getItemId();
 
         if (id == R.id.profile) {
-            // Handle the camera action
+            Intent profile = new Intent(GroupsActivity.this, ProfileActivity.class);
+            profile.putExtra("id", userId);
+            startActivity(profile);
         } else if (id == R.id.groups) {
 
         } else if (id == R.id.configuration) {
@@ -200,7 +211,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
 
     @Override
     public void onItemClick(int position, View v) {
-        Intent main = new Intent(GroupsActivity.this, GroupActivity.class);
+        Intent main = new Intent(GroupsActivity.this, GroupTabbedActivity.class);
         Group group = groupAdapter.getItem(position);
         SharedPreferences userPref = getSharedPreferences("user", 0);
         SharedPreferences.Editor editor = userPref.edit();
@@ -209,5 +220,10 @@ public class GroupsActivity extends AppCompatActivity implements GroupService.Ca
         editor.putString("image_url", group.getImageUrl());
         editor.apply();
         startActivity(main);
+    }
+
+    @Override
+    public void onRefresh() {
+        groupService.loadGroups(userId);
     }
 }

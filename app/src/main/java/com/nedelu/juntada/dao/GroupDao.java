@@ -164,4 +164,14 @@ public class GroupDao {
         }
     }
 
+    public void clearMembers(Long id) {
+        try {
+            DeleteBuilder<GroupMember, Long> deleteBuilder = helper.getGroupMemberDao().deleteBuilder();
+            deleteBuilder.where().eq("group_id", id);
+            deleteBuilder.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

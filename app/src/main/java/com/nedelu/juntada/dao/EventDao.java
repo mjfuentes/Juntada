@@ -73,9 +73,18 @@ public class EventDao {
             event.setConfirmedUsers(new ArrayList<User>());
 
             List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
-
             for (ConfirmedUser confirmedUser : confirmedUsers){
                 event.getConfirmedUsers().add(helper.getUserDao().queryForId(confirmedUser.getUserId()));
+            }
+
+            List<NotGoingUsers> notGoingUsers = helper.getmNotGoingUsersDao().queryBuilder().where().eq("event", id).query();
+            for (NotGoingUsers notGoingUser : notGoingUsers){
+                event.getNotGoingUsers().add(helper.getUserDao().queryForId(notGoingUser.getUserId()));
+            }
+
+            List<DontKnowUsers> doNotKnowUsers = helper.getDontKnowUsersDao().queryBuilder().where().eq("event", id).query();
+            for (DontKnowUsers doNotKnowUser : doNotKnowUsers){
+                event.getDoNotKnowUsers().add(helper.getUserDao().queryForId(doNotKnowUser.getUserId()));
             }
 
             return event;
@@ -184,6 +193,42 @@ public class EventDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void cleanAssistance(Long id) {
+        try {
+            DeleteBuilder<ConfirmedUser, Long> builder = helper.getConfirmedUsersDao().deleteBuilder();
+            builder.where().eq("event", id);
+            builder.delete();
+
+            DeleteBuilder<NotGoingUsers, Long> builder2 = helper.getmNotGoingUsersDao().deleteBuilder();
+            builder2.where().eq("event", id);
+            builder2.delete();
+
+            DeleteBuilder<DontKnowUsers, Long> builder3 = helper.getDontKnowUsersDao().deleteBuilder();
+            builder3.where().eq("event", id);
+            builder3.delete();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveNotGoingUser(NotGoingUsers notGoingUser) {
+        try {
+            helper.getmNotGoingUsersDao().create(notGoingUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveDontKnowUser(DontKnowUsers dontKnowUser) {
+        try {
+            helper.getDontKnowUsersDao().create(dontKnowUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 

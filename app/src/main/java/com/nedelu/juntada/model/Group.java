@@ -29,6 +29,9 @@ public class Group {
     @DatabaseField(columnName = "image_url")
     private String imageUrl;
 
+    @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true,foreignAutoCreate = true)
+    private User creator;
+
     private List<User> users = new ArrayList<>();
 
     public Group(){
@@ -82,4 +85,12 @@ public class Group {
         this.polls = polls;
     }
 
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
 }

@@ -7,9 +7,10 @@ android {
         applicationId "com.nedelu.juntada"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true //important
     }
     buildTypes {
         release {
@@ -54,6 +55,7 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
 
 
 

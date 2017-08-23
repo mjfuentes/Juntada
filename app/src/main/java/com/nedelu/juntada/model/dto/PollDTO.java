@@ -15,6 +15,10 @@ public class PollDTO {
     private String location;
     private List<PollOptionDTO> options;
 
+
+
+    private String description;
+
     public Long getCreator() {
         return creator;
     }
@@ -61,5 +65,11 @@ public class PollDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -12,9 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.model.Poll;
-import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 
 import java.util.List;
@@ -73,7 +71,6 @@ public class PollFragment extends Fragment {
 
             recyclerView.setAdapter(new MyPollRecyclerViewAdapter(groupService.getPolls(groupId), mListener));
             recyclerView.setHasFixedSize(true);
-            recyclerView .setNestedScrollingEnabled(false);
 
         }
         return view;

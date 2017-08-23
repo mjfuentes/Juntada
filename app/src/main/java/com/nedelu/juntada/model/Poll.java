@@ -28,9 +28,9 @@ public class Poll {
     @DatabaseField(columnName = "location")
     private String location;
 
-    public String getDescription(){
-        return "Test description";
-    }
+    @DatabaseField(columnName = "description")
+    private String description;
+
 
     @ForeignCollectionField(columnName = "options", eager = true)
     private ForeignCollection<PollOption> options;
@@ -78,7 +78,13 @@ public class Poll {
     public void setOptions(ForeignCollection<PollOption> options) {
         this.options = options;
     }
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Long getId() {
         return id;

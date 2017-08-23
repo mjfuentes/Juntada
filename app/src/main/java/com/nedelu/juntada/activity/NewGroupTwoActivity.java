@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.nedelu.juntada.R;
+import com.nedelu.juntada.service.GroupService;
 
-public class NewGroupTwoActivity extends AppCompatActivity {
+public class NewGroupTwoActivity extends AppCompatActivity implements TokenResultActivity {
 
     private Long userId;
     private Long groupId;
     private ProgressBar progressBar;
+    private GroupService groupService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,25 +28,14 @@ public class NewGroupTwoActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.INVISIBLE);
 
+        groupService = GroupService.getInstance(NewGroupTwoActivity.this);
+
         FloatingActionButton createButton = (FloatingActionButton) findViewById(R.id.add_members_button);
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo get token from server
-                String GROUP_TOKEN = "ABCD1234";
-
-                String url = "http://10.1.1.16:8080/joinGroup/" + GROUP_TOKEN;
-
-                progressBar.setVisibility(View.VISIBLE);
-
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-                String sAux = "\nTe invite a mi Grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-                sAux += "\n"+ url + "\n\n";
-                i.putExtra(Intent.EXTRA_TEXT, sAux);
-                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+                groupService.getGroupToken(groupId, NewGroupTwoActivity.this);
             }
         });
 
@@ -62,4 +53,16 @@ public class NewGroupTwoActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    public void tokenGenerated(String token) {
+        String url = "http://www.juntada.nedelu.com/join/" + token;
+
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+        String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
+        sAux += "\n"+ url;
+        i.putExtra(Intent.EXTRA_TEXT, sAux);
+        startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+    }
 }

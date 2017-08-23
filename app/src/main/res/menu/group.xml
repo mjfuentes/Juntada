@@ -8,8 +8,7 @@
         <!--app:showAsAction="never" />-->
 
     <item
-        android:id="@+id/create_event"
-        android:icon="@drawable/add_event"
-        android:title="Crear event"
-        app:showAsAction="always"/>
+        android:id="@+id/leave_group"
+        android:title="Abandonar grupo"
+        app:showAsAction="never"/>
 </menu>

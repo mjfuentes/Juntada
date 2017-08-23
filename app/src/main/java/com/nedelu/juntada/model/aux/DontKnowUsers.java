@@ -8,7 +8,7 @@ import com.j256.ormlite.field.DatabaseField;
 
 public class DontKnowUsers {
 
-    @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
+    @DatabaseField(unique=true, canBeNull=false, columnName = "id",generatedId = true)
     private Long id;
 
     @DatabaseField(columnName = "event")
@@ -17,6 +17,13 @@ public class DontKnowUsers {
     @DatabaseField(columnName = "user")
     private Long userId;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getEventId() {
         return eventId;

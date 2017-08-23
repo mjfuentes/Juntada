@@ -58,6 +58,7 @@ public class NewEventActivity extends AppCompatActivity {
     private RadioGroup editType;
     private TextView editTime;
     private Place selectedPlace;
+    private TextInputLayout editDescription;
     private String timeSelected = "";
     private Long userId;
     private Long groupId;
@@ -108,6 +109,7 @@ public class NewEventActivity extends AppCompatActivity {
         };
 
         editDate = (EditText) findViewById(R.id.edit_date);
+        editDescription = (TextInputLayout) findViewById(R.id.edit_description);
         editName = (TextInputLayout) findViewById(R.id.edit_name);
         editType = (RadioGroup) findViewById(R.id.edit_type);
         dateView = (TextView) findViewById(R.id.date_view);
@@ -173,10 +175,11 @@ public class NewEventActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkFields()){
+                if (checkFields() && checkDescription()){
                     PollRequest request = new PollRequest();
                     request.setGroupId(groupId);
                     request.setCreatorId(userId);
+                    request.setDescription(editDescription.getEditText().getText().toString());
                     request.setTitle(editName.getEditText().getText().toString());
                     request.setLocation(editLocation.getEditText().getText().toString());
                     int radioButtonID = editType.getCheckedRadioButtonId();
@@ -203,8 +206,6 @@ public class NewEventActivity extends AppCompatActivity {
                         groupService.createEvent(request,NewEventActivity.this);
                     }
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -229,10 +230,22 @@ public class NewEventActivity extends AppCompatActivity {
 
     }
 
+    private boolean checkDescription() {
+        if (editDescription.getEditText().getText().toString().length() > 150){
+            Toast.makeText(getApplicationContext(), "La descripcion es muy larga. (Max 150 caracteres)", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     private boolean checkFields() {
 
-        return !editName.getEditText().getText().toString().equals("") &&
-                !editLocation.getEditText().getText().toString().equals("");
+        if (editName.getEditText().getText().toString().equals("") ||
+                editLocation.getEditText().getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -240,7 +253,7 @@ public class NewEventActivity extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 selectedPlace = PlaceAutocomplete.getPlace(this, data);
-                String placeDetailsStr = selectedPlace.getName().toString();
+                String placeDetailsStr = selectedPlace.getAddress().toString();
                 editLocation.getEditText().setText(placeDetailsStr);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);

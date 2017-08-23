@@ -2,6 +2,7 @@ package com.nedelu.juntada.service.interfaces;
 
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.dto.AssitanceRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.GroupDTO;
@@ -17,6 +18,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -55,4 +57,10 @@ public interface ServerInterface {
 
     @POST("groups/member")
     Call<GroupDTO> joinGroup(@Body JoinGroupDTO joinGroup);
+
+    @POST("events/{eventId}/assistant")
+    Call<EventDTO> saveAssistance(@Path("eventId") Long eventId, @Body AssitanceRequest request);
+
+    @DELETE("users/{userID}/groups/{groupId}")
+    Call<UserDTO> deleteGroup(@Path("userID") Long userId ,@Path("groupId") Long groupId);
 }

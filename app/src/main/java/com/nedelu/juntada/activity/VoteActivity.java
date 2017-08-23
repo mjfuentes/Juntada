@@ -1,10 +1,13 @@
 package com.nedelu.juntada.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -44,7 +47,13 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vote);
+        setContentView(R.layout.app_bar_vote);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null){
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
 
         SharedPreferences userPref = getSharedPreferences("user", 0);
         Long pollId = userPref.getLong("pollId", 0L);
@@ -56,10 +65,20 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         progressBar.setVisibility(View.INVISIBLE);
         optionsList = (RecyclerView) findViewById(R.id.options_list);
         optionsList.setLayoutManager(new LinearLayoutManager(VoteActivity.this));
-        optionsList.addItemDecoration(new SimpleDividerItemDecoration(this));
         List<PollOption> options = new ArrayList<>(poll.getOptions());
         List<VotingItem> items = new ArrayList<>();
         TextView button = (TextView) findViewById(R.id.voting_button);
+
+        View locationButton = findViewById(R.id.location_button);
+
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String map = "http://maps.google.co.in/maps?q=" + poll.getLocation();
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                startActivity(i);
+            }
+        });
 
         for (PollOption option : options){
             VotingItem item = new VotingItem(option);

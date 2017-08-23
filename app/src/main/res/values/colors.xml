@@ -6,4 +6,5 @@
     <color name="textPrimary">#424242</color>
     <color name="colorAccent">#E52C39</color>
     <color name="colorGroupsText">#424242</color>
+    <color name="confirmButton">#444444</color>
 </resources>

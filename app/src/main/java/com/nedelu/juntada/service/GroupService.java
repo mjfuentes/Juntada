@@ -10,12 +10,12 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
-import com.nedelu.juntada.activity.GroupActivity;
-import com.nedelu.juntada.activity.GroupsActivity;
+import com.nedelu.juntada.activity.GroupTabbedActivity;
 import com.nedelu.juntada.activity.JoinActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
+import com.nedelu.juntada.activity.TokenResultActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.model.Event;
@@ -204,18 +204,20 @@ public class GroupService extends Observable {
                 if (response.code() == 200) {
                     new SaveGroupsTask().execute(response.body());
                 } else {
+                    activity.updateGroups(false);
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
+                activity.updateGroups(false);
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    public void loadGroup(final Long groupId, final GroupActivity groupActivity){
+    public void loadGroup(final Long groupId, final GroupTabbedActivity groupActivity){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -227,16 +229,18 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<GroupDTO>() {
             @Override
             public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
-                if (response.code() != 404) {
+                if (response.code() == 200) {
                     new SaveGroupTask().execute(response.body(), groupActivity);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    groupActivity.refreshGroup(false);
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                groupActivity.refreshGroup(false);
             }
         });
     }
@@ -244,6 +248,7 @@ public class GroupService extends Observable {
     private Group fromDTO(GroupDTO groupDTO) {
         Group group = new Group();
         group.setId(groupDTO.getId());
+        group.setCreator(userService.getUser(groupDTO.getCreator().getId()));
         group.setImageUrl(groupDTO.getImageUrl());
         group.setName(groupDTO.getName());
         return group;
@@ -264,6 +269,8 @@ public class GroupService extends Observable {
         Group group = fromDTO(groupDTO);
         groupDao.saveGroup(group);
 
+        groupDao.clearMembers(groupDTO.getId());
+
         for (UserDTO user : groupDTO.getUsers()){
             userService.saveUser(user);
             groupDao.saveGroupMember(groupDTO.getId(), user.getId());
@@ -280,7 +287,12 @@ public class GroupService extends Observable {
     }
 
     public List<Event> getEvents(Long groupId){
-        return groupDao.getEvents(groupId);
+        List<Event> events = groupDao.getEvents(groupId);
+        for (Event event : events){
+            eventService.populateUsers(event);
+        }
+
+        return events;
     }
 
     public List<Poll> getPolls(Long groupId){
@@ -291,17 +303,39 @@ public class GroupService extends Observable {
         return groupDao.savePollRequest(request);
     }
 
-    public void deleteGroup(Long userId, Group group){
-       groupDao.deleteGroup(userId,group);
+    public void deleteGroup(final Long userId, final Group group, final GroupTabbedActivity groupActivity){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        Call<UserDTO> call = server.deleteGroup(userId, group.getId());
+        call.enqueue(new Callback<UserDTO>() {
+            @Override
+            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                if (response.code() == 200) {
+                    groupDao.deleteGroup(userId, group);
+                    groupActivity.groupDeleted(true);
+                } else {
+                    groupActivity.groupDeleted(false);
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserDTO> call, Throwable t) {
+                groupActivity.groupDeleted(false);
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    public Group loadGroupData(Long groupId, GroupActivity groupActivity){
+
+    public Group loadGroupData(Long groupId, GroupTabbedActivity groupActivity){
 
        Group group = groupDao.loadGroupData(groupId);
-
-        for (Event event : group.getEvents()){
-            eventService.populateUsers(event);
-        }
 
         for (GroupMember member : groupDao.getGroupMembers(group.getId())){
             group.getUsers().add(userService.getUser(member.getUserId()));
@@ -327,7 +361,7 @@ public class GroupService extends Observable {
         return groupDao.getPollRequest(pollRequestId);
     }
 
-    public void getGroupToken(Long groupId, final GroupActivity groupActivity) {
+    public void getGroupToken(Long groupId, final TokenResultActivity activity) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -340,8 +374,8 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<GroupTokenDTO>() {
             @Override
             public void onResponse(Call<GroupTokenDTO> call, Response<GroupTokenDTO> response) {
-                if (response.code() != 404) {
-                    groupActivity.groupTokenResult(response.body().getToken());
+                if (response.code() == 200) {
+                    activity.tokenGenerated(response.body().getToken());
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
@@ -374,7 +408,7 @@ public class GroupService extends Observable {
                 if (response.code() == 200) {
                     Group group = saveGroup(response.body());
 
-                    Intent main = new Intent(joinActivity, GroupActivity.class);
+                    Intent main = new Intent(joinActivity, GroupTabbedActivity.class);
                     SharedPreferences userPref = joinActivity.getSharedPreferences("user", 0);
                     SharedPreferences.Editor editor = userPref.edit();
                     editor.putLong("userId", userId);
@@ -396,8 +430,9 @@ public class GroupService extends Observable {
         });
     }
 
+
     public interface Callbacks{
-        public void updateGroups();
+        public void updateGroups(Boolean result);
     }
 
     private class SaveGroupsTask extends AsyncTask<List<GroupDTO>, Void, Void> {
@@ -418,8 +453,10 @@ public class GroupService extends Observable {
             return null;
         }
 
-        protected void onPostExecute(Void... params) {
-            activity.updateGroups();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            activity.updateGroups(true);
+            super.onPostExecute(aVoid);
         }
 
 
@@ -427,16 +464,17 @@ public class GroupService extends Observable {
 
     private class SaveGroupTask extends AsyncTask<Object, Void, Void> {
         private Group group;
-        private GroupActivity groupActivity;
+        private GroupTabbedActivity groupActivity;
         protected Void doInBackground(Object... params) {
             GroupDTO groupDTO = (GroupDTO) params[0];
-            groupActivity = (GroupActivity) params[1];
+            groupActivity = (GroupTabbedActivity) params[1];
             group = saveGroup(groupDTO);
             return null;
         }
 
-        protected void onPostExecute(Void... params) {
-            groupActivity.refreshGroup(group);
+        @Override
+        protected void onPostExecute(Void params) {
+            groupActivity.refreshGroup(true);
         }
 
 

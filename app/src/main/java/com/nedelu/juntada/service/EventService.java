@@ -2,16 +2,23 @@ package com.nedelu.juntada.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.nedelu.juntada.activity.EventActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.dao.UserDao;
+import com.nedelu.juntada.model.Assistance;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollOptionVote;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
+import com.nedelu.juntada.model.aux.DontKnowUsers;
+import com.nedelu.juntada.model.aux.NotGoingUsers;
+import com.nedelu.juntada.model.dto.AssitanceRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
@@ -42,6 +49,7 @@ public class EventService {
     private GroupService groupService;
     private String baseUrl = "http://10.1.1.16:8080";
 
+
     public EventService(Context context) {
         this.context = context;
         this.userService = new UserService(context);
@@ -65,7 +73,7 @@ public class EventService {
         call.enqueue(new Callback<PollDTO>() {
             @Override
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
-                if (response.code() != 404) {
+                if (response.code() == 200) {
                     savePoll(response.body());
                     listener.pollVoted();
                 } else {
@@ -132,6 +140,7 @@ public class EventService {
         poll.setTitle(pollDTO.getTitle());
         poll.setCreator(userDao.getUser(pollDTO.getCreator()));
         poll.setGroup(groupDao.getGroup(pollDTO.getGroup()));
+        poll.setDescription(pollDTO.getDescription());
 
         return poll;
     }
@@ -146,19 +155,35 @@ public class EventService {
         event.setTime(eventDTO.getTime());
         event.setDescription(eventDTO.getDescription());
         event.setCreator(userDao.getUser(eventDTO.getCreator()));
-
         eventDao.saveEvent(event);
 
         Event newEvent = eventDao.getEvent(event.getId());
 
-        for (Long userId : eventDTO.getConfirmedUsers()){
 
-            ConfirmedUser confirmedUser = eventDao.getconfirmedUser(userId, event.getId());
-            if (confirmedUser == null) {
-                confirmedUser = new ConfirmedUser();
-                confirmedUser.setEventId(newEvent.getId());
-                confirmedUser.setUserId(userId);
-                eventDao.saveConfirmedUser(confirmedUser);
+        eventDao.cleanAssistance(event.getId());
+        for (Long userId : eventDTO.getConfirmedUsers()){
+            ConfirmedUser confirmedUser = new ConfirmedUser();
+            confirmedUser.setEventId(newEvent.getId());
+            confirmedUser.setUserId(userId);
+            eventDao.saveConfirmedUser(confirmedUser);
+        }
+
+        if (eventDTO.getNotGoingUsers() != null) {
+            for (Long userId : eventDTO.getNotGoingUsers()) {
+                NotGoingUsers notGoingUser = new NotGoingUsers();
+                notGoingUser.setEventId(newEvent.getId());
+                notGoingUser.setUserId(userId);
+                eventDao.saveNotGoingUser(notGoingUser);
+            }
+        }
+
+        if (eventDTO.getDoNotKnowUsers() != null) {
+
+            for (Long userId : eventDTO.getDoNotKnowUsers()) {
+                DontKnowUsers dontKnowUser = new DontKnowUsers();
+                dontKnowUser.setEventId(newEvent.getId());
+                dontKnowUser.setUserId(userId);
+                eventDao.saveDontKnowUser(dontKnowUser);
             }
         }
 
@@ -179,6 +204,39 @@ public class EventService {
 
     public Event getEvent(Long eventId) {
         return eventDao.getEvent(eventId);
+    }
+
+    public void saveAssistance(Long userId, Long eventId, Assistance assistance, final EventActivity eventActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+        AssitanceRequest request = new AssitanceRequest();
+        request.setUserId(userId);
+        request.setEventId(eventId);
+        request.setAssistance(assistance);
+
+        final Call<EventDTO> call = server.saveAssistance(eventId, request);
+        call.enqueue(new Callback<EventDTO>() {
+            @Override
+            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                if (response.code() == 200) {
+                    saveEvent(response.body());
+                    eventActivity.assistanceSaved(true);
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    eventActivity.assistanceSaved(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventDTO> call, Throwable t) {
+                eventActivity.assistanceSaved(false);
+                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public interface ResultListener{

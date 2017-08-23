@@ -8,4 +8,7 @@
     <string name="title_activity_group">GroupActivity</string>
     <string name="login">O</string>
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</string>
+    <string name="title_activity_profile">Ver Perfil</string>
+    <string name="title_activity_group_tabbed">GroupTabbedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

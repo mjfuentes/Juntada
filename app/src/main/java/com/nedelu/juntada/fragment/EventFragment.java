@@ -12,12 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.activity.GroupActivity;
 import com.nedelu.juntada.model.Event;
-import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.service.GroupService;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -72,7 +68,6 @@ public class EventFragment extends Fragment {
 
             recyclerView.setAdapter(new MyEventRecyclerViewAdapter(groupService.getEvents(groupId), mListener));
             recyclerView.setHasFixedSize(true);
-            recyclerView .setNestedScrollingEnabled(false);
 
         }
         return view;

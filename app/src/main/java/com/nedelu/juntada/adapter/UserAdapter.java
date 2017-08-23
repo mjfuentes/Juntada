@@ -27,14 +27,29 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
     private final RecyclerView mRecyclerView;
     private final List<User> mItems;
     private int mCurrentItemId = 0;
+    private ClickListener mClickListener;
 
-    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    public interface ClickListener {
+        void onUserClicked(int position, View v);
+    }
+
+    public class SimpleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView userImage;
 
         public SimpleViewHolder(View view) {
             super(view);
             userImage = (ImageView) view.findViewById(R.id.userImage);
+            view.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onUserClicked(getAdapterPosition(), view);
+        }
+    }
+
+    public void setOnItemClickListener(UserAdapter.ClickListener clickListener) {
+        mClickListener = clickListener;
     }
 
     public UserAdapter(Context context,List<User> users, RecyclerView recyclerView) {
@@ -72,6 +87,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
     public void onBindViewHolder(SimpleViewHolder holder, int position) {
         String url = mItems.get(position).getImageUrl();
         Picasso.with(mContext).load(url).into(holder.userImage);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mItems.get(position).getId();
     }
 
     @Override

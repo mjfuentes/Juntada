@@ -13,6 +13,7 @@ import java.util.List;
 
 public class User {
 
+
     @DatabaseField(id=true, unique=true, canBeNull=false, columnName = "id")
     private Long id;
 
@@ -81,6 +82,15 @@ public class User {
 
     public void setOwnedEvents(ForeignCollection<Event> ownedEvents) {
         this.ownedEvents = ownedEvents;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass().equals(User.class)){
+            User user = (User) obj;
+            return user.getId().equals(this.getId());
+        }
+        return super.equals(obj);
     }
 
 }
