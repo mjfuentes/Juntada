@@ -48,7 +48,7 @@ public class NewGroupActivity extends AppCompatActivity {
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int REQUEST_CROP_ICON = 2;
     private ProgressBar progressBar;
-    private RelativeLayout blur;
+    private FloatingActionButton createButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +56,8 @@ public class NewGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_group);
 
         Bundle inBundle = getIntent().getExtras();
-        blur = (RelativeLayout) findViewById(R.id.blur_background);
         userId = Long.valueOf(inBundle.get("id").toString());
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (ProgressBar) findViewById(R.id.button_progress_bar);
         progressBar.setVisibility(View.INVISIBLE);
         imageView = (ImageView) findViewById(R.id.upload_image);
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +71,7 @@ public class NewGroupActivity extends AppCompatActivity {
             }
         });
 
-        final FloatingActionButton createButton = (FloatingActionButton) findViewById(R.id.create_button);
+        createButton = (FloatingActionButton) findViewById(R.id.create_button);
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,9 +85,8 @@ public class NewGroupActivity extends AppCompatActivity {
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
-                    createButton.setVisibility(View.INVISIBLE);
+                    createButton.setClickable(false);
                     progressBar.setVisibility(View.VISIBLE);
-                    blur.setVisibility(View.VISIBLE);
                     Group group = new Group();
                     group.setName(StringEscapeUtils.escapeJava(editTextName.getText().toString()));
                     GroupService.getInstance(NewGroupActivity.this).createGroup(NewGroupActivity.this, userId, group,imageUri, NewGroupActivity.this);
@@ -122,15 +120,16 @@ public class NewGroupActivity extends AppCompatActivity {
 
     public void groupCreated(Long groupId){
 
-        Intent main = new Intent(NewGroupActivity.this, NewGroupTwoActivity.class);
-        main.putExtra("userId", userId);
-        main.putExtra("groupId", groupId);
-        startActivity(main);
-
-        finish();
+        if (groupId != null) {
+            Intent main = new Intent(NewGroupActivity.this, NewGroupTwoActivity.class);
+            main.putExtra("userId", userId);
+            main.putExtra("groupId", groupId);
+            startActivity(main);
+            finish();
+        } else {
+            createButton.setClickable(true);
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
-    public void groupCreationFailed(){
-        finish();
-    }
 }

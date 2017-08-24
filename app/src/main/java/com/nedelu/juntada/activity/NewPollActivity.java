@@ -127,7 +127,10 @@ public class NewPollActivity extends AppCompatActivity {
                         addDate.setVisibility(View.INVISIBLE);
                     }
 
-                    button.setVisibility(View.VISIBLE);
+                    if (dateAdapter.getCount() > 1){
+                        button.setVisibility(View.VISIBLE);
+                    }
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
                 }

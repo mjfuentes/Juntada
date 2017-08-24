@@ -80,6 +80,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/text_time" />
 
     <TextView
+        android:textAlignment="center"
         android:id="@+id/text_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

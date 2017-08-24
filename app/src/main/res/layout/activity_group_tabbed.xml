@@ -27,7 +27,7 @@
             <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:background="#fff"
+                android:background="@color/colorLight"
                 app:layout_collapseMode="parallax"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/groupMembers"
                     android:layout_width="match_parent"
-                    android:layout_margin="15dp"
+                    android:layout_margin="10dp"
                     android:layout_height="25dp">
 
                     <TextView
@@ -130,11 +130,14 @@
 
         </android.support.design.widget.AppBarLayout>
 
+
+
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_event"
@@ -144,6 +147,13 @@
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/add_event" />
+
+    <ProgressBar
+        android:visibility="invisible"
+        android:id="@id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

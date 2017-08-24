@@ -50,7 +50,7 @@ import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
 public class GroupTabbedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,UserAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener, TokenResultActivity, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener,UserAdapter.ClickListener, TokenResultActivity, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
 
 
     private Long userId;
@@ -65,9 +65,8 @@ public class GroupTabbedActivity extends AppCompatActivity
     private FloatingActionButton addEventButton;
     private User user;
     private NestedScrollView scrollView;
-    private View blur;
     private ProgressBar progressBar;
-    private SwipeRefreshLayout swipeRefreshLayout;
+//    private SwipeRefreshLayout swipeRefreshLayout;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -93,10 +92,10 @@ public class GroupTabbedActivity extends AppCompatActivity
             taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
             setTaskDescription(taskDesc);
         }
-
+//
 //        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 //        swipeRefreshLayout.setOnRefreshListener(this);
-//
+
         SharedPreferences userPref = getSharedPreferences("user", 0);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
@@ -143,7 +142,7 @@ public class GroupTabbedActivity extends AppCompatActivity
         mViewPager.setAdapter(mEventPagerAdapter);
 
 //        blur = findViewById(R.id.blur_background);
-//        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         addEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +158,7 @@ public class GroupTabbedActivity extends AppCompatActivity
         addMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
                 groupService.getGroupToken(groupId, GroupTabbedActivity.this);
             }
         });
@@ -169,20 +169,27 @@ public class GroupTabbedActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_group_tabbed, menu);
+        if (group.getCreator().getId().equals(userId)) {
+            getMenuInflater().inflate(R.menu.group_admin, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.group, menu);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.leave_group) {
+            groupService.deleteGroup(userId, group, GroupTabbedActivity.this);
+            addEventButton.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        if (id == R.id.delete_group) {
+            progressBar.setVisibility(View.VISIBLE);
+            addEventButton.setVisibility(View.INVISIBLE);
+            groupService.deleteGroup(userId, group, GroupTabbedActivity.this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -234,7 +241,6 @@ public class GroupTabbedActivity extends AppCompatActivity
         if (deleted) {
             finish();
         } else {
-            blur.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
             addEventButton.setVisibility(View.VISIBLE);
         }
@@ -242,6 +248,7 @@ public class GroupTabbedActivity extends AppCompatActivity
 
     @Override
     public void tokenGenerated(String token) {
+        progressBar.setVisibility(View.INVISIBLE);
         String url = "http://www.juntada.nedelu.com/join/" + token;
 
         Intent i = new Intent(Intent.ACTION_SEND);
@@ -253,10 +260,10 @@ public class GroupTabbedActivity extends AppCompatActivity
         startActivity(Intent.createChooser(i, "Elegir aplicacion"));
     }
 
-    @Override
-    public void onRefresh() {
-        groupService.loadGroup(groupId,GroupTabbedActivity.this);
-    }
+//    @Override
+//    public void onRefresh() {
+//        groupService.loadGroup(groupId,GroupTabbedActivity.this);
+//    }
 
     @Override
     public void onUserClicked(int position, View v) {

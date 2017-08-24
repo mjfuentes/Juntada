@@ -64,7 +64,7 @@ public class NewEventActivity extends AppCompatActivity {
     private Long groupId;
     private GroupService groupService;
     private ProgressBar progressBar;
-    private RelativeLayout blur;
+    private FloatingActionButton button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,10 +151,8 @@ public class NewEventActivity extends AppCompatActivity {
 
         editLocation = (TextInputLayout) findViewById(R.id.edit_location);
 
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        blur = (RelativeLayout) findViewById(R.id.blur_background);
+        progressBar = (ProgressBar) findViewById(R.id.button_progress_bar);
         progressBar.setVisibility(View.INVISIBLE);
-        blur.setVisibility(View.INVISIBLE);
         editDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,11 +169,12 @@ public class NewEventActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.add_event);
+        button  = (FloatingActionButton) findViewById(R.id.add_event);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkFields() && checkDescription()){
+                    button.setClickable(false);
                     PollRequest request = new PollRequest();
                     request.setGroupId(groupId);
                     request.setCreatorId(userId);
@@ -202,7 +201,6 @@ public class NewEventActivity extends AppCompatActivity {
                         options.add(option);
                         request.setOptions(options);
                         progressBar.setVisibility(View.VISIBLE);
-                        blur.setVisibility(View.VISIBLE);
                         groupService.createEvent(request,NewEventActivity.this);
                     }
 
@@ -271,9 +269,13 @@ public class NewEventActivity extends AppCompatActivity {
         editDate.setText(sdf.format(myCalendar.getTime()));
     }
 
-    public void eventCreated(Event event){
+    public void eventCreated(Boolean result){
         progressBar.setVisibility(View.INVISIBLE);
-        finish();
+        button.setClickable(true);
+
+        if (result) {
+            finish();
+        }
 
     }
 

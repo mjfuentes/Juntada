@@ -12,7 +12,6 @@
         android:name=".App"
         android:allowBackup="true"
         android:icon="@drawable/logo"
-        android:label="Juntada"
         android:largeHeap="true"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
@@ -87,7 +86,7 @@
         <activity
             android:name=".activity.JoinActivity"
             android:screenOrientation="portrait">
-            <intent-filter android:label="Aceptar invitacion a grupo!">
+            <intent-filter android:label="Juntada">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

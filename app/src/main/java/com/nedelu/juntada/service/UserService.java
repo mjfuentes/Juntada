@@ -35,7 +35,7 @@ public class UserService {
         this.context = context;
         this.userDao = new UserDao(context);
         SharedPreferences userPref = context.getSharedPreferences("user", 0);
-        baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
+        baseUrl = userPref.getString("server_url", "http://www.juntada.nedelu.com");
     }
 
     public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {

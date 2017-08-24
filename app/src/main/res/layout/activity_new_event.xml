@@ -57,7 +57,7 @@
             android:ellipsize="end"
             android:ems="10"
             android:hint="Nombre"
-            android:inputType="textCapWords"
+            android:inputType="textCapSentences"
             android:maxLines="1"
             android:text=""
             android:textColorHint="@color/colorPrimary"
@@ -104,7 +104,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/edit_description"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColorHint="#757575"
         app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout"
@@ -126,7 +126,7 @@
             android:ems="10"
             android:maxLength="150"
             android:hint="Descripcion"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textCapSentences"
             android:maxLines="5"
             android:gravity="start"
             android:lines="3"
@@ -207,15 +207,34 @@ f
         android:layout_marginStart="8dp">
     </EditText>
 
+    <com.dmitrymalkovich.android.ProgressFloatingActionButton
+        android:id="@+id/add_event_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clickable="true">
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_event"
+        android:elevation="0dp"
+        android:layout_margin="@dimen/fab_margin"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_done_white_48dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="@dimen/fab_margin" />
+        app:srcCompat="@drawable/check" />
+
+        <ProgressBar
+            android:indeterminateTint="@color/colorPrimaryDark"
+            android:id="@+id/button_progress_bar"
+            android:layout_margin="@dimen/fab_margin"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </com.dmitrymalkovich.android.ProgressFloatingActionButton>
 
     <ImageView
         android:id="@+id/calendar_image"
@@ -249,7 +268,9 @@ f
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="#CCFFFFFF"
         android:layout_height="0dp"
-        android:layout_width="0dp"></RelativeLayout>
+        android:layout_width="0dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0"></RelativeLayout>
 
 
     <ProgressBar

@@ -118,15 +118,21 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<GroupDTO>() {
             @Override
             public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
-                GroupDTO groupDTO = response.body();
-                Group group =saveGroup(groupDTO);
-                newGroupActivity.groupCreated(group.getId());
+                if (response.code() == 200) {
+                    GroupDTO groupDTO = response.body();
+                    Group group = saveGroup(groupDTO);
+                    newGroupActivity.groupCreated(group.getId());
+                } else {
+                    Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    newGroupActivity.groupCreated(null);
+
+                }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Group creation failed!", Toast.LENGTH_LONG).show();
-                newGroupActivity.groupCreationFailed();
+                Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                newGroupActivity.groupCreated(null);
             }
         });
     }
@@ -143,14 +149,20 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<EventDTO>() {
             @Override
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                EventDTO eventDTO = response.body();
-                Event event = eventService.saveEvent(eventDTO);
-                newEventActivity.eventCreated(event);
+                if (response.code() == 200){
+                    EventDTO eventDTO = response.body();
+                    Event event = eventService.saveEvent(eventDTO);
+                    newEventActivity.eventCreated(true);
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    newEventActivity.eventCreated(false);
+                }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                newEventActivity.eventCreated(false);
             }
         });
     }
