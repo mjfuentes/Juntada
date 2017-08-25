@@ -68,7 +68,6 @@ public class EventFragment extends Fragment {
 
             recyclerView.setAdapter(new MyEventRecyclerViewAdapter(groupService.getEvents(groupId), mListener));
             recyclerView.setHasFixedSize(true);
-
         }
         return view;
     }

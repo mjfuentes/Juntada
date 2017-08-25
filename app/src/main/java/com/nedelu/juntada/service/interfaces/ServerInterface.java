@@ -4,10 +4,12 @@ import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.dto.AssitanceRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
+import com.nedelu.juntada.model.dto.EventTokenDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.GroupTokenDTO;
 import com.nedelu.juntada.model.dto.JoinGroupDTO;
+import com.nedelu.juntada.model.dto.PollConfirmDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.PollVoteRequest;
 import com.nedelu.juntada.model.dto.UserDTO;
@@ -63,4 +65,10 @@ public interface ServerInterface {
 
     @DELETE("users/{userID}/groups/{groupId}")
     Call<UserDTO> deleteGroup(@Path("userID") Long userId ,@Path("groupId") Long groupId);
+
+    @POST("polls/{pollId}")
+    Call<EventDTO> confirmPoll(@Path("pollId") Long pollId, @Body PollConfirmDTO request);
+
+    @GET("events/{eventId}/token")
+    Call<EventTokenDTO> getEventToken(@Path("eventId") Long eventId);
 }

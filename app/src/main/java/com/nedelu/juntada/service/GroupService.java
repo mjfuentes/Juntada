@@ -288,9 +288,13 @@ public class GroupService extends Observable {
             groupDao.saveGroupMember(groupDTO.getId(), user.getId());
         }
 
+        groupDao.clearPolls(groupDTO.getId());
+
         for (PollDTO pollDTO: groupDTO.getPolls()){
             eventService.savePoll(pollDTO);
         }
+
+        groupDao.clearEvents(groupDTO.getId());
         for (EventDTO eventDTO: groupDTO.getEvents()){
             eventService.saveEvent(eventDTO);
         }
@@ -389,12 +393,14 @@ public class GroupService extends Observable {
                 if (response.code() == 200) {
                     activity.tokenGenerated(response.body().getToken());
                 } else {
+                    activity.tokenGenerated(null);
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupTokenDTO> call, Throwable t) {
+                activity.tokenGenerated(null);
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });

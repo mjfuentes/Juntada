@@ -8,6 +8,10 @@
             android:icon="@drawable/people"
             android:title="Mis grupos" />
         <item
+            android:id="@+id/events"
+            android:icon="@drawable/calendar"
+            android:title="Mis invitaciones" />
+        <item
             android:id="@+id/profile"
             android:icon="@drawable/person_gray"
             android:title="Perfil" />

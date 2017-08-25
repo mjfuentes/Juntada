@@ -174,4 +174,24 @@ public class GroupDao {
         }
 
     }
+
+    public void clearPolls(Long id) {
+        try {
+            DeleteBuilder<Poll, Long> deleteBuilder = helper.getPollDao().deleteBuilder();
+            deleteBuilder.where().eq("group", id);
+            deleteBuilder.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearEvents(Long id) {
+        try {
+            DeleteBuilder<Event, Long> deleteBuilder = helper.getEventDao().deleteBuilder();
+            deleteBuilder.where().eq("owner_group", id);
+            deleteBuilder.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

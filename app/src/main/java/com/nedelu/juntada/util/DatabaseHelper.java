@@ -16,6 +16,7 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
 import com.nedelu.juntada.model.aux.GroupMember;
+import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
 
 import java.sql.SQLException;
@@ -26,7 +27,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME    = "juntada2.db";
-    private static final int DATABASE_VERSION = 37;
+    private static final int DATABASE_VERSION = 38;
 
     private Dao<User, Long> mUserDao = null;
     private Dao<Group, Long> mGroupDao = null;
@@ -37,6 +38,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<DontKnowUsers, Long> mDontKnowUsersDao = null;
     private Dao<ConfirmedUser, Long> mConfirmedUsersDao = null;
     private Dao<NotGoingUsers, Long> mNotGoingUsersDao = null;
+    private Dao<InvitedUser, Long> mInvitedUsersDao = null;
     private Dao<PollOptionVote, Long> mPollOptionVotesDao = null;
 
 
@@ -58,6 +60,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTableIfNotExists(connectionSource,ConfirmedUser.class);
             TableUtils.createTableIfNotExists(connectionSource,DontKnowUsers.class);
             TableUtils.createTableIfNotExists(connectionSource,PollOptionVote.class);
+            TableUtils.createTableIfNotExists(connectionSource,InvitedUser.class);
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -79,6 +83,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, ConfirmedUser.class, true);
             TableUtils.dropTable(connectionSource, DontKnowUsers.class, true);
             TableUtils.dropTable(connectionSource,PollOptionVote.class, true);
+            TableUtils.dropTable(connectionSource,InvitedUser.class, true);
 
             onCreate(db, connectionSource);
         } catch (SQLException e) {
@@ -158,6 +163,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
 
         return mDontKnowUsersDao ;
+    }
+
+    public Dao<InvitedUser, Long> getInvitedUsersDao() throws SQLException {
+        if (mInvitedUsersDao == null) {
+            mInvitedUsersDao  = getDao(InvitedUser.class);
+        }
+
+        return mInvitedUsersDao;
     }
 
     public Dao<PollOptionVote, Long> getmPollOptionVotesDao() throws SQLException {

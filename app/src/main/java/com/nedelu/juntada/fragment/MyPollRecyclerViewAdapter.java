@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,12 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
 
     public MyPollRecyclerViewAdapter(List<Poll> items, PollFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
+        Collections.sort(items, new Comparator<Poll>() {
+            @Override
+            public int compare(Poll poll, Poll t1) {
+                return t1.getId().compareTo(poll.getId());
+            }
+        });
         mListener = listener;
     }
 
@@ -42,6 +50,13 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
         holder.mItem = mValues.get(position);
         Poll poll = mValues.get(position);
         List<PollOption> options = new ArrayList<>(poll.getOptions());
+
+        Collections.sort(options, new Comparator<PollOption>() {
+            @Override
+            public int compare(PollOption pollOption, PollOption t1) {
+                return Integer.valueOf(t1.getVotes().size()).compareTo(Integer.valueOf(pollOption.getVotes().size()));
+            }
+        });
 
         String dayMonth = "dd/MM";
         SimpleDateFormat dayMonthFormat = new SimpleDateFormat(dayMonth, Locale.ENGLISH);

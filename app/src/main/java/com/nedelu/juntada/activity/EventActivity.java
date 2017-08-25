@@ -51,6 +51,7 @@ public class EventActivity extends AppCompatActivity {
     private View maybeButton;
     private User user;
     private UserService userService;
+    private ImageView addMembersButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +72,12 @@ public class EventActivity extends AppCompatActivity {
         user = userService.getUser(userId);
         eventService = new EventService(this);
         event = eventService.getEvent(eventId);
-
+        addMembersButton = (ImageView) findViewById(R.id.add_members_button);
         userList = (RecyclerView) findViewById(R.id.userList);
         userAdapter = new UserAdapter(EventActivity.this, event.getConfirmedUsers(), userList);
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         userList.setAdapter(userAdapter);
-        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
-        userList.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         blur = findViewById(R.id.blur_background);
@@ -111,6 +110,15 @@ public class EventActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
                 blur.setVisibility(View.VISIBLE);
                 saveAssistance(Assistance.MAYBE);
+            }
+        });
+
+        addMembersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addMembersButton.setClickable(false);
+                progressBar.setVisibility(View.VISIBLE);
+                eventService.generateToken(eventId, EventActivity.this);
             }
         });
 
@@ -203,6 +211,22 @@ public class EventActivity extends AppCompatActivity {
         if (b) {
             event = eventService.getEvent(eventId);
             refreshInfo();
+        }
+    }
+
+    public void tokenGenerated(String token) {
+        progressBar.setVisibility(View.INVISIBLE);
+        addMembersButton.setClickable(true);
+        if (token != null) {
+            String url = "http://www.juntada.nedelu.com/events/" + token;
+
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+            String sAux = "\nTe invite a mi evento de Juntada! Para ingresar usa el siguiente link:\n\n";
+            sAux += "\n" + url;
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
         }
     }
 }

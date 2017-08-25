@@ -2,11 +2,13 @@ package com.nedelu.juntada.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.CalendarContract;
 import android.widget.Toast;
 
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.UserDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
@@ -29,6 +31,7 @@ public class UserService {
     private Context context;
     private UserDao userDao;
     private String baseUrl;
+    private EventService eventService;
 
     public UserService(Context context)
     {
@@ -36,6 +39,7 @@ public class UserService {
         this.userDao = new UserDao(context);
         SharedPreferences userPref = context.getSharedPreferences("user", 0);
         baseUrl = userPref.getString("server_url", "http://www.juntada.nedelu.com");
+        eventService = new EventService(context);
     }
 
     public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {
@@ -149,5 +153,9 @@ public class UserService {
         user.setLastName(userDTO.getLastName());
 
         saveUser(user);
+
+        for (EventDTO eventDTO : userDTO.getEvents()){
+            eventService.saveEvent(eventDTO);
+        }
     }
 }

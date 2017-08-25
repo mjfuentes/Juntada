@@ -10,6 +10,7 @@ import com.nedelu.juntada.model.PollOptionVote;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
+import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
 import com.nedelu.juntada.util.DatabaseHelper;
 
@@ -208,6 +209,10 @@ public class EventDao {
             DeleteBuilder<DontKnowUsers, Long> builder3 = helper.getDontKnowUsersDao().deleteBuilder();
             builder3.where().eq("event", id);
             builder3.delete();
+
+            DeleteBuilder<InvitedUser, Long> builder4 = helper.getInvitedUsersDao().deleteBuilder();
+            builder4.where().eq("event", id);
+            builder4.delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -229,6 +234,28 @@ public class EventDao {
             e.printStackTrace();
         }
 
+    }
+
+    public List<Event> getForUser(Long userId) {
+        try {
+            List<InvitedUser> result = helper.getInvitedUsersDao().queryBuilder().where().eq("user", userId).query();
+            List<Event> events = new ArrayList<>();
+            for (InvitedUser invitedUser : result){
+                events.add(getEvent(invitedUser.getEventId()));
+            }
+            return events;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public void saveInvitedUser(InvitedUser invitedUser) {
+        try {
+            helper.getInvitedUsersDao().create(invitedUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 

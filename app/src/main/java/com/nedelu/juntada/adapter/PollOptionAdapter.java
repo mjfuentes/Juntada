@@ -35,6 +35,7 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
     private final List<VotingItem> mItems;
     private int mCurrentItemId = 0;
     private VoteListener mListener;
+    private boolean admin;
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
@@ -43,9 +44,10 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
         }
     }
 
-    public PollOptionAdapter(Context context, List<VotingItem> options, RecyclerView recyclerView, VoteListener listener) {
+    public PollOptionAdapter(Context context, List<VotingItem> options, RecyclerView recyclerView, VoteListener listener, boolean creator) {
         mContext = context;
         mListener = listener;
+        admin = creator;
         mItems = new ArrayList<VotingItem>(options.size());
         for (int i = 0; i < options.size(); i++) {
             addItem(i,options.get(i));
@@ -112,12 +114,23 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ImageView checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
+                ImageView checkbox;
+                if (admin) {
+                    for (int i = 0; i < mItems.size(); i++) {
+                        View view = mRecyclerView.getChildAt(i);
+                        checkbox = (ImageView) view.findViewById(R.id.checkbox);
+                        checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
+                    }
+                }
+                checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
 
                 if (holder.mItem.getVoted()) {
                     holder.mItem.setVoted(false);
                     checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
                 } else {
+                    for (VotingItem item :mItems){
+                        item.setVoted(false);
+                    }
                     holder.mItem.setVoted(true);
                     checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.checked_green));
                 }

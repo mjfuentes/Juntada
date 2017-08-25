@@ -49,6 +49,8 @@ import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class GroupTabbedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,UserAdapter.ClickListener, TokenResultActivity, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
 
@@ -69,6 +71,7 @@ public class GroupTabbedActivity extends AppCompatActivity
 //    private SwipeRefreshLayout swipeRefreshLayout;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    private ImageView addMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +116,8 @@ public class GroupTabbedActivity extends AppCompatActivity
         Picasso.with(GroupTabbedActivity.this).load(user.getImageUrl()).into(user_image);
 //
         groupService = GroupService.getInstance(GroupTabbedActivity.this);
-        group = groupService.loadGroupData(groupId, GroupTabbedActivity.this);
-        getSupportActionBar().setTitle(group.getName());
+        group = groupService.getGroup(groupId);
+        getSupportActionBar().setTitle(StringEscapeUtils.unescapeJava(group.getName()));
 //
 //        scrollView = (NestedScrollView) findViewById(R.id.scrollView);
         ImageView groupImageView = (ImageView) findViewById(R.id.collapsing_group_image);
@@ -154,10 +157,11 @@ public class GroupTabbedActivity extends AppCompatActivity
             }
         });
 
-        ImageButton addMember = (ImageButton) findViewById(R.id.add_members_button);
+        addMember = (ImageButton) findViewById(R.id.add_members_button);
         addMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                addMember.setClickable(false);
                 progressBar.setVisibility(View.VISIBLE);
                 groupService.getGroupToken(groupId, GroupTabbedActivity.this);
             }
@@ -249,15 +253,18 @@ public class GroupTabbedActivity extends AppCompatActivity
     @Override
     public void tokenGenerated(String token) {
         progressBar.setVisibility(View.INVISIBLE);
-        String url = "http://www.juntada.nedelu.com/join/" + token;
+        addMember.setClickable(true);
+        if (token != null) {
+            String url = "http://www.juntada.nedelu.com/groups/" + token;
 
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-        String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-        sAux += "\n"+ url;
-        i.putExtra(Intent.EXTRA_TEXT, sAux);
-        startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+            String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
+            sAux += "\n" + url;
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+        }
     }
 
 //    @Override
@@ -309,9 +316,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     }
 
     public void refreshGroup(Boolean result){
-//        if (swipeRefreshLayout.isRefreshing()){
-//            swipeRefreshLayout.setRefreshing(false);
-//        }
+        groupService.loadGroup(groupId,GroupTabbedActivity.this);
 
         if (result) {
             this.group = groupService.getGroup(groupId);

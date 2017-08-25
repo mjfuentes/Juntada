@@ -15,6 +15,7 @@ public class EventDTO {
     private List<Long> confirmedUsers;
     private List<Long> doNotKnowUsers;
     private List<Long> notGoingUsers;
+    private List<Long> invitedUsers;
     private String date;
     private String time;
     private String title;
@@ -111,5 +112,13 @@ public class EventDTO {
 		this.id = id;
 	}
 
+
+    public List<Long> getInvitedUsers() {
+        return invitedUsers;
+    }
+
+    public void setInvitedUsers(List<Long> invitedUsers) {
+        this.invitedUsers = invitedUsers;
+    }
 
 }

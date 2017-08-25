@@ -117,13 +117,13 @@ public class NewPollActivity extends AppCompatActivity {
         addDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkFields() && dateAdapter.getCount() < 4) {
+                if (checkFields() && dateAdapter.getCount() < 20) {
                     PollOption option = new PollOption();
                     option.setDate(sdf.format(myCalendar.getTime()));
                     option.setTime(selectedTime);
                     dateAdapter.addDate(option);
 
-                    if (dateAdapter.getCount() == 4){
+                    if (dateAdapter.getCount() == 20){
                         addDate.setVisibility(View.INVISIBLE);
                     }
 

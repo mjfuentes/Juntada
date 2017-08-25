@@ -52,7 +52,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         setContentView(R.layout.activity_groups);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -190,6 +190,10 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             startActivity(profile);
         } else if (id == R.id.groups) {
 
+        } else if (id == R.id.events) {
+            Intent events = new Intent(GroupsActivity.this, EventsActivity.class);
+            events.putExtra("id", userId);
+            startActivity(events);
         } else if (id == R.id.configuration) {
 
         } else if (id == R.id.share) {

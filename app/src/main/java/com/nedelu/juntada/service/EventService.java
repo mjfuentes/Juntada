@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.nedelu.juntada.activity.EventActivity;
+import com.nedelu.juntada.activity.VoteActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.dao.UserDao;
@@ -17,10 +18,14 @@ import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollOptionVote;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
+import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
 import com.nedelu.juntada.model.dto.AssitanceRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
+import com.nedelu.juntada.model.dto.EventTokenDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
+import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.PollConfirmDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.PollOptionDTO;
 import com.nedelu.juntada.model.dto.PollVoteRequest;
@@ -45,14 +50,12 @@ public class EventService {
     private EventDao eventDao;
     private GroupDao groupDao;
     private UserDao userDao;
-    private UserService userService;
     private GroupService groupService;
     private String baseUrl = "http://10.1.1.16:8080";
 
 
     public EventService(Context context) {
         this.context = context;
-        this.userService = new UserService(context);
         this.eventDao = new EventDao(context);
         this.groupDao = new GroupDao(context);
         this.userDao = new UserDao(context);
@@ -75,16 +78,17 @@ public class EventService {
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
                 if (response.code() == 200) {
                     savePoll(response.body());
-                    listener.pollVoted();
+                    listener.pollVoted(true, 0l);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    listener.pollVoted();
+                    Toast.makeText(context,"No se pudo realizar la operacion", Toast.LENGTH_LONG).show();
+                    listener.pollVoted(false, 0l);
                 }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                listener.pollVoted(false, 0l);
             }
         });
     }
@@ -187,6 +191,16 @@ public class EventService {
             }
         }
 
+        if (eventDTO.getInvitedUsers() != null) {
+
+            for (Long userId : eventDTO.getInvitedUsers()) {
+                InvitedUser invitedUser = new InvitedUser();
+                invitedUser.setEventId(newEvent.getId());
+                invitedUser.setUserId(userId);
+                eventDao.saveInvitedUser(invitedUser);
+            }
+        }
+
         return newEvent;
     }
 
@@ -239,7 +253,47 @@ public class EventService {
         });
     }
 
+    public void confirmEvent(Poll poll, PollOption option, final VoteActivity voteActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+        PollConfirmDTO confirm = new PollConfirmDTO();
+        confirm.setSelectedOptionId(option.getId());
+
+        final Call<EventDTO> call = server.confirmPoll(poll.getId(), confirm);
+        call.enqueue(new Callback<EventDTO>() {
+            @Override
+            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                if (response.code() == 200) {
+                    saveEvent(response.body());
+                    voteActivity.pollVoted(true, response.body().getId());
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    voteActivity.pollVoted(false, 0l);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventDTO> call, Throwable t) {
+                voteActivity.pollVoted(false, 0l);
+                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void generateToken(Long eventId, final EventActivity eventActivity) {
+
+    }
+
+    public List<Event> getEventsForUser(Long userId) {
+        return eventDao.getForUser(userId);
+    }
+
     public interface ResultListener{
-        void pollVoted();
+
+        void pollVoted(Boolean result, Long eventId);
     }
 }
