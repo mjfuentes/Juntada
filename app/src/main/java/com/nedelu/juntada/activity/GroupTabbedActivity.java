@@ -52,7 +52,7 @@ import com.squareup.picasso.Picasso;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 public class GroupTabbedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,UserAdapter.ClickListener, TokenResultActivity, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
+        implements UserAdapter.ClickListener, TokenResultActivity, EventFragment.OnListFragmentInteractionListener, PollFragment.OnListFragmentInteractionListener {
 
 
     private Long userId;
@@ -76,11 +76,11 @@ public class GroupTabbedActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group);
+        setContentView(R.layout.activity_group_tabbed);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -107,13 +107,13 @@ public class GroupTabbedActivity extends AppCompatActivity
         userService = new UserService(GroupTabbedActivity.this);
         user = userService.getUser(userId);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View headerView = navigationView.getHeaderView(0);
-        TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
-        user_name.setText(user.getFirstName() + " " + user.getLastName());
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        View headerView = navigationView.getHeaderView(0);
+//        TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
+//        user_name.setText(user.getFirstName() + " " + user.getLastName());
 
-        ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
-        Picasso.with(GroupTabbedActivity.this).load(user.getImageUrl()).into(user_image);
+//        ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
+//        Picasso.with(GroupTabbedActivity.this).load(user.getImageUrl()).into(user_image);
 //
         groupService = GroupService.getInstance(GroupTabbedActivity.this);
         group = groupService.getGroup(groupId);
@@ -130,13 +130,12 @@ public class GroupTabbedActivity extends AppCompatActivity
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         userList.setAdapter(userAdapter);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.setDrawerListener(toggle);
+//        toggle.syncState();
 
-        navigationView.setNavigationItemSelectedListener(this);
 
         mEventPagerAdapter = new GroupTabbedActivity.SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -196,6 +195,11 @@ public class GroupTabbedActivity extends AppCompatActivity
             groupService.deleteGroup(userId, group, GroupTabbedActivity.this);
         }
 
+        if (id == R.id.notifications) {
+            Intent notifications = new Intent(this, NotificationsActivity.class);
+            startActivity(notifications);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -220,26 +224,7 @@ public class GroupTabbedActivity extends AppCompatActivity
         startActivity(vote);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
 
-        if (id == R.id.groups) {
-            finish();
-        }
-        if (id == R.id.profile){
-            Intent profile = new Intent(GroupTabbedActivity.this, ProfileActivity.class);
-            profile.putExtra("id", userId);
-            startActivity(profile);
-            finish();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     public void groupDeleted(Boolean deleted){
         if (deleted) {
@@ -255,7 +240,7 @@ public class GroupTabbedActivity extends AppCompatActivity
         progressBar.setVisibility(View.INVISIBLE);
         addMember.setClickable(true);
         if (token != null) {
-            String url = "http://www.juntada.nedelu.com/groups/" + token;
+            String url = "http://www.juntada.nedelu.com/joinGroup/" + token;
 
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");

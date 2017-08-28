@@ -16,7 +16,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.UserService;
@@ -28,6 +30,8 @@ public class ProfileActivity extends AppCompatActivity
 
     private UserService userService;
     private User user;
+    private Long userId;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class ProfileActivity extends AppCompatActivity
         userService = new UserService(ProfileActivity.this);
 
         Bundle inBundle = getIntent().getExtras();
-        Long userId = Long.valueOf(inBundle.get("id").toString());
+        userId = Long.valueOf(inBundle.get("id").toString());
         user = userService.getUser(userId);
 
         TextView name = (TextView) findViewById(R.id.user_name);
@@ -53,7 +57,7 @@ public class ProfileActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
         user_name.setText(user.getFirstName() + " " + user.getLastName());
@@ -77,10 +81,10 @@ public class ProfileActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.profile, menu);
+        getMenuInflater().inflate(R.menu.profile, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -103,13 +107,47 @@ public class ProfileActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.groups) {
-            Intent groups = new Intent(ProfileActivity.this, GroupsActivity.class);
+        if (id == R.id.profile) {
+            Intent profile = new Intent(this, ProfileActivity.class);
+            profile.putExtra("id", userId);
+            startActivity(profile);
+            finish();
+        } else if (id == R.id.groups) {
+            Intent groups = new Intent(this, GroupsActivity.class);
+            groups.putExtra("id", userId);
             startActivity(groups);
             finish();
-        }
-        if (id == R.id.profile){
-            //
+        } else if (id == R.id.events) {
+            Intent events = new Intent(this, EventsActivity.class);
+            events.putExtra("id", userId);
+            startActivity(events);
+            finish();
+        } else if (id == R.id.configuration) {
+            /*Intent events = new Intent(this, SettingsActivity.class);
+            events.putExtra("id", userId);
+            startActivity(events);*/
+            Toast.makeText(getApplicationContext(), "Proximamente!", Toast.LENGTH_SHORT).show();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return false;
+
+        } else if (id == R.id.share) {
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+                String sAux = "\nProbá Juntada para Android, disponible en: \n\n";
+                sAux = sAux + "https://play.google.com/store/apps/details?id=com.nedelu.juntada \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+            } catch(Exception e) {
+                //e.toString();
+            }
+        } else if (id == R.id.exit) {
+            LoginManager.getInstance().logOut();
+            Intent login = new Intent(this, LoginActivity.class);
+            startActivity(login);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

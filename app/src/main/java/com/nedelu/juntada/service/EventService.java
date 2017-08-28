@@ -2,6 +2,7 @@ package com.nedelu.juntada.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -60,7 +61,7 @@ public class EventService {
         this.groupDao = new GroupDao(context);
         this.userDao = new UserDao(context);
 
-        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
         baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
     }
 

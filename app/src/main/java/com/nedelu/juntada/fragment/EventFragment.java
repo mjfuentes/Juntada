@@ -15,6 +15,8 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.service.GroupService;
 
+import java.util.List;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -52,23 +54,30 @@ public class EventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
-
+        View mNoMessagesView = view.findViewById(R.id.noMessages);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-
-            SharedPreferences userPref = context.getSharedPreferences("user", 0);
-            Long groupId =  userPref.getLong("groupId", 0L);
-
-            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(groupService.getEvents(groupId), mListener));
-            recyclerView.setHasFixedSize(true);
+        Context context = view.getContext();
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+
+        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        Long groupId =  userPref.getLong("groupId", 0L);
+        List<Event> events = groupService.getEvents(groupId);
+        recyclerView.setAdapter(new MyEventRecyclerViewAdapter(events, mListener));
+        recyclerView.setHasFixedSize(true);
+
+        if (events.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            mNoMessagesView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            mNoMessagesView.setVisibility(View.VISIBLE);
+        }
+
         return view;
     }
 

@@ -71,21 +71,24 @@ public class EventDao {
     public Event getEvent(Long id) {
         try {
             Event event = helper.getEventDao().queryForId(id);
-            event.setConfirmedUsers(new ArrayList<User>());
 
-            List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
-            for (ConfirmedUser confirmedUser : confirmedUsers){
-                event.getConfirmedUsers().add(helper.getUserDao().queryForId(confirmedUser.getUserId()));
-            }
+            if (event != null) {
+                event.setConfirmedUsers(new ArrayList<User>());
 
-            List<NotGoingUsers> notGoingUsers = helper.getmNotGoingUsersDao().queryBuilder().where().eq("event", id).query();
-            for (NotGoingUsers notGoingUser : notGoingUsers){
-                event.getNotGoingUsers().add(helper.getUserDao().queryForId(notGoingUser.getUserId()));
-            }
+                List<ConfirmedUser> confirmedUsers = helper.getConfirmedUsersDao().queryBuilder().where().eq("event", id).query();
+                for (ConfirmedUser confirmedUser : confirmedUsers) {
+                    event.getConfirmedUsers().add(helper.getUserDao().queryForId(confirmedUser.getUserId()));
+                }
 
-            List<DontKnowUsers> doNotKnowUsers = helper.getDontKnowUsersDao().queryBuilder().where().eq("event", id).query();
-            for (DontKnowUsers doNotKnowUser : doNotKnowUsers){
-                event.getDoNotKnowUsers().add(helper.getUserDao().queryForId(doNotKnowUser.getUserId()));
+                List<NotGoingUsers> notGoingUsers = helper.getmNotGoingUsersDao().queryBuilder().where().eq("event", id).query();
+                for (NotGoingUsers notGoingUser : notGoingUsers) {
+                    event.getNotGoingUsers().add(helper.getUserDao().queryForId(notGoingUser.getUserId()));
+                }
+
+                List<DontKnowUsers> doNotKnowUsers = helper.getDontKnowUsersDao().queryBuilder().where().eq("event", id).query();
+                for (DontKnowUsers doNotKnowUser : doNotKnowUsers) {
+                    event.getDoNotKnowUsers().add(helper.getUserDao().queryForId(doNotKnowUser.getUserId()));
+                }
             }
 
             return event;

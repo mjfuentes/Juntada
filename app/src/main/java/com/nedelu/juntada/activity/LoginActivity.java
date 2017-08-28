@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -46,6 +47,25 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+        SharedPreferences.Editor editor = userPref.edit();
+        editor.putString("server_url", "http://www.juntada.nedelu.com");
+        editor.apply();
+
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.nedelu.juntada", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.i("HASH", "printHashKey() Hash Key: " + hashKey);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("HASH", "printHashKey()", e);
+        } catch (Exception e) {
+            Log.e("HASH", "printHashKey()", e);
+        }
+
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
@@ -58,6 +78,8 @@ public class LoginActivity extends AppCompatActivity {
 //                checkUser(newProfile);
           }
         };
+
+
 
         accessTokenTracker.startTracking();
         profileTracker.startTracking();
@@ -73,9 +95,9 @@ public class LoginActivity extends AppCompatActivity {
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-//                AccessToken accessToken = loginResult.getAccessToken();
-//                Profile profile = Profile.getCurrentProfile();
-//                checkUser(profile);
+                AccessToken accessToken = loginResult.getAccessToken();
+                Profile profile = Profile.getCurrentProfile();
+                checkUser(profile);
             }
 
             @Override
@@ -102,6 +124,9 @@ public class LoginActivity extends AppCompatActivity {
             User currentUser = userService.getUserByFacebookId(profile.getId());
             if (currentUser == null) {
                 try {
+
+
+
                     userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());
                 } catch (IOException e) {
                     Toast.makeText(getApplicationContext(), "Error during user creation", Toast.LENGTH_SHORT).show();
@@ -129,7 +154,6 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences userPref = getSharedPreferences("user", 0);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("userId", user.getId());
-        editor.putString("server_url", "http://10.1.1.16:8080");
         editor.apply();
 
         startActivity(main);

@@ -12,11 +12,11 @@
             android:title="Mis invitaciones" />
         <item
             android:id="@+id/profile"
-            android:icon="@drawable/person_gray"
+            android:icon="@drawable/ic_profile"
             android:title="Perfil" />
         <item
             android:id="@+id/configuration"
-            android:icon="@drawable/setting_gray"
+            android:icon="@drawable/ic_settings"
             android:title="Configuracion" />
     </group>
 
@@ -26,9 +26,9 @@
             android:icon="@drawable/ic_menu_share"
             android:title="Compartir" />
         <item
-            android:id="@+id/about"
-            android:icon="@drawable/terms_gray"
-            android:title="Acerca de Juntada" />
+            android:id="@+id/exit"
+            android:icon="@drawable/ic_exit"
+            android:title="Salir de Juntada" />
     </group>
 
 </menu>

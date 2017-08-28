@@ -218,7 +218,7 @@ public class EventActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
         addMembersButton.setClickable(true);
         if (token != null) {
-            String url = "http://www.juntada.nedelu.com/events/" + token;
+            String url = "http://www.juntada.nedelu.com/joinEvent/" + token;
 
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");

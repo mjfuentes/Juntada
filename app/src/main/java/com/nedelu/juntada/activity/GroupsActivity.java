@@ -21,7 +21,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.model.Group;
@@ -43,6 +46,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     private GroupService groupService;
     private UserService userService;
     private Long userId;
+    private NavigationView navigationView;
     ImageView firstGroup;
     private User user;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -79,7 +83,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         user = userService.getUser(userId);
         firstGroup = (ImageView) findViewById(R.id.first_group);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
         user_name.setText(user.getFirstName() + " " + user.getLastName());
@@ -149,8 +153,28 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.notifications) {
+            Intent notifications = new Intent(this, NotificationsActivity.class);
+            startActivity(notifications);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.groups, menu);
+        return true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        navigationView.setCheckedItem(R.id.groups);
+
         List<Group> groups = groupService.getUserGroups(userId);
         Collections.sort(groups, new Comparator<Group>() {
             @Override
@@ -185,27 +209,46 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         int id = item.getItemId();
 
         if (id == R.id.profile) {
-            Intent profile = new Intent(GroupsActivity.this, ProfileActivity.class);
+            Intent profile = new Intent(this, ProfileActivity.class);
             profile.putExtra("id", userId);
             startActivity(profile);
+            finish();
         } else if (id == R.id.groups) {
-
+            Intent groups = new Intent(this, GroupsActivity.class);
+            groups.putExtra("id", userId);
+            startActivity(groups);
+            finish();
         } else if (id == R.id.events) {
-            Intent events = new Intent(GroupsActivity.this, EventsActivity.class);
+            Intent events = new Intent(this, EventsActivity.class);
             events.putExtra("id", userId);
             startActivity(events);
+            finish();
         } else if (id == R.id.configuration) {
+//            Intent events = new Intent(this, SettingsActivity.class);
+//            events.putExtra("id", userId);
+//            startActivity(events);
+            Toast.makeText(getApplicationContext(), "Proximamente!", Toast.LENGTH_SHORT).show();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return false;
 
         } else if (id == R.id.share) {
-//            Intent i = new Intent(Intent.ACTION_SEND);
-//            i.setType("text/plain");
-//            i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-//            String sAux = "\nTe invite a mi Grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-//            sAux += "\n"+ url + "\n\n";
-//            i.putExtra(Intent.EXTRA_TEXT, sAux);
-//            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
-        } else if (id == R.id.about) {
-
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
+                String sAux = "\nProbá Juntada para Android, disponible en: \n\n";
+                sAux = sAux + "https://play.google.com/store/apps/details?id=com.nedelu.juntada \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+            } catch(Exception e) {
+                //e.toString();
+            }
+        } else if (id == R.id.exit) {
+            LoginManager.getInstance().logOut();
+            Intent login = new Intent(this, LoginActivity.class);
+            startActivity(login);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

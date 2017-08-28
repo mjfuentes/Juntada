@@ -30,6 +30,8 @@ public class PollFragment extends Fragment {
     private PollFragment.OnListFragmentInteractionListener mListener;
     private GroupService groupService;
     private Context mContext;
+    private Long userId;
+    private View mNoMessagesView;
 
     public PollFragment() {
     }
@@ -49,30 +51,39 @@ public class PollFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        SharedPreferences userPref = mContext.getSharedPreferences("user", 0);
+        userId = userPref.getLong("userId", 0L);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_unconfirmed_list, container, false);
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-
-            SharedPreferences userPref = context.getSharedPreferences("user", 0);
-            Long groupId =  userPref.getLong("groupId", 0L);
-
-            recyclerView.setAdapter(new MyPollRecyclerViewAdapter(groupService.getPolls(groupId), mListener));
-            recyclerView.setHasFixedSize(true);
-
+        Context context = view.getContext();
+        mNoMessagesView = view.findViewById(R.id.noMessages);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+
+        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        Long groupId =  userPref.getLong("groupId", 0L);
+
+        List<Poll> polls = groupService.getPolls(groupId);
+        recyclerView.setAdapter(new MyPollRecyclerViewAdapter(polls, userId, mListener));
+        recyclerView.setHasFixedSize(true);
+
+        if (polls.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            mNoMessagesView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            mNoMessagesView.setVisibility(View.VISIBLE);
+        }
+
         return view;
     }
 

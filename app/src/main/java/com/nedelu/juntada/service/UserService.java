@@ -2,6 +2,7 @@ package com.nedelu.juntada.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class UserService {
     {
         this.context = context;
         this.userDao = new UserDao(context);
-        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
         baseUrl = userPref.getString("server_url", "http://www.juntada.nedelu.com");
         eventService = new EventService(context);
     }

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,8 +27,9 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
 
     private final List<Poll> mValues;
     private final PollFragment.OnListFragmentInteractionListener mListener;
+    private Long mUserId;
 
-    public MyPollRecyclerViewAdapter(List<Poll> items, PollFragment.OnListFragmentInteractionListener listener) {
+    public MyPollRecyclerViewAdapter(List<Poll> items,Long userId, PollFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         Collections.sort(items, new Comparator<Poll>() {
             @Override
@@ -35,6 +37,7 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
                 return t1.getId().compareTo(poll.getId());
             }
         });
+        mUserId = userId;
         mListener = listener;
     }
 
@@ -66,6 +69,13 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
 
         TextView pollname = (TextView) holder.mView.findViewById(R.id.poll_name);
         pollname.setText(poll.getTitle());
+        TextView vote = (TextView) holder.mView.findViewById(R.id.vote_title);
+        ImageView voteImage = (ImageView) holder.mView.findViewById(R.id.vote_image);
+
+        if (poll.getCreator().getId().equals(mUserId)){
+            voteImage.setVisibility(View.GONE);
+            vote.setText("CONFIRMAR");
+        }
 
         try {
             if (options.size() > 0) {

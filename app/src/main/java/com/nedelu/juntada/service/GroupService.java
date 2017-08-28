@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -69,7 +70,7 @@ public class GroupService extends Observable {
         this.groupDao = new GroupDao(context);
         this.eventDao = new EventDao(context);
 
-        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
         baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
         userId = userPref.getLong("userId", 0l);
     }

@@ -30,22 +30,25 @@
             android:layout_margin="10dp" />
 
         <ImageView
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="70dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/voto_white"/>
+            android:id="@+id/vote_image"
+            android:scaleType="centerInside"
+            android:layout_alignTop="@+id/vote_title"
+            android:layout_alignBottom="@+id/vote_title"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/vote_title"
+            android:src="@drawable/voto_white" />
 
         <TextView
-            android:id="@+id/textView4"
-            android:textSize="17dp"
+            android:id="@+id/vote_title"
+            android:textSize="15dp"
             android:textColor="#ffffff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="10dp"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
             android:text="VOTAR" />
 
     </RelativeLayout>

@@ -36,6 +36,7 @@
 
         <activity
             android:name=".activity.GroupsActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -112,11 +113,17 @@
             android:name=".activity.GroupTabbedActivity"
             android:label="@string/title_activity_group_tabbed"
             android:screenOrientation="portrait"
+            android:parentActivityName=".activity.GroupsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.EventsActivity"
             android:label="@string/title_activity_events"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".activity.NotificationsActivity"
+            android:label="Notificaciones"></activity>
     </application>
 
 </manifest>
