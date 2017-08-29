@@ -75,4 +75,11 @@ public interface ServerInterface {
 
     @POST("events/member")
     Call<EventDTO> joinEvent(@Body JoinEventDTO joinEvent);
+
+    @POST("groups/{groupId}")
+    Call<GroupDTO> updateGroupName(@Path("groupId") Long groupId,@Body GroupDTO groupDTO);
+
+    @Multipart
+    @POST("groups/{groupId}/image")
+    Call<GroupDTO> updateGroupImage(@Path("groupId") Long groupId,@Part MultipartBody.Part body);
 }

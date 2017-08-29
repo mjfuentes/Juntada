@@ -36,7 +36,7 @@
 
         <activity
             android:name=".activity.GroupsActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         <intent-filter android:label="Juntada">

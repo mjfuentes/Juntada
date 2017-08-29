@@ -1,10 +1,13 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -138,6 +141,13 @@ public class NewPollActivity extends AppCompatActivity {
             }
 
         };
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
 
         final ImageButton addDate = (ImageButton) findViewById(R.id.add_date);
         addDate.setOnClickListener(new View.OnClickListener() {

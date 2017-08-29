@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -459,6 +460,81 @@ public class GroupService extends Observable {
                 joinActivity.finish();
             }
         });
+    }
+
+    public void updateGroupName(Long groupId, String text, final GroupTabbedActivity groupTabbedActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.setId(groupId);
+        groupDTO.setName(text);
+
+        Call<GroupDTO> call = server.updateGroupName(groupId, groupDTO);
+
+        call.enqueue(new Callback<GroupDTO>() {
+            @Override
+            public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
+                if (response.code() == 200) {
+                    Group group = saveGroup(response.body());
+                    groupTabbedActivity.updateName(group.getName());
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    groupTabbedActivity.updateName(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupDTO> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                groupTabbedActivity.updateName(null);
+            }
+        });
+    }
+
+    public void updateGroupImage(Long groupId, Uri imageUri, final GroupTabbedActivity groupTabbedActivity) {
+        File file = FileUtils.getFile(context, imageUri);
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse(getMimeType(imageUri.toString())),
+                        file
+                );
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+        final Call<GroupDTO> call = server.updateGroupImage(groupId, body);
+        call.enqueue(new Callback<GroupDTO>() {
+            @Override
+            public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
+                if (response.code() == 200) {
+                    GroupDTO groupDTO = response.body();
+                    Group group = saveGroup(groupDTO);
+                    groupTabbedActivity.imageUpdated(group.getImageUrl());
+                } else {
+                    Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    groupTabbedActivity.imageUpdated(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupDTO> call, Throwable t) {
+                Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                groupTabbedActivity.imageUpdated(null);
+            }
+        });
+
     }
 
 

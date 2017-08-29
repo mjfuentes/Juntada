@@ -1,10 +1,13 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,10 +52,18 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.4:8080");
-
-        editor.putString("server_url", "http://www.juntada.nedelu.com");
+        editor.putString("server_url", "http://10.1.1.4:8080");
+//        editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
+
+
 
         try {
             PackageInfo info = getPackageManager().getPackageInfo("com.nedelu.juntada", PackageManager.GET_SIGNATURES);

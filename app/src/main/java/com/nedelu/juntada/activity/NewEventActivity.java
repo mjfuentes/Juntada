@@ -1,9 +1,12 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
@@ -118,6 +121,13 @@ public class NewEventActivity extends AppCompatActivity {
         timeView = (TextView) findViewById(R.id.time_view);
         calendarImage = (ImageView) findViewById(R.id.calendar_image);
         timeImage = (ImageView) findViewById(R.id.time_image);
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
 
 
         editType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

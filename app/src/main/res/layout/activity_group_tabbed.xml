@@ -20,7 +20,7 @@
             app:expandedTitleMarginBottom="140dp"
             android:layout_height="wrap_content"
             app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded.Shadow"
-
+            android:id="@+id/collapsing_toolbar"
             android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:contentScrim="?attr/colorPrimary">
@@ -40,13 +40,22 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:id="@+id/collapsing_group_image"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/app_name"
-                app:layout_collapseMode="parallax"
-                tools:layout_editor_absoluteY="25dp"
-                tools:layout_editor_absoluteX="8dp" />
+                app:layout_collapseMode="parallax" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/edit_group_name"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/collapsing_group_image"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="30dp"
+                    android:src="@drawable/ic_edit"/>
 
             <RelativeLayout
                 android:id="@+id/users"
@@ -54,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="10dp"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/collapsing_group_image"
+                app:layout_constraintTop_toBottomOf="@+id/collapsing_group_image"
                 app:layout_constraintLeft_toLeftOf="parent">
 
 
@@ -114,8 +123,7 @@
                 android:id="@+id/toolbar"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_width="match_parent"
-                app:layout_collapseMode="pin"
-                android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:layout_collapseMode="pin" />
         </android.support.design.widget.CollapsingToolbarLayout>
 
 

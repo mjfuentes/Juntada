@@ -1,11 +1,14 @@
 package com.nedelu.juntada.activity;
 
 import android.app.ActivityManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +20,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,12 +31,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -49,6 +58,8 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -59,6 +70,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     private Long userId;
     private Long groupId;
     private String image_url;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
     private UserService userService;
     private UserAdapter userAdapter;
     private RecyclerView userList;
@@ -74,6 +86,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     private ImageView addMember;
     private EventFragment eventFragment;
     private PollFragment pollFragment;
+    private ImageView groupImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +100,7 @@ public class GroupTabbedActivity extends AppCompatActivity
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -113,8 +126,54 @@ public class GroupTabbedActivity extends AppCompatActivity
         group = groupService.getGroup(groupId);
         getSupportActionBar().setTitle(StringEscapeUtils.unescapeJava(group.getName()));
 
-        ImageView groupImageView = (ImageView) findViewById(R.id.collapsing_group_image);
-        Picasso.with(GroupTabbedActivity.this).load(group.getImageUrl()).into(groupImageView);
+        if (group.getCreator().getId().equals(userId)){
+            ImageView editName = (ImageView) findViewById(R.id.edit_group_name);
+            editName.setVisibility(View.VISIBLE);
+            editName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(GroupTabbedActivity.this, R.style.DialogTheme);
+                    builder.setTitle("Editar nombre");
+
+                    final EditText input = new EditText(GroupTabbedActivity.this);
+                    input.setText(StringEscapeUtils.unescapeJava(group.getName()));
+                    input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                    input.setLines(1);
+                    input.setMaxLines(1);
+
+                    FrameLayout container = new FrameLayout(GroupTabbedActivity.this);
+                    FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.leftMargin = 30;
+                    params.rightMargin = 30;
+                    input.setLayoutParams(params);
+
+                    int maxLength = 20;
+                    input.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
+                    container.addView(input);
+                    builder.setView(container);
+
+                    builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            progressBar.setVisibility(View.VISIBLE);
+                            groupService.updateGroupName(groupId, StringEscapeUtils.escapeJava(input.getText().toString()), GroupTabbedActivity.this);
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+            });
+        }
+
+        groupImage = (ImageView) findViewById(R.id.collapsing_group_image);
+        Picasso.with(GroupTabbedActivity.this).load(group.getImageUrl()).into(groupImage);
 
         userList = (RecyclerView) findViewById(R.id.userList);
         userAdapter = new UserAdapter(GroupTabbedActivity.this, group.getUsers(), userList);
@@ -150,6 +209,16 @@ public class GroupTabbedActivity extends AppCompatActivity
             }
         });
 
+        groupImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CropImage.activity().setAspectRatio(4,3)
+                        .setRequestedSize(800,600)
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(GroupTabbedActivity.this);
+            }
+        });
+
     }
 
     @Override
@@ -158,6 +227,20 @@ public class GroupTabbedActivity extends AppCompatActivity
         super.onResume();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                progressBar.setVisibility(View.VISIBLE);
+                Uri imageUri = result.getUri();
+                Picasso.with(GroupTabbedActivity.this).load(imageUri).into(groupImage);
+                groupService.updateGroupImage(groupId,imageUri, GroupTabbedActivity.this);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -251,6 +334,23 @@ public class GroupTabbedActivity extends AppCompatActivity
         Intent profile = new Intent(GroupTabbedActivity.this, ProfileActivity.class);
         profile.putExtra("id", userAdapter.getItemId(position));
         startActivity(profile);
+    }
+
+    public void updateName(String name) {
+        progressBar.setVisibility(View.GONE);
+        if (name  !=null){
+            group.setName(name);
+            collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(group.getName()));;
+        }
+    }
+
+    public void imageUpdated(String imageUrl) {
+        progressBar.setVisibility(View.GONE);
+        if (imageUrl != null){
+
+        } else {
+            Picasso.with(GroupTabbedActivity.this).load(group.getImageUrl()).into(groupImage);
+        }
     }
 
 

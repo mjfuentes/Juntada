@@ -145,14 +145,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                     return t1.getId().compareTo(group.getId());
                 }
             });
-            if (groupAdapter.getItemCount() != groups.size()) {
-                firstGroup.setVisibility(View.INVISIBLE);
-                groupAdapter.setData(groups);
-                recyclerView.removeAllViews();
-                groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
-                groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-                groupAdapter.notifyDataSetChanged();
-            }
+            firstGroup.setVisibility(View.INVISIBLE);
+            groupAdapter.setData(groups);
+            recyclerView.removeAllViews();
+            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
+            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+            groupAdapter.notifyDataSetChanged();
         }
     }
 
@@ -176,23 +174,10 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
     @Override
     protected void onResume() {
-
-        Intent intent = getIntent();
-        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)){
-
-            String[] parts = intent.getDataString().split("/");
-            String path =  parts[parts.length-2];
-            String token = parts[parts.length-1];
-            if (path.equals("joinGroup")) {
-                groupService.joinGroup(userId, token, GroupsActivity.this);
-            } else if (path.equals("joinEvent")){
-                eventService.joinEvent(userId, token, GroupsActivity.this);
-            }
-        }
-
         super.onResume();
         navigationView.setCheckedItem(R.id.groups);
 
+        groupService.loadGroups(userId);
         List<Group> groups = groupService.getUserGroups(userId);
         Collections.sort(groups, new Comparator<Group>() {
             @Override

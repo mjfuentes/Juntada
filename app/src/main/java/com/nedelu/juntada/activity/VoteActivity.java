@@ -1,8 +1,11 @@
 package com.nedelu.juntada.activity;
 
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
@@ -83,6 +86,13 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         optionsList.setLayoutManager(new LinearLayoutManager(VoteActivity.this));
         List<PollOption> options = new ArrayList<>(poll.getOptions());
         List<VotingItem> items = new ArrayList<>();
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+        ActivityManager.TaskDescription taskDesc = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+            setTaskDescription(taskDesc);
+        }
 
         View locationButton = findViewById(R.id.location_button);
 
