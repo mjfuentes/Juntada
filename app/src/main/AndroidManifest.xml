@@ -38,7 +38,23 @@
             android:name=".activity.GroupsActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+        <intent-filter android:label="Juntada">
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:host="www.juntada.nedelu.com"
+                android:pathPrefix="/joinGroup"
+                android:scheme="http" />
+            <data
+                android:host="www.juntada.nedelu.com"
+                android:pathPrefix="/joinEvent"
+                android:scheme="http" />
+            <!-- note that the leading "/" is required for pathPrefix -->
+        </intent-filter>
+        </activity>
         <activity
             android:name=".activity.NewGroupActivity"
             android:label="Nuevo Grupo"
@@ -86,18 +102,7 @@
         <activity
             android:name=".activity.JoinActivity"
             android:screenOrientation="portrait">
-            <intent-filter android:label="Juntada">
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data
-                    android:host="www.juntada.nedelu.com"
-                    android:pathPrefix="/join"
-                    android:scheme="http" />
-                <!-- note that the leading "/" is required for pathPrefix -->
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.EventActivity"
@@ -114,7 +119,9 @@
             android:label="@string/title_activity_group_tabbed"
             android:screenOrientation="portrait"
             android:parentActivityName=".activity.GroupsActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
         <activity
             android:name=".activity.EventsActivity"
             android:label="@string/title_activity_events"

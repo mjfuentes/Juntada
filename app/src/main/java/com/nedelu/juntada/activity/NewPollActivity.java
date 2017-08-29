@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -33,6 +35,8 @@ import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.service.GroupService;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class NewPollActivity extends AppCompatActivity {
+public class NewPollActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private GroupService groupService;
     private DateAdapter dateAdapter;
@@ -58,6 +62,7 @@ public class NewPollActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private SimpleDateFormat sdf;
     private String selectedTime;
+    private List<Integer> selectedItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +72,7 @@ public class NewPollActivity extends AppCompatActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Bundle inBundle = getIntent().getExtras();
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
         pollRequestId = Long.valueOf(inBundle.get("pollRequestId").toString());
@@ -98,6 +103,7 @@ public class NewPollActivity extends AppCompatActivity {
         dateAdapter = new DateAdapter(NewPollActivity.this);
         dateList = (GridView) findViewById(R.id.date_list);
         dateList.setAdapter(dateAdapter);
+        dateList.setOnItemClickListener(this);
 
         myCalendar = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -150,6 +156,7 @@ public class NewPollActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                button.setClickable(false);
                 progressBar.setVisibility(View.VISIBLE);
                 request.setOptions(dateAdapter.getItems());
                 groupService.createPoll(request, NewPollActivity.this);
@@ -179,7 +186,21 @@ public class NewPollActivity extends AppCompatActivity {
     }
 
     public void pollCreated(Poll poll) {
-        this.finish();
+        if (poll != null) {
+            this.finish();
+        } else {
+            button.setClickable(true);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (selectedItems.size() == 0){
+
+        }
+        dateList.setItemChecked(i,true);
+        dateList.setSelection(i);
+        selectedItems.add(i);
     }
 
     private class DateAdapter extends BaseAdapter {
@@ -227,13 +248,22 @@ public class NewPollActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-            SimpleDateFormat formatDay = new SimpleDateFormat("EEE", new Locale("es_ES"));
+            SimpleDateFormat formatDay = new SimpleDateFormat("EEE", new Locale("es", "ES"));
 
             try {
                 Date date = format.parse(options.get(i).getDate());
                 dateText.setText(sdf.format(date));
                 timeText.setText(options.get(i).getTime());
-                dayText.setText(formatDay.format(date));
+                dayText.setText(StringUtils.upperCase(formatDay.format(date).substring(0,3)));
+
+                rowView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ImageView imageView = findViewById()
+                    }
+                });
+
+
 
             } catch (ParseException e) {
                 e.printStackTrace();

@@ -244,7 +244,10 @@ public class EventDao {
             List<InvitedUser> result = helper.getInvitedUsersDao().queryBuilder().where().eq("user", userId).query();
             List<Event> events = new ArrayList<>();
             for (InvitedUser invitedUser : result){
-                events.add(getEvent(invitedUser.getEventId()));
+                Event event = getEvent(invitedUser.getEventId());
+                if (event != null) {
+                    events.add(event);
+                }
             }
             return events;
         } catch (SQLException e) {

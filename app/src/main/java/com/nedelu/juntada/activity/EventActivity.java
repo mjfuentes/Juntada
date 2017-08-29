@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class EventActivity extends AppCompatActivity {
+public class EventActivity extends AppCompatActivity implements UserAdapter.ClickListener {
 
     private Long userId;
     private Long eventId;
@@ -64,7 +65,7 @@ public class EventActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         eventId = userPref.getLong("eventId", 0L);
 
@@ -75,6 +76,8 @@ public class EventActivity extends AppCompatActivity {
         addMembersButton = (ImageView) findViewById(R.id.add_members_button);
         userList = (RecyclerView) findViewById(R.id.userList);
         userAdapter = new UserAdapter(EventActivity.this, event.getConfirmedUsers(), userList);
+        userAdapter.setOnItemClickListener(this);
+
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         userList.setAdapter(userAdapter);
@@ -228,5 +231,13 @@ public class EventActivity extends AppCompatActivity {
             i.putExtra(Intent.EXTRA_TEXT, sAux);
             startActivity(Intent.createChooser(i, "Elegir aplicacion"));
         }
+    }
+
+
+    @Override
+    public void onUserClicked(int position, View v) {
+        Intent profile = new Intent(EventActivity.this, ProfileActivity.class);
+        profile.putExtra("id", userAdapter.getItemId(position));
+        startActivity(profile);
     }
 }

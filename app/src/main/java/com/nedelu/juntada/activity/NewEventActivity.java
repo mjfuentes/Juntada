@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
@@ -65,6 +66,7 @@ public class NewEventActivity extends AppCompatActivity {
     private GroupService groupService;
     private ProgressBar progressBar;
     private FloatingActionButton button;
+    private RadioButton radioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,7 @@ public class NewEventActivity extends AppCompatActivity {
 
 
 
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
 
@@ -156,9 +158,11 @@ public class NewEventActivity extends AppCompatActivity {
         editDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new DatePickerDialog(NewEventActivity.this, R.style.DialogTheme,date, myCalendar
+                DatePickerDialog dialog =  new DatePickerDialog(NewEventActivity.this, R.style.DialogTheme,date, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+                dialog.show();
             }
         });
 
@@ -173,7 +177,9 @@ public class NewEventActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkFields() && checkDescription()){
+                int radioButtonID = editType.getCheckedRadioButtonId();
+                radioButton = (RadioButton) editType.findViewById(radioButtonID);
+                if (checkFields(radioButton) && checkDescription()){
                     button.setClickable(false);
                     PollRequest request = new PollRequest();
                     request.setGroupId(groupId);
@@ -181,8 +187,7 @@ public class NewEventActivity extends AppCompatActivity {
                     request.setDescription(editDescription.getEditText().getText().toString());
                     request.setTitle(editName.getEditText().getText().toString());
                     request.setLocation(editLocation.getEditText().getText().toString());
-                    int radioButtonID = editType.getCheckedRadioButtonId();
-                    RadioButton radioButton = (RadioButton) editType.findViewById(radioButtonID);
+
                     List<PollOption> options = null;
                     if (radioButton.getText().equals("Votacion")){
                         PollRequest savedRequest = groupService.savePollRequest(request);
@@ -236,10 +241,9 @@ public class NewEventActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkFields() {
+    private boolean checkFields(RadioButton radioButton) {
 
-        if (editName.getEditText().getText().toString().equals("") ||
-                editLocation.getEditText().getText().toString().equals("")) {
+        if ((editName.getEditText().getText().toString().equals("") || editLocation.getEditText().getText().toString().equals("")) || (editTime.getText().toString().equals("") && !radioButton.getText().equals("Votacion"))) {
             Toast.makeText(getApplicationContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
             return false;
         }

@@ -3,6 +3,7 @@ package com.nedelu.juntada.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +47,7 @@ public class EventsActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Invitaciones");
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         eventService = new EventService(this);
         userService = new UserService(this);
@@ -155,7 +156,7 @@ public class EventsActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Event item) {
         Intent event = new Intent(EventsActivity.this, EventActivity.class);
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("eventId", item.getId());
         editor.apply();

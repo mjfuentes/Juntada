@@ -49,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
+//        editor.putString("server_url", "http://10.1.1.4:8080");
+
         editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
 
@@ -151,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("userId", user.getId());
         editor.apply();

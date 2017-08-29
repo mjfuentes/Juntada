@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -29,6 +30,7 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.nedelu.juntada.util.SpacesItemDecoration;
@@ -45,6 +47,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     private RecyclerView recyclerView;
     private GroupService groupService;
     private UserService userService;
+    private EventService eventService;
     private Long userId;
     private NavigationView navigationView;
     ImageView firstGroup;
@@ -77,9 +80,10 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                 startActivity(main);
             }
         });
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         userService = new UserService(GroupsActivity.this);
+        eventService = new EventService(GroupsActivity.this);
         user = userService.getUser(userId);
         firstGroup = (ImageView) findViewById(R.id.first_group);
 
@@ -171,7 +175,26 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     }
 
     @Override
+    public void onNewIntent(final Intent newIntent) {
+        Intent intent = newIntent;
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)){
+
+            String[] parts = intent.getDataString().split("/");
+            String path =  parts[parts.length-2];
+            String token = parts[parts.length-1];
+            if (path.equals("joinGroup")) {
+                groupService.joinGroup(userId, token, GroupsActivity.this);
+            } else if (path.equals("joinEvent")){
+                eventService.joinEvent(userId, token, GroupsActivity.this);
+            }
+        }
+    }
+
+    @Override
     protected void onResume() {
+
+
+
         super.onResume();
         navigationView.setCheckedItem(R.id.groups);
 
@@ -260,7 +283,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     public void onItemClick(int position, View v) {
         Intent main = new Intent(GroupsActivity.this, GroupTabbedActivity.class);
         Group group = groupAdapter.getItem(position);
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("userId", userId);
         editor.putLong("groupId", group.getId());

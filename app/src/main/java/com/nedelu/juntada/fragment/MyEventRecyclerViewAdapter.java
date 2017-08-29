@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Event> mValues;
+    private List<Event> mValues;
     private final OnListFragmentInteractionListener mListener;
 
     public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener) {
@@ -91,6 +91,33 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setItems(List<Event> items) {
+        Collections.sort(items, new Comparator<Event>() {
+            @Override
+            public int compare(Event event, Event t1) {
+                try {
+                    final SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                    final SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+                    Date optionDate1 = completeFormat.parse(event.getDate());
+                    Date optionDate2 = completeFormat.parse(t1.getDate());
+
+                    int result = optionDate1.compareTo(optionDate2);
+                    if (result == 0){
+                        optionDate1 = time.parse(event.getTime());
+                        optionDate2 = time.parse(t1.getTime());
+                        return optionDate1.compareTo(optionDate2);
+                    }
+                    return result;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+        this.mValues = items;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

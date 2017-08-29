@@ -11,14 +11,14 @@
         android:id="@+id/list"
         android:name="com.nedelu.juntada.fragment.EventFragment"
         android:layout_width="match_parent"
-        android:layout_height="2000dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:padding="4dp"
         android:clipToPadding="false"
         app:layoutManager="LinearLayoutManager"
-        tools:context="com.nedelu.juntada.fragment.EventFragment"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.nedelu.juntada.fragment.EventFragment"
         tools:listitem="@layout/fragment_event" />
     <LinearLayout
         android:id="@+id/noMessages"

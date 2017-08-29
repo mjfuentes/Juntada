@@ -25,7 +25,7 @@ import java.util.Locale;
 
 public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Poll> mValues;
+    private List<Poll> mValues;
     private final PollFragment.OnListFragmentInteractionListener mListener;
     private Long mUserId;
 
@@ -149,6 +149,11 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setItems(List<Poll> items) {
+        this.mValues = items;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

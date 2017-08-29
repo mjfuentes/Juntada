@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
+import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
@@ -16,6 +17,7 @@ import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,19 +59,15 @@ public class UserService {
         user.setLastName(lastName);
         user.setFacebookId(facebookId);
         user.setImageUrl(imageUrl);
-        Call<Long> call = server.createUser(user);
-        call.enqueue(new Callback<Long>() {
+        Call<UserDTO> call = server.createUser(user);
+        call.enqueue(new Callback<UserDTO>() {
             @Override
-            public void onResponse(Call<Long> call, Response<Long> response) {
+            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
 
                 if (response.code() == 200) {
-                    Long userId = response.body();
-
-                    if (userId != null) {
-                        user.setId(userId);
-                        saveUser(user);
-                        activity.nextActivity(user, true);
-                    }
+                    UserDTO userDTO = response.body();
+                    User newUser = saveUser(userDTO);
+                    activity.nextActivity(newUser, true);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
@@ -77,7 +75,7 @@ public class UserService {
             }
 
             @Override
-            public void onFailure(Call<Long> call, Throwable t) {
+            public void onFailure(Call<UserDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
@@ -145,7 +143,7 @@ public class UserService {
         userDao.saveUserGroup(userId, groupId);
     }
 
-    public void saveUser(UserDTO userDTO) {
+    public User saveUser(UserDTO userDTO) {
         User user = new User();
         user.setId(userDTO.getId());
         user.setFacebookId(userDTO.getFacebookId());
@@ -158,5 +156,7 @@ public class UserService {
         for (EventDTO eventDTO : userDTO.getEvents()){
             eventService.saveEvent(eventDTO);
         }
+
+        return getUser(user.getId());
     }
 }

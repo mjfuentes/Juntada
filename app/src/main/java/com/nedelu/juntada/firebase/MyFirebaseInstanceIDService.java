@@ -1,6 +1,7 @@
 package com.nedelu.juntada.firebase;
 
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -30,7 +31,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
             userService = new UserService(MyFirebaseInstanceIDService.this);
         }
 
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         Long userId = userPref.getLong("id", 0L);
         try {
             userService.registerUserToken(userService.getUser(userId), token);

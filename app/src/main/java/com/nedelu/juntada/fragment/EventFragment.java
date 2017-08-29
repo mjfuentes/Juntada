@@ -3,6 +3,7 @@ package com.nedelu.juntada.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +31,10 @@ public class EventFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
     private Context mContext;
     private GroupService groupService;
-
+    private Long groupId;
+    private MyEventRecyclerViewAdapter eventRecyclerViewAdapter;
+    private RecyclerView recyclerView;
+    private View mNoMessagesView;
     public EventFragment() {
     }
 
@@ -54,20 +58,21 @@ public class EventFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
-        View mNoMessagesView = view.findViewById(R.id.noMessages);
+        mNoMessagesView = view.findViewById(R.id.noMessages);
         // Set the adapter
         Context context = view.getContext();
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
         if (mColumnCount <= 1) {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
 
-        SharedPreferences userPref = context.getSharedPreferences("user", 0);
-        Long groupId =  userPref.getLong("groupId", 0L);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        groupId = userPref.getLong("groupId", 0L);
         List<Event> events = groupService.getEvents(groupId);
-        recyclerView.setAdapter(new MyEventRecyclerViewAdapter(events, mListener));
+        eventRecyclerViewAdapter = new MyEventRecyclerViewAdapter(events, mListener);
+        recyclerView.setAdapter(eventRecyclerViewAdapter);
         recyclerView.setHasFixedSize(true);
 
         if (events.size() > 0) {
@@ -103,6 +108,19 @@ public class EventFragment extends Fragment {
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
     }
+
+    public void refresh() {
+        List<Event> events = this.groupService.getEvents(groupId);
+        if (events.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            mNoMessagesView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            mNoMessagesView.setVisibility(View.VISIBLE);
+        }
+        eventRecyclerViewAdapter.setItems(events);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

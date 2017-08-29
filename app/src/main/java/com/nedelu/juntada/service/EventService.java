@@ -1,6 +1,7 @@
 package com.nedelu.juntada.service;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -8,12 +9,16 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.nedelu.juntada.activity.EventActivity;
+import com.nedelu.juntada.activity.GroupTabbedActivity;
+import com.nedelu.juntada.activity.GroupsActivity;
+import com.nedelu.juntada.activity.JoinActivity;
 import com.nedelu.juntada.activity.VoteActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Assistance;
 import com.nedelu.juntada.model.Event;
+import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollOptionVote;
@@ -26,6 +31,8 @@ import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.EventTokenDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.JoinEventDTO;
+import com.nedelu.juntada.model.dto.JoinGroupDTO;
 import com.nedelu.juntada.model.dto.PollConfirmDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.PollOptionDTO;
@@ -151,58 +158,61 @@ public class EventService {
     }
 
     public Event saveEvent(EventDTO eventDTO) {
-        Event event = new Event();
-        event.setId(eventDTO.getId());
-        event.setLocation(eventDTO.getLocation());
-        event.setGroup(groupDao.getGroup(eventDTO.getOwnerGroup()));
-        event.setTitle(eventDTO.getTitle());
-        event.setDate(eventDTO.getDate());
-        event.setTime(eventDTO.getTime());
-        event.setDescription(eventDTO.getDescription());
-        event.setCreator(userDao.getUser(eventDTO.getCreator()));
-        eventDao.saveEvent(event);
+        if (eventDTO.getId() != null) {
+            Event event = new Event();
+            event.setId(eventDTO.getId());
+            event.setLocation(eventDTO.getLocation());
+            event.setGroup(groupDao.getGroup(eventDTO.getOwnerGroup()));
+            event.setTitle(eventDTO.getTitle());
+            event.setDate(eventDTO.getDate());
+            event.setTime(eventDTO.getTime());
+            event.setDescription(eventDTO.getDescription());
+            event.setCreator(userDao.getUser(eventDTO.getCreator()));
+            eventDao.saveEvent(event);
 
-        Event newEvent = eventDao.getEvent(event.getId());
+            Event newEvent = eventDao.getEvent(event.getId());
 
 
-        eventDao.cleanAssistance(event.getId());
-        for (Long userId : eventDTO.getConfirmedUsers()){
-            ConfirmedUser confirmedUser = new ConfirmedUser();
-            confirmedUser.setEventId(newEvent.getId());
-            confirmedUser.setUserId(userId);
-            eventDao.saveConfirmedUser(confirmedUser);
-        }
-
-        if (eventDTO.getNotGoingUsers() != null) {
-            for (Long userId : eventDTO.getNotGoingUsers()) {
-                NotGoingUsers notGoingUser = new NotGoingUsers();
-                notGoingUser.setEventId(newEvent.getId());
-                notGoingUser.setUserId(userId);
-                eventDao.saveNotGoingUser(notGoingUser);
+            eventDao.cleanAssistance(event.getId());
+            for (Long userId : eventDTO.getConfirmedUsers()) {
+                ConfirmedUser confirmedUser = new ConfirmedUser();
+                confirmedUser.setEventId(newEvent.getId());
+                confirmedUser.setUserId(userId);
+                eventDao.saveConfirmedUser(confirmedUser);
             }
-        }
 
-        if (eventDTO.getDoNotKnowUsers() != null) {
-
-            for (Long userId : eventDTO.getDoNotKnowUsers()) {
-                DontKnowUsers dontKnowUser = new DontKnowUsers();
-                dontKnowUser.setEventId(newEvent.getId());
-                dontKnowUser.setUserId(userId);
-                eventDao.saveDontKnowUser(dontKnowUser);
+            if (eventDTO.getNotGoingUsers() != null) {
+                for (Long userId : eventDTO.getNotGoingUsers()) {
+                    NotGoingUsers notGoingUser = new NotGoingUsers();
+                    notGoingUser.setEventId(newEvent.getId());
+                    notGoingUser.setUserId(userId);
+                    eventDao.saveNotGoingUser(notGoingUser);
+                }
             }
-        }
 
-        if (eventDTO.getInvitedUsers() != null) {
+            if (eventDTO.getDoNotKnowUsers() != null) {
 
-            for (Long userId : eventDTO.getInvitedUsers()) {
-                InvitedUser invitedUser = new InvitedUser();
-                invitedUser.setEventId(newEvent.getId());
-                invitedUser.setUserId(userId);
-                eventDao.saveInvitedUser(invitedUser);
+                for (Long userId : eventDTO.getDoNotKnowUsers()) {
+                    DontKnowUsers dontKnowUser = new DontKnowUsers();
+                    dontKnowUser.setEventId(newEvent.getId());
+                    dontKnowUser.setUserId(userId);
+                    eventDao.saveDontKnowUser(dontKnowUser);
+                }
             }
+
+            if (eventDTO.getInvitedUsers() != null) {
+
+                for (Long userId : eventDTO.getInvitedUsers()) {
+                    InvitedUser invitedUser = new InvitedUser();
+                    invitedUser.setEventId(newEvent.getId());
+                    invitedUser.setUserId(userId);
+                    eventDao.saveInvitedUser(invitedUser);
+                }
+            }
+            return newEvent;
         }
 
-        return newEvent;
+        return null;
     }
 
     public Poll getPoll(Long pollId){
@@ -286,11 +296,77 @@ public class EventService {
     }
 
     public void generateToken(Long eventId, final EventActivity eventActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        Call<EventTokenDTO> call = server.getEventToken(eventId);
+
+        call.enqueue(new Callback<EventTokenDTO>() {
+            @Override
+            public void onResponse(Call<EventTokenDTO> call, Response<EventTokenDTO> response) {
+                if (response.code() == 200) {
+                    eventActivity.tokenGenerated(response.body().getToken());
+                } else {
+                    eventActivity.tokenGenerated(null);
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventTokenDTO> call, Throwable t) {
+                eventActivity.tokenGenerated(null);
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public List<Event> getEventsForUser(Long userId) {
         return eventDao.getForUser(userId);
+    }
+
+    public void joinEvent(final Long userId, String token, final GroupsActivity joinActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+
+        JoinEventDTO joinEvent = new JoinEventDTO();
+        joinEvent.setUserId(userId);
+        joinEvent.setEventToken(token);
+
+        Call<EventDTO> call = server.joinEvent(joinEvent);
+
+        call.enqueue(new Callback<EventDTO>() {
+            @Override
+            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                if (response.code() == 200) {
+                    Event event = saveEvent(response.body());
+
+                    Intent main = new Intent(joinActivity, EventActivity.class);
+                    SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = userPref.edit();
+                    editor.putLong("userId", userId);
+                    editor.putLong("eventId", event.getId());
+                    editor.apply();
+                    joinActivity.startActivity(main);
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    joinActivity.finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventDTO> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                joinActivity.finish();
+            }
+        });
     }
 
     public interface ResultListener{

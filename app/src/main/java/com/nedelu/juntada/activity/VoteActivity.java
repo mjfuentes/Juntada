@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -67,8 +68,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         Long pollId = userPref.getLong("pollId", 0L);
         final Long userId = userPref.getLong("userId", 0L);
         final EventService eventService = new EventService(VoteActivity.this);
@@ -217,7 +217,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         if (result) {
             if (isCreator) {
                 Intent event = new Intent(VoteActivity.this, EventActivity.class);
-                SharedPreferences userPref = getSharedPreferences("user", 0);
+                SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = userPref.edit();
                 editor.putLong("eventId", eventId);
                 editor.apply();

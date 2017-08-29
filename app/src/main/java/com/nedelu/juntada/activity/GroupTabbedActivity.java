@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -68,10 +69,11 @@ public class GroupTabbedActivity extends AppCompatActivity
     private User user;
     private NestedScrollView scrollView;
     private ProgressBar progressBar;
-//    private SwipeRefreshLayout swipeRefreshLayout;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ImageView addMember;
+    private EventFragment eventFragment;
+    private PollFragment pollFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +101,7 @@ public class GroupTabbedActivity extends AppCompatActivity
 //        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
 //        swipeRefreshLayout.setOnRefreshListener(this);
 
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
         image_url =  userPref.getString("image_url", "");
@@ -107,19 +109,10 @@ public class GroupTabbedActivity extends AppCompatActivity
         userService = new UserService(GroupTabbedActivity.this);
         user = userService.getUser(userId);
 
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        View headerView = navigationView.getHeaderView(0);
-//        TextView user_name = (TextView) headerView.findViewById(R.id.user_name);
-//        user_name.setText(user.getFirstName() + " " + user.getLastName());
-
-//        ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
-//        Picasso.with(GroupTabbedActivity.this).load(user.getImageUrl()).into(user_image);
-//
         groupService = GroupService.getInstance(GroupTabbedActivity.this);
         group = groupService.getGroup(groupId);
         getSupportActionBar().setTitle(StringEscapeUtils.unescapeJava(group.getName()));
-//
-//        scrollView = (NestedScrollView) findViewById(R.id.scrollView);
+
         ImageView groupImageView = (ImageView) findViewById(R.id.collapsing_group_image);
         Picasso.with(GroupTabbedActivity.this).load(group.getImageUrl()).into(groupImageView);
 
@@ -129,21 +122,12 @@ public class GroupTabbedActivity extends AppCompatActivity
 
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         userList.setAdapter(userAdapter);
-
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.setDrawerListener(toggle);
-//        toggle.syncState();
-
-
         mEventPagerAdapter = new GroupTabbedActivity.SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
         addEventButton = (FloatingActionButton) findViewById(R.id.add_event);
         mViewPager.setAdapter(mEventPagerAdapter);
 
-//        blur = findViewById(R.id.blur_background);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         addEventButton.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +150,12 @@ public class GroupTabbedActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        groupService.loadGroupData(groupId, this);
+        super.onResume();
     }
 
 
@@ -207,7 +197,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Event item) {
         Intent event = new Intent(GroupTabbedActivity.this, EventActivity.class);
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("eventId", item.getId());
         editor.apply();
@@ -217,7 +207,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Poll item) {
         Intent vote = new Intent(GroupTabbedActivity.this, VoteActivity.class);
-        SharedPreferences userPref = getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = userPref.edit();
         editor.putLong("pollId", item.getId());
         editor.apply();
@@ -252,10 +242,9 @@ public class GroupTabbedActivity extends AppCompatActivity
         }
     }
 
-//    @Override
-//    public void onRefresh() {
-//        groupService.loadGroup(groupId,GroupTabbedActivity.this);
-//    }
+    public void onRefresh() {
+        groupService.loadGroup(groupId,GroupTabbedActivity.this);
+    }
 
     @Override
     public void onUserClicked(int position, View v) {
@@ -275,11 +264,13 @@ public class GroupTabbedActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return EventFragment.newInstance(GroupTabbedActivity.this);
+                    eventFragment = EventFragment.newInstance(GroupTabbedActivity.this);
+                    return eventFragment;
                 case 1:
-                    return PollFragment.newInstance(GroupTabbedActivity.this);
+                    pollFragment = PollFragment.newInstance(GroupTabbedActivity.this);
+                    return pollFragment;
                 default:
-                    return new EventFragment();
+                    return EventFragment.newInstance(GroupTabbedActivity.this);
             }
         }
 
@@ -298,10 +289,15 @@ public class GroupTabbedActivity extends AppCompatActivity
             }
             return null;
         }
+
+        public void refresh() {
+            pollFragment.refresh();
+            eventFragment.refresh();
+        }
     }
 
     public void refreshGroup(Boolean result){
-        groupService.loadGroup(groupId,GroupTabbedActivity.this);
+//        groupService.loadGroup(groupId,GroupTabbedActivity.this);
 
         if (result) {
             this.group = groupService.getGroup(groupId);
@@ -312,12 +308,7 @@ public class GroupTabbedActivity extends AppCompatActivity
             userAdapter.notifyItemRangeInserted(0, userAdapter.getItemCount());
             userAdapter.notifyDataSetChanged();
 
-            mEventPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            try {
-                mViewPager.setAdapter(mEventPagerAdapter);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+            mSectionsPagerAdapter.refresh();
         }
     }
 }

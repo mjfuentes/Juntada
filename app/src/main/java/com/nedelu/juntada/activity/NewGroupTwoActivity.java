@@ -55,7 +55,7 @@ public class NewGroupTwoActivity extends AppCompatActivity implements TokenResul
 
     @Override
     public void tokenGenerated(String token) {
-        String url = "http://www.juntada.nedelu.com/join/" + token;
+        String url = "http://www.juntada.nedelu.com/joinGroup/" + token;
 
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");

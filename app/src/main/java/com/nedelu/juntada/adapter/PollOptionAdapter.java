@@ -115,23 +115,23 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
             @Override
             public void onClick(View v) {
                 ImageView checkbox;
-                if (admin) {
-                    for (int i = 0; i < mItems.size(); i++) {
-                        View view = mRecyclerView.getChildAt(i);
-                        checkbox = (ImageView) view.findViewById(R.id.checkbox);
-                        checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
-                    }
-                }
-                checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
+
 
                 if (holder.mItem.getVoted()) {
                     holder.mItem.setVoted(false);
+                    checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
                     checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
                 } else {
-                    for (VotingItem item :mItems){
-                        item.setVoted(false);
+                    if (admin) {
+                        for (int i = 0; i < mItems.size(); i++) {
+                            View view = mRecyclerView.getChildAt(i);
+                            mItems.get(i).setVoted(false);
+                            checkbox = (ImageView) view.findViewById(R.id.checkbox);
+                            checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.check_green));
+                        }
                     }
                     holder.mItem.setVoted(true);
+                    checkbox = (ImageView) holder.mView.findViewById(R.id.checkbox);
                     checkbox.setImageDrawable(mContext.getResources().getDrawable(R.drawable.checked_green));
                 }
 

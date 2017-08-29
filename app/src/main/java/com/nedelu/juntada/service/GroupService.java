@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nedelu.juntada.activity.GroupTabbedActivity;
+import com.nedelu.juntada.activity.GroupsActivity;
 import com.nedelu.juntada.activity.JoinActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
@@ -23,6 +24,7 @@ import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollRequest;
+import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
@@ -180,15 +182,21 @@ public class GroupService extends Observable {
         call.enqueue(new Callback<PollDTO>() {
             @Override
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
-                PollDTO pollDTO = response.body();
-                Poll poll = eventService.savePoll(pollDTO);
-                newPollActivity.pollCreated(poll);
+                if (response.code() == 200) {
+                    PollDTO pollDTO = response.body();
+                    Poll poll = eventService.savePoll(pollDTO);
+                    newPollActivity.pollCreated(poll);
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    newPollActivity.pollCreated(null);
+
+                }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                newPollActivity.finish();
+                newPollActivity.pollCreated(null);
             }
         });
     }
@@ -261,7 +269,11 @@ public class GroupService extends Observable {
     private Group fromDTO(GroupDTO groupDTO) {
         Group group = new Group();
         group.setId(groupDTO.getId());
-        group.setCreator(userService.getUser(groupDTO.getCreator().getId()));
+        User creator = userService.getUser(groupDTO.getCreator().getId());
+        if (creator == null){
+            creator = userService.saveUser(groupDTO.getCreator());
+        }
+        group.setCreator(creator);
         group.setImageUrl(groupDTO.getImageUrl());
         group.setName(groupDTO.getName());
         return group;
@@ -407,7 +419,7 @@ public class GroupService extends Observable {
         });
     }
 
-    public void joinGroup(final Long userId, String token, final JoinActivity joinActivity) {
+    public void joinGroup(final Long userId, String token, final GroupsActivity joinActivity) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -428,7 +440,7 @@ public class GroupService extends Observable {
                     Group group = saveGroup(response.body());
 
                     Intent main = new Intent(joinActivity, GroupTabbedActivity.class);
-                    SharedPreferences userPref = joinActivity.getSharedPreferences("user", 0);
+                    SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
                     SharedPreferences.Editor editor = userPref.edit();
                     editor.putLong("userId", userId);
                     editor.putLong("groupId", group.getId());

@@ -8,6 +8,7 @@ import com.nedelu.juntada.model.dto.EventTokenDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.JoinEventDTO;
 import com.nedelu.juntada.model.dto.JoinGroupDTO;
 import com.nedelu.juntada.model.dto.PollConfirmDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
@@ -30,7 +31,7 @@ import retrofit2.http.Path;
 public interface ServerInterface {
 
     @POST("users")
-    Call<Long> createUser(@Body User user);
+    Call<UserDTO> createUser(@Body User user);
 
     @POST("users/{userId}/firebase")
     Call<UserDTO> registerFirebase(@Path("userId") Long userId, @Body FirebaseRegistration registration);
@@ -71,4 +72,7 @@ public interface ServerInterface {
 
     @GET("events/{eventId}/token")
     Call<EventTokenDTO> getEventToken(@Path("eventId") Long eventId);
+
+    @POST("events/member")
+    Call<EventDTO> joinEvent(@Body JoinEventDTO joinEvent);
 }

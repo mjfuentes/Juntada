@@ -3,6 +3,7 @@ package com.nedelu.juntada.fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,8 +32,10 @@ public class PollFragment extends Fragment {
     private GroupService groupService;
     private Context mContext;
     private Long userId;
+    private Long groupId;
     private View mNoMessagesView;
-
+    private MyPollRecyclerViewAdapter myPollRecyclerViewAdapter;
+    private RecyclerView recyclerView;
     public PollFragment() {
     }
 
@@ -52,7 +55,8 @@ public class PollFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-        SharedPreferences userPref = mContext.getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        groupId = userPref.getLong("groupId", 0L);
         userId = userPref.getLong("userId", 0L);
     }
 
@@ -62,18 +66,19 @@ public class PollFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_unconfirmed_list, container, false);
         Context context = view.getContext();
         mNoMessagesView = view.findViewById(R.id.noMessages);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+         recyclerView = (RecyclerView) view.findViewById(R.id.list);
         if (mColumnCount <= 1) {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
 
-        SharedPreferences userPref = context.getSharedPreferences("user", 0);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         Long groupId =  userPref.getLong("groupId", 0L);
 
         List<Poll> polls = groupService.getPolls(groupId);
-        recyclerView.setAdapter(new MyPollRecyclerViewAdapter(polls, userId, mListener));
+        myPollRecyclerViewAdapter = new MyPollRecyclerViewAdapter(polls, userId, mListener);
+        recyclerView.setAdapter(myPollRecyclerViewAdapter);
         recyclerView.setHasFixedSize(true);
 
         if (polls.size() > 0) {
@@ -107,6 +112,18 @@ public class PollFragment extends Fragment {
     public void setContext(Context context) {this.mContext = context; }
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
+    }
+
+    public void refresh() {
+        List<Poll> polls = groupService.getPolls(groupId);
+        if (polls.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            mNoMessagesView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            mNoMessagesView.setVisibility(View.VISIBLE);
+        }
+        myPollRecyclerViewAdapter.setItems(polls);
     }
 
     public interface OnListFragmentInteractionListener {
