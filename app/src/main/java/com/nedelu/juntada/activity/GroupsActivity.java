@@ -175,8 +175,9 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     }
 
     @Override
-    public void onNewIntent(final Intent newIntent) {
-        Intent intent = newIntent;
+    protected void onResume() {
+
+        Intent intent = getIntent();
         if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)){
 
             String[] parts = intent.getDataString().split("/");
@@ -188,12 +189,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                 eventService.joinEvent(userId, token, GroupsActivity.this);
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-
-
 
         super.onResume();
         navigationView.setCheckedItem(R.id.groups);

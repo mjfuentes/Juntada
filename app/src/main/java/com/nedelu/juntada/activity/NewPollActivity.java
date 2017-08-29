@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -45,7 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class NewPollActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class NewPollActivity extends AppCompatActivity {
 
     private GroupService groupService;
     private DateAdapter dateAdapter;
@@ -63,6 +65,25 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
     private SimpleDateFormat sdf;
     private String selectedTime;
     private List<Integer> selectedItems = new ArrayList<>();
+    private Boolean delete = false;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.remove_item){
+            if (selectedItems.size() > 0){
+                for (Integer i : selectedItems){
+                    dateAdapter.removeItem(i);
+                }
+                dateAdapter.notifyDataSetChanged();
+                selectedItems.clear();
+
+                if (dateAdapter.getCount() < 2){
+                    button.setVisibility(View.GONE);
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,10 +121,9 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
 
         dateImage = (ImageView) findViewById(R.id.date_image);
 
-        dateAdapter = new DateAdapter(NewPollActivity.this);
+        dateAdapter = new DateAdapter(NewPollActivity.this, this);
         dateList = (GridView) findViewById(R.id.date_list);
         dateList.setAdapter(dateAdapter);
-        dateList.setOnItemClickListener(this);
 
         myCalendar = Calendar.getInstance();
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -127,7 +147,8 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
                     PollOption option = new PollOption();
                     option.setDate(sdf.format(myCalendar.getTime()));
                     option.setTime(selectedTime);
-                    dateAdapter.addDate(option);
+                    int index = dateAdapter.addDate(option);
+                    dateList.smoothScrollToPosition(index);
 
                     if (dateAdapter.getCount() == 20){
                         addDate.setVisibility(View.INVISIBLE);
@@ -194,27 +215,48 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (selectedItems.size() == 0){
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_poll, menu);
+        if (delete){
+            menu.getItem(0).setVisible(true);
+        } else {
+            menu.getItem(0).setVisible(false);
         }
-        dateList.setItemChecked(i,true);
-        dateList.setSelection(i);
-        selectedItems.add(i);
+        return true;
+    }
+
+
+    private void itemClicked(Integer i) {
+        if (selectedItems.contains(i)){
+            selectedItems.remove(i);
+            if (selectedItems.size()== 0){
+                delete = false;
+                invalidateOptionsMenu();
+            }
+        } else {
+            if (selectedItems.size() == 0){
+                delete = true;
+                invalidateOptionsMenu();
+            }
+            selectedItems.add(i);
+        }
     }
 
     private class DateAdapter extends BaseAdapter {
 
         private Context context;
         private List<PollOption> options = new ArrayList<>();
+        private NewPollActivity listener;
 
-        public DateAdapter(Context context){
+        public DateAdapter(Context context, NewPollActivity listener){
+            this.listener = listener;
             this.context = context;
         }
 
-        public void addDate(PollOption date) {
+        public int addDate(PollOption date) {
             this.options.add(date);
             this.notifyDataSetChanged();
+            return options.size()-1;
         }
 
 
@@ -234,12 +276,12 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
         }
 
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
 
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            View rowView = inflater.inflate(R.layout.poll_item, viewGroup, false);
+            final View rowView = inflater.inflate(R.layout.poll_item, viewGroup, false);
             TextView dateText = (TextView) rowView.findViewById(R.id.text_date);
             TextView timeText = (TextView) rowView.findViewById(R.id.text_time);
             TextView dayText = (TextView) rowView.findViewById(R.id.text_day);
@@ -259,7 +301,13 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
                 rowView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ImageView imageView = findViewById()
+                        ImageView imageView = (ImageView) rowView.findViewById(R.id.checked);
+                        if (imageView.getVisibility() == View.VISIBLE){
+                            imageView.setVisibility(View.GONE);
+                        } else {
+                            imageView.setVisibility(View.VISIBLE);
+                        }
+                        listener.itemClicked(i);
                     }
                 });
 
@@ -274,6 +322,10 @@ public class NewPollActivity extends AppCompatActivity implements AdapterView.On
 
         public List<PollOption> getItems() {
             return options;
+        }
+
+        public void removeItem(int i) {
+            options.remove(i);
         }
     }
 
