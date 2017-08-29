@@ -132,6 +132,20 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)){
+            String[] parts = intent.getDataString().split("/");
+            String path =  parts[parts.length-2];
+            String token = parts[parts.length-1];
+            if (path.equals("joinGroup")) {
+                    groupService.joinGroup(userId, token, GroupsActivity.this);
+                 } else if (path.equals("joinEvent")){
+                    eventService.joinEvent(userId, token, GroupsActivity.this);
+                }
+            }
+    }
+
     public void updateGroups(Boolean result){
         if (swipeRefreshLayout.isRefreshing()){
             swipeRefreshLayout.setRefreshing(false);
