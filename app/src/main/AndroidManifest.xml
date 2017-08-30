@@ -11,9 +11,9 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@drawable/logo"
+        android:icon="@drawable/logo_green"
         android:largeHeap="true"
-        android:roundIcon="@drawable/logo"
+        android:roundIcon="@drawable/logo_green"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name=".firebase.MyFirebaseMessagingService">
