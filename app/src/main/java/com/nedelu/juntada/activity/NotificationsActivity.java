@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,13 +18,10 @@ import android.widget.LinearLayout;
 
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.PushNotificationsAdapter;
-import com.nedelu.juntada.firebase.MyFirebaseMessagingService;
-import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.service.interfaces.NotificationContract;
 import com.nedelu.juntada.util.NotificationsPresenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationsActivity extends AppCompatActivity implements NotificationContract.View, PushNotificationsAdapter.OnItemClickListener {

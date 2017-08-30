@@ -10,6 +10,8 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.fragment.EventFragment.OnListFragmentInteractionListener;
 import com.nedelu.juntada.model.Event;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -70,7 +72,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         TextView eventLocation = (TextView) holder.mView.findViewById(R.id.event_location);
         TextView eventParticipants = (TextView) holder.mView.findViewById(R.id.users);
 
-        eventName.setText(mValues.get(position).getTitle());
+        eventName.setText(StringEscapeUtils.unescapeJava(mValues.get(position).getTitle()));
         eventDate.setText(mValues.get(position).getDate());
         eventTime.setText(mValues.get(position).getTime());
         eventLocation.setText(mValues.get(position).getLocation());

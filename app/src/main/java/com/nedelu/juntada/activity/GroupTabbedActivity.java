@@ -333,7 +333,7 @@ public class GroupTabbedActivity extends AppCompatActivity
 
     @Override
     public void onUserClicked(int position, View v) {
-        Intent profile = new Intent(GroupTabbedActivity.this, ProfileActivity.class);
+        Intent profile = new Intent(GroupTabbedActivity.this, VisitProfileActivity.class);
         profile.putExtra("id", userAdapter.getItemId(position));
         startActivity(profile);
     }

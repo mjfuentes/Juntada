@@ -108,7 +108,7 @@ public class NewPollActivity extends AppCompatActivity {
         groupService = GroupService.getInstance(NewPollActivity.this);
         request = groupService.getPollRequest(pollRequestId);
 
-        getSupportActionBar().setTitle(request.getTitle());
+        getSupportActionBar().setTitle("Agregar opciones");
 
         editDate = (EditText) findViewById(R.id.edit_date);
         editTime = (EditText) findViewById(R.id.edit_time);

@@ -94,7 +94,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/voto_red"/>
+                    android:src="@drawable/voto_green"/>
                 <TextView
                     android:text="02"
                     android:textStyle="bold"
@@ -144,7 +144,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/voto_red"/>
+                    android:src="@drawable/voto_green"/>
                 <TextView
                     android:text="02"
                     android:textStyle="bold"
@@ -200,7 +200,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/voto_red"/>
+                        android:src="@drawable/voto_green"/>
                     <TextView
                         android:text="02"
                         android:textStyle="bold"
@@ -249,7 +249,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/voto_red"/>
+                        android:src="@drawable/voto_green"/>
                     <TextView
                         android:text="02"
                         android:textStyle="bold"

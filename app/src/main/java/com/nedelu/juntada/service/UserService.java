@@ -116,7 +116,7 @@ public class UserService {
     public void saveUser(User user){
         try {
             userDao.saveUser(user);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -138,7 +138,6 @@ public class UserService {
         }
     }
 
-
     public void saveUserGroup(Long userId, Long groupId) {
         userDao.saveUserGroup(userId, groupId);
     }
@@ -152,10 +151,6 @@ public class UserService {
         user.setLastName(userDTO.getLastName());
 
         saveUser(user);
-
-            for (EventDTO eventDTO : userDTO.getEvents()){
-            eventService.saveEvent(eventDTO);
-        }
 
         return getUser(user.getId());
     }

@@ -14,6 +14,8 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class PushNotificationsAdapter
         final PushNotification newNotification = pushNotifications.get(position);
         User user = userService.getUser(newNotification.getCreatorId());
         holder.title.setText(newNotification.getTitle());
-        holder.description.setText(newNotification.getDescription());
+        holder.description.setText(StringEscapeUtils.unescapeJava(newNotification.getDescription()));
         Picasso.with(mContext).load(user.getImageUrl()).resize(150, 150).into(holder.image);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

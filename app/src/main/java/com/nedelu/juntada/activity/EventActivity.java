@@ -31,6 +31,7 @@ import com.nedelu.juntada.service.UserService;
 import com.nedelu.juntada.util.SpacesItemDecoration;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
@@ -172,12 +173,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
 
-
         Date optionDate = null;
         try {
             optionDate = completeFormat.parse(event.getDate());
-            title.setText(event.getTitle());
-            description.setText(event.getDescription());
+            title.setText(StringEscapeUtils.unescapeJava(event.getTitle()));
+            description.setText(StringEscapeUtils.unescapeJava(event.getDescription()));
             location.setText(event.getLocation());
             weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0,3)));
             date.setText(dayMonthFormat.format(optionDate));
@@ -256,7 +256,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
     @Override
     public void onUserClicked(int position, View v) {
-        Intent profile = new Intent(EventActivity.this, ProfileActivity.class);
+        Intent profile = new Intent(EventActivity.this, VisitProfileActivity.class);
         profile.putExtra("id", userAdapter.getItemId(position));
         startActivity(profile);
     }

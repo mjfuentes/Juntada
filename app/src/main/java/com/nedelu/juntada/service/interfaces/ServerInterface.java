@@ -8,6 +8,7 @@ import com.nedelu.juntada.model.dto.EventTokenDTO;
 import com.nedelu.juntada.model.dto.FirebaseRegistration;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.InvitedEventDTO;
 import com.nedelu.juntada.model.dto.JoinEventDTO;
 import com.nedelu.juntada.model.dto.JoinGroupDTO;
 import com.nedelu.juntada.model.dto.PollConfirmDTO;
@@ -88,4 +89,7 @@ public interface ServerInterface {
 
     @GET("polls/{pollId}")
     Call<PollDTO> getPoll(@Path("pollId") Long pollId);
+
+    @GET("users/{userId}/events")
+    Call<List<InvitedEventDTO>> getEventsForUser(@Path("userId") Long userId);
 }

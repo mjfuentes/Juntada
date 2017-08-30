@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-//                checkUser(newProfile);
+                checkUser(newProfile);
           }
         };
 
@@ -137,9 +137,6 @@ public class LoginActivity extends AppCompatActivity {
             User currentUser = userService.getUserByFacebookId(profile.getId());
             if (currentUser == null) {
                 try {
-
-
-
                     userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());
                 } catch (IOException e) {
                     Toast.makeText(getApplicationContext(), "Error during user creation", Toast.LENGTH_SHORT).show();

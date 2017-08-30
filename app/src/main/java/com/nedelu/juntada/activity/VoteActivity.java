@@ -35,6 +35,7 @@ import com.nedelu.juntada.model.dto.VoteRequestDTO;
 import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.util.SimpleDividerItemDecoration;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.lucasr.twowayview.TwoWayLayoutManager;
 import org.lucasr.twowayview.widget.ListLayoutManager;
 
@@ -159,10 +160,10 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         }
 
         TextView pollTitle = (TextView) findViewById(R.id.poll_title);
-        pollTitle.setText(poll.getTitle());
+        pollTitle.setText(StringEscapeUtils.unescapeJava(poll.getTitle()));
 
         TextView pollDescription = (TextView) findViewById(R.id.poll_description);
-        pollDescription.setText(poll.getDescription());
+        pollDescription.setText(StringEscapeUtils.unescapeJava(poll.getDescription()));
 
         TextView pollLocation = (TextView) findViewById(R.id.poll_location);
         pollLocation.setText(poll.getLocation());

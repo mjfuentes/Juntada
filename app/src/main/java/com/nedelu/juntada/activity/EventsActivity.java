@@ -33,6 +33,8 @@ import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 public class EventsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, EventFragment.OnListFragmentInteractionListener {
 
@@ -71,8 +73,9 @@ public class EventsActivity extends AppCompatActivity
         ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
         Picasso.with(EventsActivity.this).load(user.getImageUrl()).into(user_image);
 
+        eventsAdapter = new MyEventRecyclerViewAdapter(eventService.loadEventsForUser(userId,this), EventsActivity.this);
         eventsList = (RecyclerView) findViewById(R.id.events_list);
-        eventsList.setAdapter(new MyEventRecyclerViewAdapter(eventService.getEventsForUser(userId), EventsActivity.this));
+        eventsList.setAdapter(eventsAdapter);
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
@@ -80,6 +83,14 @@ public class EventsActivity extends AppCompatActivity
             taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
             setTaskDescription(taskDesc);
         }
+    }
+
+    public void refreshEvents(List<Event> events){
+        if (events != null){
+            eventsAdapter.setItems(events);
+            eventsAdapter.notifyDataSetChanged();
+        }
+
     }
 
     @Override

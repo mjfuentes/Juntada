@@ -12,6 +12,7 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
@@ -68,7 +69,7 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
 
         TextView pollname = (TextView) holder.mView.findViewById(R.id.poll_name);
-        pollname.setText(poll.getTitle());
+        pollname.setText(StringEscapeUtils.unescapeJava(poll.getTitle()));
         TextView vote = (TextView) holder.mView.findViewById(R.id.vote_title);
         ImageView voteImage = (ImageView) holder.mView.findViewById(R.id.vote_image);
 

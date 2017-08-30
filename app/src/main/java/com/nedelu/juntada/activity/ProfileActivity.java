@@ -2,9 +2,11 @@ package com.nedelu.juntada.activity;
 
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -34,8 +36,6 @@ public class ProfileActivity extends AppCompatActivity
     private UserService userService;
     private User user;
     private Long userId;
-    private Long loggedInUserId;
-    private User loggedInUser;
     private NavigationView navigationView;
 
     @Override
@@ -47,8 +47,8 @@ public class ProfileActivity extends AppCompatActivity
 
         userService = new UserService(ProfileActivity.this);
 
-        Bundle inBundle = getIntent().getExtras();
-        userId = Long.valueOf(inBundle.get("id").toString());
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+        userId = userPref.getLong("userId", 0L);
         user = userService.getUser(userId);
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
@@ -105,9 +105,9 @@ public class ProfileActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.notifications) {
+            Intent notifications = new Intent(this, NotificationsActivity.class);
+            startActivity(notifications);
         }
 
         return super.onOptionsItemSelected(item);

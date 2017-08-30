@@ -39,21 +39,22 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-        <intent-filter android:label="Juntada">
-            <action android:name="android.intent.action.VIEW" />
+            <intent-filter android:label="Juntada">
+                <action android:name="android.intent.action.VIEW" />
 
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data
-                android:host="www.juntada.nedelu.com"
-                android:pathPrefix="/joinGroup"
-                android:scheme="http" />
-            <data
-                android:host="www.juntada.nedelu.com"
-                android:pathPrefix="/joinEvent"
-                android:scheme="http" />
-            <!-- note that the leading "/" is required for pathPrefix -->
-        </intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.juntada.nedelu.com"
+                    android:pathPrefix="/joinGroup"
+                    android:scheme="http" />
+                <data
+                    android:host="www.juntada.nedelu.com"
+                    android:pathPrefix="/joinEvent"
+                    android:scheme="http" />
+                <!-- note that the leading "/" is required for pathPrefix -->
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.NewGroupActivity"
@@ -101,9 +102,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.JoinActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activity.EventActivity"
             android:parentActivityName=".activity.GroupTabbedActivity"
@@ -117,26 +116,31 @@
         <activity
             android:name=".activity.GroupTabbedActivity"
             android:label="@string/title_activity_group_tabbed"
-            android:screenOrientation="portrait"
             android:parentActivityName=".activity.GroupsActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.EventsActivity"
             android:label="@string/title_activity_events"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.NotificationsActivity"
-            android:label="Notificaciones">
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NotificationsActivity"
+            android:label="Notificaciones"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="notifications" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-
         </activity>
+        <activity android:name=".activity.VisitProfileActivity"
+            android:screenOrientation="portrait"
+            android:label="Ver Perfil"></activity>
     </application>
 
 </manifest>

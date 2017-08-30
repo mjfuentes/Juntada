@@ -32,7 +32,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         }
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        Long userId = userPref.getLong("id", 0L);
+        Long userId = userPref.getLong("userId", 0L);
         try {
             userService.registerUserToken(userService.getUser(userId), token);
         } catch (Exception e){

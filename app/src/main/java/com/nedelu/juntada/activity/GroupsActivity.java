@@ -88,6 +88,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         eventService = new EventService(GroupsActivity.this);
         user = userService.getUser(userId);
         firstGroup = (ImageView) findViewById(R.id.first_group);
+        recyclerView = (RecyclerView) findViewById(R.id.groups_view);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
@@ -118,11 +119,11 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         if (groups.size() == 0){
             firstGroup.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
         }
 
         groupAdapter = new GroupAdapter(GroupsActivity.this, groups);
         groupAdapter.setOnItemClickListener(this);
-        recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setItemViewCacheSize(6);
         recyclerView.setAdapter(groupAdapter);
@@ -168,18 +169,26 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         if (result) {
             List<Group> groups = groupService.getUserGroups(userId);
-            Collections.sort(groups, new Comparator<Group>() {
-                @Override
-                public int compare(Group group, Group t1) {
-                    return t1.getId().compareTo(group.getId());
-                }
-            });
-            firstGroup.setVisibility(View.INVISIBLE);
-            groupAdapter.setData(groups);
-            recyclerView.removeAllViews();
-            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
-            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-            groupAdapter.notifyDataSetChanged();
+            if (groups.size() == 0){
+                firstGroup.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                firstGroup.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                Collections.sort(groups, new Comparator<Group>() {
+                    @Override
+                    public int compare(Group group, Group t1) {
+                        return t1.getId().compareTo(group.getId());
+                    }
+                });
+                firstGroup.setVisibility(View.INVISIBLE);
+                groupAdapter.setData(groups);
+                recyclerView.removeAllViews();
+                groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
+                groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
+                groupAdapter.notifyDataSetChanged();
+            }
+
         }
     }
 
@@ -209,13 +218,18 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         groupService.loadGroups(userId);
 
         List<Group> groups = groupService.getUserGroups(userId);
-        Collections.sort(groups, new Comparator<Group>() {
-            @Override
-            public int compare(Group group, Group t1) {
-                return t1.getId().compareTo(group.getId());
-            }
-        });
-        if (groupAdapter.getItemCount() != groups.size()) {
+        if (groups.size() == 0){
+            firstGroup.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            firstGroup.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            Collections.sort(groups, new Comparator<Group>() {
+                @Override
+                public int compare(Group group, Group t1) {
+                    return t1.getId().compareTo(group.getId());
+                }
+            });
             firstGroup.setVisibility(View.INVISIBLE);
             groupAdapter.setData(groups);
             recyclerView.removeAllViews();
@@ -245,17 +259,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             Intent profile = new Intent(this, ProfileActivity.class);
             profile.putExtra("id", userId);
             startActivity(profile);
-            finish();
         } else if (id == R.id.groups) {
-            Intent groups = new Intent(this, GroupsActivity.class);
-            groups.putExtra("id", userId);
-            startActivity(groups);
-            finish();
+
         } else if (id == R.id.events) {
             Intent events = new Intent(this, EventsActivity.class);
             events.putExtra("id", userId);
             startActivity(events);
-            finish();
         } else if (id == R.id.configuration) {
 //            Intent events = new Intent(this, SettingsActivity.class);
 //            events.putExtra("id", userId);

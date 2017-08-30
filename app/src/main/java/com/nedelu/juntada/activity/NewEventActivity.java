@@ -39,6 +39,7 @@ import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.service.GroupService;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.SimpleDateFormat;
@@ -194,8 +195,8 @@ public class NewEventActivity extends AppCompatActivity {
                     PollRequest request = new PollRequest();
                     request.setGroupId(groupId);
                     request.setCreatorId(userId);
-                    request.setDescription(editDescription.getEditText().getText().toString());
-                    request.setTitle(editName.getEditText().getText().toString());
+                    request.setDescription(StringEscapeUtils.escapeJava(editDescription.getEditText().getText().toString()));
+                    request.setTitle(StringEscapeUtils.escapeJava(editName.getEditText().getText().toString()));
                     request.setLocation(editLocation.getEditText().getText().toString());
 
                     List<PollOption> options = null;

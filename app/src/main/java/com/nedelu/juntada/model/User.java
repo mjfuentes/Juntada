@@ -86,6 +86,7 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         if (obj.getClass().equals(User.class)){
             User user = (User) obj;
             return user.getId().equals(this.getId());
