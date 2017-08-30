@@ -7,8 +7,8 @@ android {
         applicationId "com.nedelu.juntada"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 21
-        versionName "1.20"
+        versionCode 22
+        versionName "1.21"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
         vectorDrawables.useSupportLibrary = true

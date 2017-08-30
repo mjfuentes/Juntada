@@ -30,6 +30,7 @@ import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.GroupDTO;
 import com.nedelu.juntada.model.dto.GroupTokenDTO;
+import com.nedelu.juntada.model.dto.InvitedEventDTO;
 import com.nedelu.juntada.model.dto.JoinGroupDTO;
 import com.nedelu.juntada.model.dto.PollDTO;
 import com.nedelu.juntada.model.dto.UserDTO;
@@ -309,7 +310,7 @@ public class GroupService extends Observable {
         }
 
         groupDao.clearEvents(groupDTO.getId());
-        for (EventDTO eventDTO: groupDTO.getEvents()){
+        for (InvitedEventDTO eventDTO: groupDTO.getEvents()){
             eventService.saveEvent(eventDTO);
         }
 

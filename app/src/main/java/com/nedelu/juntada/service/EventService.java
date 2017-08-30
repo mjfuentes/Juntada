@@ -236,8 +236,6 @@ public class EventService {
             eventDao.saveEvent(event);
 
             Event newEvent = eventDao.getEvent(event.getId());
-
-
             eventDao.cleanAssistance(event.getId());
             for (UserDTO user : eventDTO.getConfirmedUsers()) {
                 saveUser(user);

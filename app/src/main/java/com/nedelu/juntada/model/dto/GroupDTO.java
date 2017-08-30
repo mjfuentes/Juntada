@@ -13,15 +13,15 @@ public class GroupDTO {
     private Long id;
     private UserDTO creator;
     private String imageUrl;
-    private List<EventDTO> events;
+    private List<InvitedEventDTO> events;
     private List<UserDTO> users;
     private List<PollDTO> polls;
 
-    public List<EventDTO> getEvents() {
+    public List<InvitedEventDTO> getEvents() {
 		return events;
 	}
 
-	public void setEvents(List<EventDTO> events) {
+	public void setEvents(List<InvitedEventDTO> events) {
 		this.events = events;
 	}
 
