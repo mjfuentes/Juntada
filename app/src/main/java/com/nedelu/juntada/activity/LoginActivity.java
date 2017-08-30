@@ -52,8 +52,8 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.4:8080");
-        editor.putString("server_url", "http://www.juntada.nedelu.com");
+        editor.putString("server_url", "http://10.1.1.4:8080");
+//        editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
@@ -85,17 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-                checkUser(newProfile);
-          }
-        };
-
-
-
         accessTokenTracker.startTracking();
-        profileTracker.startTracking();
 
 
         super.onCreate(savedInstanceState);
@@ -108,9 +98,19 @@ public class LoginActivity extends AppCompatActivity {
         FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                AccessToken accessToken = loginResult.getAccessToken();
-                Profile profile = Profile.getCurrentProfile();
-                checkUser(profile);
+                if(Profile.getCurrentProfile() == null) {
+                    profileTracker = new ProfileTracker() {
+                        @Override
+                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                            checkUser(profile2);
+                            profileTracker.stopTracking();
+                        }
+                    };
+                }
+                else {
+                    Profile profile = Profile.getCurrentProfile();
+                    checkUser(profile);
+                }
             }
 
             @Override
@@ -188,7 +188,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
         //Facebook login
         accessTokenTracker.stopTracking();
-        profileTracker.stopTracking();
     }
 
     @Override
