@@ -153,7 +153,7 @@ public class UserService {
 
         saveUser(user);
 
-        for (EventDTO eventDTO : userDTO.getEvents()){
+            for (EventDTO eventDTO : userDTO.getEvents()){
             eventService.saveEvent(eventDTO);
         }
 

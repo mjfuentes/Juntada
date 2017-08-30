@@ -80,6 +80,8 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                 startActivity(main);
             }
         });
+
+
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         userService = new UserService(GroupsActivity.this);
@@ -122,6 +124,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         groupAdapter.setOnItemClickListener(this);
         recyclerView = (RecyclerView) findViewById(R.id.groups_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setItemViewCacheSize(6);
         recyclerView.setAdapter(groupAdapter);
 
         groupService.registerClient(this);
@@ -139,11 +142,23 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             String path =  parts[parts.length-2];
             String token = parts[parts.length-1];
             if (path.equals("joinGroup")) {
-                    groupService.joinGroup(userId, token, GroupsActivity.this);
-                 } else if (path.equals("joinEvent")){
-                    eventService.joinEvent(userId, token, GroupsActivity.this);
+                groupService.joinGroup(userId, token, GroupsActivity.this);
+             } else if (path.equals("joinEvent")){
+                eventService.joinEvent(userId, token, GroupsActivity.this);
+            }
+        } else {
+            if (intent.getExtras() != null){
+                Boolean load = intent.getBooleanExtra("reload",false);
+                if (load){
+                    swipeRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(true);
+                        }
+                    });
                 }
             }
+        }
     }
 
     public void updateGroups(Boolean result){
@@ -192,6 +207,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         navigationView.setCheckedItem(R.id.groups);
 
         groupService.loadGroups(userId);
+
         List<Group> groups = groupService.getUserGroups(userId);
         Collections.sort(groups, new Comparator<Group>() {
             @Override

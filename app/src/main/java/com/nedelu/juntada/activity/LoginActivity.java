@@ -52,8 +52,8 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.4:8080");
-        editor.putString("server_url", "http://www.juntada.nedelu.com");
+        editor.putString("server_url", "http://10.1.1.4:8080");
+//        editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
@@ -157,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
         main.putExtra("surname", user.getLastName());
         main.putExtra("imageUrl", user.getImageUrl());
         if (newUser){
+            main.putExtra("reload",true);
             try {
                 userService.registerUserToken(user, FirebaseInstanceId.getInstance().getToken());
             } catch (Exception e){

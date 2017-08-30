@@ -67,14 +67,15 @@ public class NewPollActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private SimpleDateFormat sdf;
     private String selectedTime;
-    private List<Integer> selectedItems = new ArrayList<>();
+    private List<PollOption> selectedItems = new ArrayList<>();
     private Boolean delete = false;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.remove_item){
             if (selectedItems.size() > 0){
-                for (Integer i : selectedItems){
+                int deleted = 0;
+                for (PollOption i : selectedItems){
                     dateAdapter.removeItem(i);
                 }
                 dateAdapter.notifyDataSetChanged();
@@ -168,8 +169,6 @@ public class NewPollActivity extends AppCompatActivity {
                         button.setVisibility(View.VISIBLE);
                     }
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -210,7 +209,7 @@ public class NewPollActivity extends AppCompatActivity {
 
     private void updateLabel() {
 
-        String myFormat = "dd/MM/yy";
+        String myFormat = "dd/MM/yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
         editDate.setText(sdf.format(myCalendar.getTime()));
@@ -236,7 +235,7 @@ public class NewPollActivity extends AppCompatActivity {
     }
 
 
-    private void itemClicked(Integer i) {
+    private void itemClicked(PollOption i) {
         if (selectedItems.contains(i)){
             selectedItems.remove(i);
             if (selectedItems.size()== 0){
@@ -308,16 +307,25 @@ public class NewPollActivity extends AppCompatActivity {
                 timeText.setText(options.get(i).getTime());
                 dayText.setText(StringUtils.upperCase(formatDay.format(date).substring(0,3)));
 
+                ImageView imageView = (ImageView) rowView.findViewById(R.id.checked);
+                if (options.get(i).selected){
+                    imageView.setVisibility(View.VISIBLE);
+                } else {
+                    imageView.setVisibility(View.GONE);
+                }
+
                 rowView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         ImageView imageView = (ImageView) rowView.findViewById(R.id.checked);
-                        if (imageView.getVisibility() == View.VISIBLE){
+                        if (options.get(i).selected){
                             imageView.setVisibility(View.GONE);
+                            options.get(i).selected = false;
                         } else {
                             imageView.setVisibility(View.VISIBLE);
+                            options.get(i).selected = true;
                         }
-                        listener.itemClicked(i);
+                        listener.itemClicked(options.get(i));
                     }
                 });
 
@@ -334,14 +342,24 @@ public class NewPollActivity extends AppCompatActivity {
             return options;
         }
 
-        public void removeItem(int i) {
+        public void removeItem(PollOption i) {
             options.remove(i);
         }
     }
 
     private boolean checkFields() {
 
-        return !editDate.getText().toString().equals("") &&
-                !(editTime.getText().toString().equals(""));
+        if (editDate.getText().toString().equals("") || (editTime.getText().toString().equals(""))){
+            Toast.makeText(getApplicationContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            for (PollOption option : dateAdapter.getItems()){
+                if (option.getTime().equals(editTime.getText().toString()) && (option.getDate().equals(editDate.getText().toString()))){
+                    Toast.makeText(getApplicationContext(), "Ya agregaste esa opcion!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

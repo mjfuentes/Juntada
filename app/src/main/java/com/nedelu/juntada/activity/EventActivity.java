@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -75,17 +76,21 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userService = new UserService(this);
         user = userService.getUser(userId);
         eventService = new EventService(this);
-        event = eventService.getEvent(eventId);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+        eventService.loadEvent(eventId, this);
+
         addMembersButton = (ImageView) findViewById(R.id.add_members_button);
         userList = (RecyclerView) findViewById(R.id.userList);
-        userAdapter = new UserAdapter(EventActivity.this, event.getConfirmedUsers(), userList);
+        userAdapter = new UserAdapter(EventActivity.this, new ArrayList<User>(), userList);
         userAdapter.setOnItemClickListener(this);
 
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         userList.setAdapter(userAdapter);
 
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
         blur = findViewById(R.id.blur_background);
 
         yesButton = findViewById(R.id.yes);
@@ -128,8 +133,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             }
         });
 
-        refreshInfo();
-
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -137,9 +140,16 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             setTaskDescription(taskDesc);
         }
 
+        Event event = eventService.getEvent(eventId);
+        if (event != null){
+            refreshInfo(event);
+        }
     }
 
-    private void refreshInfo(){
+
+
+    public void refreshInfo(final Event event){
+        progressBar.setVisibility(View.GONE);
         TextView title = (TextView) findViewById(R.id.event_title);
         TextView description = (TextView) findViewById(R.id.event_description);
         TextView location = (TextView) findViewById(R.id.event_location);
@@ -223,7 +233,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         blur.setVisibility(View.INVISIBLE);
         if (b) {
             event = eventService.getEvent(eventId);
-            refreshInfo();
+            refreshInfo(event);
         }
     }
 

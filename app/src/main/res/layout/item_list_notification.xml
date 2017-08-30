@@ -4,22 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardUseCompatPadding="true"
-    app:contentPaddingLeft="@dimen/activity_horizontal_margin"
-    app:contentPaddingRight="@dimen/activity_horizontal_margin"
-    app:contentPaddingTop="8dp"
-    app:contentPaddingBottom="8dp"
+    android:clickable="true"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="3dp"
     android:minHeight="?attr/listPreferredItemHeight"
     android:layout_height="wrap_content">
 
+
+
     <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
         android:layout_width="match_parent"
+        android:layout_gravity="left"
+        android:padding="8dp"
         android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginRight="10dp"
+            android:id="@+id/image"
+            android:layout_alignTop="@+id/tv_title"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/logo"/>
 
         <TextView
             android:id="@+id/tv_title"
+            android:layout_toRightOf="@id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -28,6 +38,7 @@
             tools:text="¡Cyberlunes!" />
 
         <TextView
+            android:layout_toRightOf="@id/image"
             android:id="@+id/tv_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

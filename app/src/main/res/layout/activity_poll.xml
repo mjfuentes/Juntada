@@ -137,6 +137,7 @@
         android:numColumns="2"
         android:verticalSpacing="15dp"
         android:choiceMode="multipleChoice"
+        tools:listitem="@layout/poll_item"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintLeft_toLeftOf="parent"

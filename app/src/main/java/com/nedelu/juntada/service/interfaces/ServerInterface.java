@@ -82,4 +82,10 @@ public interface ServerInterface {
     @Multipart
     @POST("groups/{groupId}/image")
     Call<GroupDTO> updateGroupImage(@Path("groupId") Long groupId,@Part MultipartBody.Part body);
+
+    @GET("events/{eventId}")
+    Call<EventDTO> getEvent(@Path("eventId") Long eventId);
+
+    @GET("polls/{pollId}")
+    Call<PollDTO> getPoll(@Path("pollId") Long pollId);
 }

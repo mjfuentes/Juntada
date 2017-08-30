@@ -14,6 +14,15 @@ public class PushNotification {
     @DatabaseField(columnName = "description")
     private String mDescription;
 
+    @DatabaseField(columnName = "type")
+    private String mType;
+
+    @DatabaseField(columnName = "value")
+    private String mValue;
+
+    @DatabaseField(columnName = "creator_id")
+    private Long creatorId;
+
     public Long getId() {
         return id;
     }
@@ -36,6 +45,30 @@ public class PushNotification {
 
     public String getDescription() {
         return mDescription;
+    }
+
+    public String getmType() {
+        return mType;
+    }
+
+    public void setmType(String mType) {
+        this.mType = mType;
+    }
+
+    public String getmValue() {
+        return mValue;
+    }
+
+    public void setmValue(String mValue) {
+        this.mValue = mValue;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
 }

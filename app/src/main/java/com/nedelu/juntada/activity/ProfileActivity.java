@@ -34,6 +34,8 @@ public class ProfileActivity extends AppCompatActivity
     private UserService userService;
     private User user;
     private Long userId;
+    private Long loggedInUserId;
+    private User loggedInUser;
     private NavigationView navigationView;
 
     @Override

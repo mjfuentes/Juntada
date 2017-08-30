@@ -53,6 +53,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
     private RecyclerView optionsList;
     private PollOptionAdapter adapter;
     private Poll poll;
+    private Long userId;
     private List<VotingItem> votingItems;
     private EventService eventService;
     private ProgressBar progressBar;
@@ -73,10 +74,9 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         Long pollId = userPref.getLong("pollId", 0L);
-        final Long userId = userPref.getLong("userId", 0L);
-        final EventService eventService = new EventService(VoteActivity.this);
+        userId = userPref.getLong("userId", 0L);
+        eventService = new EventService(VoteActivity.this);
         poll = eventService.getPoll(pollId);
-        isCreator = poll.getCreator().getId().equals(userId);
         buttonText = (TextView) findViewById(R.id.voting_button);
         button = findViewById(R.id.button);
         selectText = (TextView) findViewById(R.id.select_text);
@@ -84,8 +84,6 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         progressBar.setVisibility(View.INVISIBLE);
         optionsList = (RecyclerView) findViewById(R.id.options_list);
         optionsList.setLayoutManager(new LinearLayoutManager(VoteActivity.this));
-        List<PollOption> options = new ArrayList<>(poll.getOptions());
-        List<VotingItem> items = new ArrayList<>();
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
@@ -93,6 +91,44 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
             setTaskDescription(taskDesc);
         }
+
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        final CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    if (toolbarLayout != null) {
+                        toolbarLayout.setTitle(poll.getTitle());
+                        isShow = true;
+                    }
+                } else if (isShow) {
+                    if (toolbarLayout != null) {
+                        toolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
+                        isShow = false;
+                    }
+                }
+            }
+        });
+        poll = eventService.getPoll(pollId);
+        if (poll != null){
+            refreshPoll(poll);
+        } else {
+            eventService.loadPoll(pollId, this);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void refreshPoll(final Poll poll){
+        progressBar.setVisibility(View.GONE);
+        List<PollOption> options = new ArrayList<>(poll.getOptions());
+        List<VotingItem> items = new ArrayList<>();
 
         View locationButton = findViewById(R.id.location_button);
 
@@ -105,6 +141,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             }
         });
 
+        isCreator = poll.getCreator().getId().equals(userId);
         if (isCreator) {
             selectText.setText("SELECCIONA UNA OPCION");
             button.setVisibility(View.INVISIBLE);
@@ -173,28 +210,6 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                 }
             }
         });
-
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        final CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
-                }
-                if (scrollRange + verticalOffset == 0) {
-                    toolbarLayout.setTitle(poll.getTitle());
-                    isShow = true;
-                } else if (isShow) {
-                    toolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
-                    isShow = false;
-                }
-            }
-        });
-
     }
 
     @Override

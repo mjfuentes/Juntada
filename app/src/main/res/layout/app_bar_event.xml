@@ -50,7 +50,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
                     android:fontFamily="serif"
-                    android:text="Despedida de Marta!"
+                    android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="25dp"
                     android:textStyle="bold" />
@@ -66,7 +66,7 @@
                     android:layout_marginTop="15dp"
                     android:fontFamily="serif"
                     android:gravity="center"
-                    android:text="@string/lorem_ipsum"
+                    android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="15dp"
                     android:textStyle="italic" />
@@ -103,7 +103,7 @@
                             android:lines="1"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:text="5A N241 Marcelo T. de Alvear, Bs As., Argentina"
+                            android:text=""
                             android:textColor="#FFFFFF"
                             android:textSize="16dp" />
 
@@ -174,7 +174,7 @@
                         android:textSize="22dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="05"
+                        android:text="00"
                         android:textColor="@color/textPrimary"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"

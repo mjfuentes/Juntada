@@ -125,8 +125,19 @@ public class GroupTabbedActivity extends AppCompatActivity
         groupService = GroupService.getInstance(GroupTabbedActivity.this);
         group = groupService.getGroup(groupId);
         getSupportActionBar().setTitle(StringEscapeUtils.unescapeJava(group.getName()));
+        groupImage = (ImageView) findViewById(R.id.collapsing_group_image);
 
         if (group.getCreator().getId().equals(userId)){
+            groupImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CropImage.activity().setAspectRatio(4,3)
+                            .setRequestedSize(800,600)
+                            .setGuidelines(CropImageView.Guidelines.ON)
+                            .start(GroupTabbedActivity.this);
+                }
+            });
+
             ImageView editName = (ImageView) findViewById(R.id.edit_group_name);
             editName.setVisibility(View.VISIBLE);
             editName.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +183,6 @@ public class GroupTabbedActivity extends AppCompatActivity
             });
         }
 
-        groupImage = (ImageView) findViewById(R.id.collapsing_group_image);
         Picasso.with(GroupTabbedActivity.this).load(group.getImageUrl()).into(groupImage);
 
         userList = (RecyclerView) findViewById(R.id.userList);
@@ -209,15 +219,7 @@ public class GroupTabbedActivity extends AppCompatActivity
             }
         });
 
-        groupImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CropImage.activity().setAspectRatio(4,3)
-                        .setRequestedSize(800,600)
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .start(GroupTabbedActivity.this);
-            }
-        });
+
 
     }
 

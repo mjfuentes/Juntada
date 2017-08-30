@@ -130,7 +130,13 @@
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".activity.NotificationsActivity"
-            android:label="Notificaciones"></activity>
+            android:label="Notificaciones">
+            <intent-filter>
+                <action android:name="notifications" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>
