@@ -30,12 +30,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        sendNotification(remoteMessage);
-        displayNotification(remoteMessage.getNotification(), remoteMessage.getData());
+        sendNotification(remoteMessage.getData());
+        displayNotification(remoteMessage.getData());
 
     }
 
-    private void displayNotification(RemoteMessage.Notification notification, Map<String, String> data) {
+    private void displayNotification(Map<String, String> data) {
         Intent intent = new Intent(this, NotificationsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         for (String key : data.keySet()){
@@ -47,8 +47,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.logo)
-                .setContentTitle(notification.getTitle())
-                .setContentText(notification.getBody())
+                .setContentTitle(data.get("title"))
+                .setContentText(data.get("description"))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -60,19 +60,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0, notificationBuilder.build());
     }
 
-    private void sendNotification(RemoteMessage remoteMessage) {
+    private void sendNotification(Map<String, String> data) {
         Intent intent = new Intent("NEW_NOTIFICATION");
-        intent.putExtra("title", remoteMessage.getNotification().getTitle());
-        intent.putExtra("description", remoteMessage.getNotification().getBody());
+        intent.putExtra("title", data.get("title"));
+        intent.putExtra("description", data.get("description"));
         LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(intent);
 
         PushNotification notification = new PushNotification();
-        notification.setTitle(remoteMessage.getNotification().getTitle());
-        notification.setDescription(remoteMessage.getNotification().getBody());
-        notification.setmType(remoteMessage.getData().get("type"));
-        notification.setmValue(remoteMessage.getData().get("id"));
-        notification.setCreatorId(Long.valueOf(remoteMessage.getData().get("creator")));
+        notification.setTitle(data.get("title"));
+        notification.setDescription( data.get("description"));
+        notification.setmType(data.get("type"));
+        notification.setmValue(data.get("id"));
+        notification.setCreatorId(Long.valueOf(data.get("creator")));
 
         pushNotificationsRepository.savePushNotification(notification);
     }
