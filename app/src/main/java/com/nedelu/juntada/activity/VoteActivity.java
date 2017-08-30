@@ -106,7 +106,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                 }
                 if (scrollRange + verticalOffset == 0) {
                     if (toolbarLayout != null) {
-                        toolbarLayout.setTitle(poll.getTitle());
+                        toolbarLayout.setTitle(StringEscapeUtils.unescapeJava(poll.getTitle()));
                         isShow = true;
                     }
                 } else if (isShow) {
@@ -118,10 +118,11 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             }
         });
         poll = eventService.getPoll(pollId);
+
+        eventService.loadPoll(pollId, this);
         if (poll != null){
             refreshPoll(poll);
         } else {
-            eventService.loadPoll(pollId, this);
             progressBar.setVisibility(View.VISIBLE);
         }
     }

@@ -18,6 +18,8 @@ import com.nedelu.juntada.activity.NotificationsActivity;
 import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.util.PushNotificationsRepository;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.Map;
 
 /**
@@ -48,7 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(data.get("title"))
-                .setContentText(data.get("description"))
+                .setContentText(StringEscapeUtils.unescapeJava(data.get("description")))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
