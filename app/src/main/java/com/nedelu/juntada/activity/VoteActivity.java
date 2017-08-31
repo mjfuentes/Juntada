@@ -283,8 +283,15 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            button.setClickable(true);
                         }
                     });
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    button.setClickable(true);
+                }
+            });
 
             AlertDialog dialog = builder.create();
             dialog.show();
