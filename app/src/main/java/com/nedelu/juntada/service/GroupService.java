@@ -543,6 +543,10 @@ public class GroupService extends Observable {
         public void updateGroups(Boolean result);
     }
 
+    public int getUnansweredEventsAndPolls(Long userId, Long eventId){
+        return groupDao.getUnansweredEventsAndPolls(userId, eventId);
+    }
+
     private class SaveGroupsTask extends AsyncTask<List<GroupDTO>, Void, Void> {
         protected Void doInBackground(List<GroupDTO>... lists) {
             List<GroupDTO> groups = lists[0];

@@ -31,7 +31,6 @@ public class Poll {
     @DatabaseField(columnName = "description")
     private String description;
 
-
     @ForeignCollectionField(columnName = "options", eager = true)
     private ForeignCollection<PollOption> options;
 

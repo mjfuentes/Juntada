@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.nedelu.juntada.R;
 
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.service.GroupService;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -41,7 +42,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     private static final int MAX_PHOTO_ANIMATION_DELAY = 600;
     private static final int MIN_ITEMS_COUNT = 2;
     private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
-    
+
     // data is passed into the constructor
     public GroupAdapter(Context context, List<Group> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -63,6 +64,14 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         String groupName = mData.get(position).getName();
         String groupImage = mData.get(position).getImageUrl();
         holder.groupName.setText(StringEscapeUtils.unescapeJava(groupName));
+        Integer unread = mData.get(position).unansweredEventsAndPolls;
+        if (unread > 0){
+            holder.notificationsAmount.setText(String.valueOf(unread));
+            holder.notificationsCircle.setVisibility(View.VISIBLE);
+        } else {
+            holder.notificationsCircle.setVisibility(View.GONE);
+            holder.notificationsAmount.setVisibility(View.GONE);
+        }
         bindPhoto(holder, position);
 //        Picasso.with(mContext).load(groupImage).into(holder.imageView);
         System.out.println("Group image requested");
@@ -143,12 +152,16 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         public TextView groupName;
         public ImageView imageView;
         public FrameLayout root;
+        public TextView notificationsAmount;
+        public ImageView notificationsCircle;
 
         public ViewHolder(View itemView) {
             super(itemView);
             root = (FrameLayout) itemView.findViewById(R.id.group_item);
+            notificationsAmount = (TextView) itemView.findViewById(R.id.notifications_amount);
             groupName = (TextView) itemView.findViewById(R.id.group_name_text);
             imageView = (ImageView) itemView.findViewById(R.id.group_image);
+            notificationsCircle = (ImageView) itemView.findViewById(R.id.notifications);
             itemView.setOnClickListener(this);
         }
 

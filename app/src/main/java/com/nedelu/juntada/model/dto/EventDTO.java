@@ -1,6 +1,5 @@
 package com.nedelu.juntada.model.dto;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +15,7 @@ public class EventDTO {
     private List<Long> doNotKnowUsers;
     private List<Long> notGoingUsers;
     private List<Long> invitedUsers;
+    private List<Long> votingUsers;
     private String date;
     private String time;
     private String title;
@@ -119,6 +119,14 @@ public class EventDTO {
 
     public void setInvitedUsers(List<Long> invitedUsers) {
         this.invitedUsers = invitedUsers;
+    }
+
+    public List<Long> getVotingUsers() {
+        return votingUsers;
+    }
+
+    public void setVotingUsers(List<Long> votingUsers) {
+        this.votingUsers = votingUsers;
     }
 
 }

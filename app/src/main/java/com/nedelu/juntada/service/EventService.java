@@ -30,6 +30,8 @@ import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
 import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
+import com.nedelu.juntada.model.aux.PollVotedUser;
+import com.nedelu.juntada.model.aux.VotedUser;
 import com.nedelu.juntada.model.dto.AssitanceRequest;
 import com.nedelu.juntada.model.dto.EventDTO;
 import com.nedelu.juntada.model.dto.EventTokenDTO;
@@ -131,6 +133,14 @@ public class EventService {
         Poll poll = fromDTO(pollDTO);
         savePoll(poll);
 
+        eventDao.removePollVotedUsers(poll.getId());
+        for (Long user : pollDTO.getVotedUsers()){
+            PollVotedUser pollVotedUser = new PollVotedUser();
+            pollVotedUser.setPollId(poll.getId());
+            pollVotedUser.setUserId(user);
+            eventDao.savePollVotedUser(pollVotedUser);
+        }
+
         for(PollOptionDTO optionDTO : pollDTO.getOptions()){
             PollOption option = new PollOption();
             option.setId(optionDTO.getId());
@@ -218,6 +228,16 @@ public class EventService {
                     eventDao.saveInvitedUser(invitedUser);
                 }
             }
+
+            if (eventDTO.getVotingUsers() != null) {
+
+                for (Long userId : eventDTO.getVotingUsers()) {
+                    VotedUser votedUser = new VotedUser();
+                    votedUser.setEventId(newEvent.getId());
+                    votedUser.setUserId(userId);
+                    eventDao.saveVotedUser(votedUser);
+                }
+            }
             populateUsers(newEvent);
             return newEvent;
         }
@@ -274,6 +294,15 @@ public class EventService {
                     invitedUser.setEventId(newEvent.getId());
                     invitedUser.setUserId(user);
                     eventDao.saveInvitedUser(invitedUser);
+                }
+            }
+            if (eventDTO.getVotingUsers() != null) {
+
+                for (Long userId : eventDTO.getVotingUsers()) {
+                    VotedUser votedUser = new VotedUser();
+                    votedUser.setEventId(newEvent.getId());
+                    votedUser.setUserId(userId);
+                    eventDao.saveVotedUser(votedUser);
                 }
             }
             populateUsers(newEvent);

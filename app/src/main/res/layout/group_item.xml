@@ -2,15 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:attr/selectableItemBackground"
     android:layout_width="wrap_content"
-    android:layout_margin="5dp"
     android:id="@+id/group_item"
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv"
         style="@style/CardViewStyle"
-        android:layout_width="180dp"
-        android:layout_height="165dp"
+        android:layout_margin="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
         android:layout_gravity="center">
 
         <LinearLayout
@@ -34,16 +34,17 @@
 
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="35dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toLeftOf="@+id/notifications"
                     android:singleLine="true"
                     android:lines="1"
+                    android:layout_centerVertical="true"
                     android:id="@+id/group_name_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -52,7 +53,30 @@
                     android:textColor="@color/colorGroupsText"
                     android:textSize="16sp" />
 
-            </LinearLayout>
+                <ImageView
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/notifications"
+                    android:layout_width="20dp"
+                    android:layout_margin="5dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/notifications_circle"/>
+
+                <TextView
+                    android:id="@+id/notifications_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/colorLight"
+                    android:layout_centerVertical="true"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:layout_alignLeft="@id/notifications"
+                    android:layout_alignTop="@id/notifications"
+                    android:layout_alignRight="@id/notifications"
+                    android:layout_alignBottom="@id/notifications"/>
+
+            </RelativeLayout>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

@@ -19,6 +19,8 @@ import com.nedelu.juntada.model.aux.DontKnowUsers;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
+import com.nedelu.juntada.model.aux.PollVotedUser;
+import com.nedelu.juntada.model.aux.VotedUser;
 
 import java.sql.SQLException;
 
@@ -28,7 +30,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME    = "juntada2.db";
-    private static final int DATABASE_VERSION = 41;
+    private static final int DATABASE_VERSION = 43;
 
     private Dao<User, Long> mUserDao = null;
     private Dao<Group, Long> mGroupDao = null;
@@ -42,6 +44,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<InvitedUser, Long> mInvitedUsersDao = null;
     private Dao<PollOptionVote, Long> mPollOptionVotesDao = null;
     private Dao<PushNotification, Long> mPushNotificationDao = null;
+    private Dao<VotedUser, Long> mVotedUsersDao = null;
+    private Dao<PollVotedUser, Long> mPollVoteduserDao = null;
 
 
     public DatabaseHelper(Context context) {
@@ -64,6 +68,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTableIfNotExists(connectionSource,PollOptionVote.class);
             TableUtils.createTableIfNotExists(connectionSource,InvitedUser.class);
             TableUtils.createTableIfNotExists(connectionSource, PushNotification.class);
+            TableUtils.createTableIfNotExists(connectionSource, VotedUser.class);
+            TableUtils.createTableIfNotExists(connectionSource, PollVotedUser.class);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -87,6 +93,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource,PollOptionVote.class, true);
             TableUtils.dropTable(connectionSource,InvitedUser.class, true);
             TableUtils.dropTable(connectionSource,PushNotification.class, true);
+            TableUtils.dropTable(connectionSource,VotedUser.class, true);
+            TableUtils.dropTable(connectionSource,PollVotedUser.class, true);
 
             onCreate(db, connectionSource);
         } catch (SQLException e) {
@@ -176,6 +184,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mInvitedUsersDao;
     }
 
+    public Dao<VotedUser, Long> getVotedUsersDao() throws SQLException {
+        if (mVotedUsersDao == null) {
+            mVotedUsersDao  = getDao(VotedUser.class);
+        }
+
+        return mVotedUsersDao;
+    }
+
     public Dao<PollOptionVote, Long> getmPollOptionVotesDao() throws SQLException {
         if (mPollOptionVotesDao == null) {
             mPollOptionVotesDao  = getDao(PollOptionVote.class);
@@ -192,10 +208,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mPushNotificationDao;
     }
 
+    public Dao<PollVotedUser, Long> getPollVotedUserDao() throws SQLException {
+        if (mPollVoteduserDao == null) {
+            mPollVoteduserDao  = getDao(PollVotedUser.class);
+        }
+
+        return mPollVoteduserDao;
+    }
+
     @Override
     public void close() {
         mUserDao = null;
 
         super.close();
     }
+
+
 }

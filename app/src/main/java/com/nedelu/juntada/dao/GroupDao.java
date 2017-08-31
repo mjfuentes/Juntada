@@ -4,14 +4,18 @@ import android.content.Context;
 
 import com.codeslap.persistence.Persistence;
 import com.codeslap.persistence.SqlAdapter;
+import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.model.aux.VotedUser;
 import com.nedelu.juntada.util.DatabaseHelper;
 
 import java.sql.SQLException;
@@ -44,7 +48,10 @@ public class GroupDao {
                     .query();
 
             for (GroupMember groupMember: groupsMember){
-                groups.add(helper.getGroupDao().queryForId(groupMember.getGroupId()));
+                Group group = helper.getGroupDao().queryForId(groupMember.getGroupId());
+                group.unansweredEventsAndPolls = getUnansweredEventsAndPolls(userId, group.getId());
+                groups.add(group);
+
             }
             return groups;
         } catch (SQLException e) {
@@ -186,12 +193,35 @@ public class GroupDao {
     }
 
     public void clearEvents(Long id) {
+
+    }
+
+    public int getUnansweredEventsAndPolls(Long userId, Long groupId) {
         try {
-            DeleteBuilder<Event, Long> deleteBuilder = helper.getEventDao().deleteBuilder();
-            deleteBuilder.where().eq("owner_group", id);
-            deleteBuilder.delete();
+            List<String[]> result = helper.getVotedUsersDao().queryRaw("select event from votedUser where user = " + userId).getResults();
+            List<String> eventIds = new ArrayList<>();
+            for (String[] string : result) {
+                eventIds.add(string[0]);
+            }
+
+            QueryBuilder<Event, Long> queryBuilder = helper.getEventDao().queryBuilder();
+            Long unvotedEvents = queryBuilder.where().eq("owner_group", groupId).and().ne("creator", userId).and().notIn("id", eventIds).countOf();
+
+
+            List<String[]> result2 = helper.getPollVotedUserDao().queryRaw("select poll from pollVotedUser where user = " + userId).getResults();
+            List<String> pollIds = new ArrayList<>();
+            for (String[] string : result2) {
+                pollIds.add(string[0]);
+            }
+
+            QueryBuilder<Poll, Long> queryBuilder2 = helper.getPollDao().queryBuilder();
+            Long unvotedPolls = queryBuilder2.where().eq("group", groupId).and().ne("creator", userId).and().notIn("id", pollIds).countOf();
+
+            return unvotedEvents.intValue() + unvotedPolls.intValue();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return 0;
     }
 }

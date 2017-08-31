@@ -32,6 +32,8 @@ public class Group {
     @DatabaseField(columnName = "creator", foreign = true, foreignAutoRefresh = true,foreignAutoCreate = true)
     private User creator;
 
+    public int unansweredEventsAndPolls;
+
     private List<User> users = new ArrayList<>();
 
     public Group(){

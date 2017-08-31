@@ -15,6 +15,7 @@ public class PollDTO {
     private String location;
     private List<PollOptionDTO> options;
 
+    private List<Long> votedUsers;
 
 
     private String description;
@@ -72,4 +73,13 @@ public class PollDTO {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public List<Long> getVotedUsers() {
+        return votedUsers;
+    }
+
+    public void setVotedUsers(List<Long> votedUsers) {
+        this.votedUsers = votedUsers;
+    }
+
 }

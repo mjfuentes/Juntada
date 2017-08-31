@@ -220,6 +220,7 @@ public class NewPollActivity extends AppCompatActivity {
             this.finish();
         } else {
             button.setClickable(true);
+            progressBar.setVisibility(View.GONE);
         }
     }
 

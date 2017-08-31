@@ -12,6 +12,8 @@ import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
 import com.nedelu.juntada.model.aux.InvitedUser;
 import com.nedelu.juntada.model.aux.NotGoingUsers;
+import com.nedelu.juntada.model.aux.PollVotedUser;
+import com.nedelu.juntada.model.aux.VotedUser;
 import com.nedelu.juntada.util.DatabaseHelper;
 
 import java.sql.SQLException;
@@ -216,6 +218,10 @@ public class EventDao {
             DeleteBuilder<InvitedUser, Long> builder4 = helper.getInvitedUsersDao().deleteBuilder();
             builder4.where().eq("event", id);
             builder4.delete();
+
+            DeleteBuilder<VotedUser, Long> builder5 = helper.getVotedUsersDao().deleteBuilder();
+            builder5.where().eq("event", id);
+            builder5.delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -284,6 +290,32 @@ public class EventDao {
             DeleteBuilder<Event, Long> builder2 = helper.getEventDao().deleteBuilder();
             builder2.where().eq("id", eventId);
             builder2.delete();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveVotedUser(VotedUser votedUser) {
+        try {
+            helper.getVotedUsersDao().create(votedUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void savePollVotedUser(PollVotedUser pollVotedUser) {
+        try {
+            helper.getPollVotedUserDao().create(pollVotedUser);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removePollVotedUsers(Long pollId) {
+        try {
+            DeleteBuilder<PollVotedUser, Long> builder = helper.getPollVotedUserDao().deleteBuilder();
+            builder.where().eq("poll", pollId);
+            builder.delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }
