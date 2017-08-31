@@ -96,4 +96,7 @@ public interface ServerInterface {
 
     @POST("events/{eventId}")
     Call<EventDTO> updateEvent(@Path("eventId") Long id,@Body EventDTO event);
+
+    @DELETE("events/{eventId}")
+    Call<Boolean> deleteEvent(@Path("eventId") Long eventId);
 }

@@ -267,6 +267,15 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if (id == R.id.delete){
+            addMembersButton.setClickable(false);
+            yesButton.setClickable(false);
+            noButton.setClickable(false);
+            maybeButton.setClickable(false);
+            progressBar.setVisibility(View.VISIBLE);
+            eventService.deleteEvent(eventId, this);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -292,5 +301,17 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     public void onResume(){
         eventService.loadEvent(eventId, this);
         super.onResume();
+    }
+
+    public void eventDeleted(boolean b) {
+        if (b){
+            this.finish();
+        }
+
+        addMembersButton.setClickable(true);
+        yesButton.setClickable(true);
+        noButton.setClickable(true);
+        maybeButton.setClickable(true);
+        progressBar.setVisibility(View.GONE);
     }
 }

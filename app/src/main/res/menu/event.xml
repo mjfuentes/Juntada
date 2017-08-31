@@ -6,4 +6,9 @@
         android:title="Editar"
         app:actionLayout="@layout/edit_event"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/delete"
+        android:title="Eliminar evento"
+        app:showAsAction="never"/>
 </menu>

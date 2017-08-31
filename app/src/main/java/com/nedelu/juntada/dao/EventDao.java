@@ -274,5 +274,19 @@ public class EventDao {
             e.printStackTrace();
         }
     }
+
+    public void deleteEvent(Long eventId) {
+        try {
+            DeleteBuilder<InvitedUser, Long> builder = helper.getInvitedUsersDao().deleteBuilder();
+            builder.where().eq("event", eventId);
+            builder.delete();
+
+            DeleteBuilder<Event, Long> builder2 = helper.getEventDao().deleteBuilder();
+            builder2.where().eq("id", eventId);
+            builder2.delete();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 

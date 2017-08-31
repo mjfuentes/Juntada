@@ -54,6 +54,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.nedelu.juntada.R.menu.event;
+
 /**
  * Created by matiasj.fuentes@gmail.com.
  */
@@ -574,6 +576,37 @@ public class EventService {
                 newEventActivity.eventCreated(null);
             }
         });
+    }
+
+    public void deleteEvent(final Long eventId, final EventActivity eventActivity) { Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+        final Call<Boolean> call = server.deleteEvent(eventId);
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.code() == 200){
+                    Boolean result = response.body();
+                    if (result){
+                        eventDao.deleteEvent(eventId);
+                        eventActivity.eventDeleted(true);
+                    }
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    eventActivity.eventDeleted(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                eventActivity.eventDeleted(false);
+            }
+        });
+
     }
 
     private class SaveEventsTask extends AsyncTask<Object, Void, Void> {
