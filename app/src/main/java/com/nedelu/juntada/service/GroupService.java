@@ -157,17 +157,17 @@ public class GroupService extends Observable {
                 if (response.code() == 200){
                     EventDTO eventDTO = response.body();
                     Event event = eventService.saveEvent(eventDTO);
-                    newEventActivity.eventCreated(true);
+                    newEventActivity.eventCreated(event);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    newEventActivity.eventCreated(false);
+                    newEventActivity.eventCreated(null);
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                newEventActivity.eventCreated(false);
+                newEventActivity.eventCreated(null);
             }
         });
     }

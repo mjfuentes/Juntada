@@ -13,6 +13,7 @@ import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -37,9 +38,11 @@ import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollRequest;
+import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.SimpleDateFormat;
@@ -71,6 +74,10 @@ public class NewEventActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FloatingActionButton button;
     private RadioButton radioButton;
+    private Boolean editMode = false;
+    private Long eventId;
+    private EventService eventService;
+    private Event event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +86,11 @@ public class NewEventActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         groupId =  userPref.getLong("groupId", 0L);
 
+        eventService = new EventService(this);
         editTime = (TextView) findViewById(R.id.edit_time);
 
         final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
@@ -184,45 +190,78 @@ public class NewEventActivity extends AppCompatActivity {
             }
         });
 
-        button  = (FloatingActionButton) findViewById(R.id.add_event);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int radioButtonID = editType.getCheckedRadioButtonId();
-                radioButton = (RadioButton) editType.findViewById(radioButtonID);
-                if (checkFields(radioButton) && checkDescription()){
-                    button.setClickable(false);
-                    PollRequest request = new PollRequest();
-                    request.setGroupId(groupId);
-                    request.setCreatorId(userId);
-                    request.setDescription(StringEscapeUtils.escapeJava(editDescription.getEditText().getText().toString()));
-                    request.setTitle(StringEscapeUtils.escapeJava(editName.getEditText().getText().toString()));
-                    request.setLocation(editLocation.getEditText().getText().toString());
+        if (getIntent().getExtras() != null){
+            eventId = getIntent().getLongExtra("eventId", 0L);
+            if (eventId != 0L && eventId != null){
+                View edit = findViewById(R.id.tipo);
+                edit.setVisibility(View.GONE);
+                editType.setVisibility(View.GONE);
+                editMode= true;
+                event = eventService.getEvent(eventId);
 
-                    List<PollOption> options = null;
-                    if (radioButton.getText().equals("Votacion")){
-                        PollRequest savedRequest = groupService.savePollRequest(request);
-                        Intent main = new Intent(NewEventActivity.this, NewPollActivity.class);
-                        main.putExtra("userId", userId);
-                        main.putExtra("groupId", groupId);
-                        main.putExtra("pollRequestId", savedRequest.getId());
-                        startActivity(main);
-                        finish();
-                    } else {
-                        options = new ArrayList<>();
-                        PollOption option = new PollOption();
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
-                        option.setDate(sdf.format(myCalendar.getTime()));
-                        option.setTime(timeSelected);
-                        options.add(option);
-                        request.setOptions(options);
-                        progressBar.setVisibility(View.VISIBLE);
-                        groupService.createEvent(request,NewEventActivity.this);
-                    }
-
-                }
+                editName.getEditText().setText(StringEscapeUtils.unescapeJava(event.getTitle()));
+                editDescription.getEditText().setText(StringEscapeUtils.unescapeJava(event.getDescription()));
+                editLocation.getEditText().setText(event.getLocation());
+                getSupportActionBar().setTitle("Editar Juntada");
             }
-        });
+        }
+
+        button  = (FloatingActionButton) findViewById(R.id.add_event);
+        if (editMode){
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkDescription() && StringUtils.isNotBlank(editName.getEditText().getText().toString()) && StringUtils.isNotBlank(editDescription.getEditText().getText().toString())) {
+                        button.setClickable(false);
+                        progressBar.setVisibility(View.VISIBLE);
+                        event.setTitle(StringEscapeUtils.escapeJava(editName.getEditText().getText().toString()));
+                        event.setDescription(StringEscapeUtils.escapeJava(editDescription.getEditText().getText().toString()));
+                        event.setLocation(editLocation.getEditText().getText().toString());
+                        eventService.updateEvent(event, NewEventActivity.this);
+                    }
+                }
+            });
+
+        } else {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int radioButtonID = editType.getCheckedRadioButtonId();
+                    radioButton = (RadioButton) editType.findViewById(radioButtonID);
+                    if (checkFields(radioButton) && checkDescription()) {
+                        button.setClickable(false);
+                        PollRequest request = new PollRequest();
+                        request.setGroupId(groupId);
+                        request.setCreatorId(userId);
+                        request.setDescription(StringEscapeUtils.escapeJava(editDescription.getEditText().getText().toString()));
+                        request.setTitle(StringEscapeUtils.escapeJava(editName.getEditText().getText().toString()));
+                        request.setLocation(editLocation.getEditText().getText().toString());
+
+                        List<PollOption> options = null;
+                        if (radioButton.getText().equals("Votacion")) {
+                            PollRequest savedRequest = groupService.savePollRequest(request);
+                            Intent main = new Intent(NewEventActivity.this, NewPollActivity.class);
+                            main.putExtra("userId", userId);
+                            main.putExtra("groupId", groupId);
+                            main.putExtra("pollRequestId", savedRequest.getId());
+                            startActivity(main);
+                            finish();
+                        } else {
+                            options = new ArrayList<>();
+                            PollOption option = new PollOption();
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                            option.setDate(sdf.format(myCalendar.getTime()));
+                            option.setTime(timeSelected);
+                            options.add(option);
+                            request.setOptions(options);
+                            progressBar.setVisibility(View.VISIBLE);
+                            groupService.createEvent(request, NewEventActivity.this);
+                        }
+
+                    }
+                }
+            });
+        }
 
         editLocation.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -242,6 +281,16 @@ public class NewEventActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home :
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean checkDescription() {
@@ -284,12 +333,22 @@ public class NewEventActivity extends AppCompatActivity {
         editDate.setText(sdf.format(myCalendar.getTime()));
     }
 
-    public void eventCreated(Boolean result){
+    public void eventCreated(Event event){
         progressBar.setVisibility(View.INVISIBLE);
         button.setClickable(true);
 
-        if (result) {
-            finish();
+        if (event != null) {
+            if (editMode){
+                finish();
+            } else {
+                Intent eventIntent = new Intent(this, EventActivity.class);
+                SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = userPref.edit();
+                editor.putLong("eventId", event.getId());
+                editor.apply();
+                startActivity(eventIntent);
+                finish();
+            }
         }
 
     }

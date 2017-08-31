@@ -14,6 +14,7 @@ import com.nedelu.juntada.activity.EventsActivity;
 import com.nedelu.juntada.activity.GroupTabbedActivity;
 import com.nedelu.juntada.activity.GroupsActivity;
 import com.nedelu.juntada.activity.JoinActivity;
+import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.VoteActivity;
 import com.nedelu.juntada.dao.EventDao;
 import com.nedelu.juntada.dao.GroupDao;
@@ -326,17 +327,17 @@ public class EventService {
             @Override
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == 200) {
-                    saveEvent(response.body());
-                    eventActivity.assistanceSaved(true);
+                    Event event = saveEvent(response.body());
+                    eventActivity.assistanceSaved(event);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    eventActivity.assistanceSaved(false);
+                    eventActivity.assistanceSaved(null);
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
-                eventActivity.assistanceSaved(false);
+                eventActivity.assistanceSaved(null);
                 Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
             }
         });
@@ -537,6 +538,40 @@ public class EventService {
             public void onFailure(Call<PollDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 voteActivity.finish();
+            }
+        });
+    }
+
+    public void updateEvent(Event event, final NewEventActivity newEventActivity) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ServerInterface server = retrofit.create(ServerInterface.class);
+        EventDTO eventDTO = new EventDTO();
+        eventDTO.setTitle(event.getTitle());
+        eventDTO.setDescription(event.getDescription());
+        eventDTO.setLocation(event.getLocation());
+
+        final Call<EventDTO> call = server.updateEvent(event.getId(), eventDTO);
+        call.enqueue(new Callback<EventDTO>() {
+            @Override
+            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                if (response.code() == 200){
+                    EventDTO eventDTO = response.body();
+                    Event event = saveEvent(eventDTO);
+                    newEventActivity.eventCreated(event);
+                } else {
+                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    newEventActivity.eventCreated(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventDTO> call, Throwable t) {
+                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                newEventActivity.eventCreated(null);
             }
         });
     }

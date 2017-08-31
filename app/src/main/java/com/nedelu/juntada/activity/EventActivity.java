@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -77,6 +79,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userService = new UserService(this);
         user = userService.getUser(userId);
         eventService = new EventService(this);
+        event = eventService.getEvent(eventId);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
@@ -228,12 +231,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         eventService.saveAssistance(userId, eventId, assistance, this);
     }
 
-    public void assistanceSaved(boolean b) {
+    public void assistanceSaved(Event e) {
         progressBar.setVisibility(View.INVISIBLE);
         blur.setVisibility(View.INVISIBLE);
-        if (b) {
-            event = eventService.getEvent(eventId);
-            refreshInfo(event);
+        if (e != null) {
+            refreshInfo(e);
         }
     }
 
@@ -259,5 +261,36 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         Intent profile = new Intent(EventActivity.this, VisitProfileActivity.class);
         profile.putExtra("id", userAdapter.getItemId(position));
         startActivity(profile);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if (event.getCreator().getId().equals(userId)) {
+            getMenuInflater().inflate(R.menu.event, menu);
+            menu.findItem(R.id.edit).getActionView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(EventActivity.this, NewEventActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
+                }
+            });
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onResume(){
+        eventService.loadEvent(eventId, this);
+        super.onResume();
     }
 }

@@ -1,5 +1,6 @@
 package com.nedelu.juntada.service.interfaces;
 
+import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.dto.AssitanceRequest;
@@ -92,4 +93,7 @@ public interface ServerInterface {
 
     @GET("users/{userId}/events")
     Call<List<InvitedEventDTO>> getEventsForUser(@Path("userId") Long userId);
+
+    @POST("events/{eventId}")
+    Call<EventDTO> updateEvent(@Path("eventId") Long id,@Body EventDTO event);
 }

@@ -87,7 +87,6 @@
         <activity
             android:name=".activity.NewEventActivity"
             android:label="Nueva Juntada"
-            android:parentActivityName=".activity.GroupTabbedActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NewPollActivity"
