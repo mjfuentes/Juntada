@@ -1,6 +1,7 @@
 package com.nedelu.juntada.activity;
 
 import android.app.ActivityManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -9,6 +10,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.provider.CalendarContract;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -232,12 +235,57 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         eventService.saveAssistance(userId, eventId, assistance, this);
     }
 
-    public void assistanceSaved(Event e) {
+    public void assistanceSaved(final Event e, Assistance assistance) {
         progressBar.setVisibility(View.INVISIBLE);
         blur.setVisibility(View.INVISIBLE);
         if (e != null) {
+            if (assistance.equals(Assistance.GOING)){
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int choice) {
+                        switch (choice) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                try {
+                                    Intent intent = new Intent(Intent.ACTION_EDIT);
+                                    intent.setType("vnd.android.cursor.item/event");
+                                    intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getTimeInMillis(e.getDate(), e.getTime()));
+                                    intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getTimeInMillis(e.getDate(), e.getTime()) + (60 * 60 * 1000));
+                                    intent.putExtra(CalendarContract.Events.TITLE, StringEscapeUtils.unescapeJava(e.getTitle()));
+                                    intent.putExtra(CalendarContract.Events.DESCRIPTION, StringEscapeUtils.unescapeJava(e.getDescription()));
+                                    intent.putExtra(CalendarContract.Events.EVENT_LOCATION, e.getLocation());
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this, R.style.DialogTheme);
+                builder.setMessage("Guardar evento en calendario?")
+                        .setPositiveButton("SI", dialogClickListener)
+                        .setNegativeButton("NO", dialogClickListener).show();
+
+            }
             refreshInfo(e);
+
         }
+    }
+
+    public long getTimeInMillis(String date, String time){
+        String completeDateString = date + " " + time;
+        SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        try {
+            Date completeDate = completeFormat.parse(completeDateString);
+            return completeDate.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public void tokenGenerated(String token) {

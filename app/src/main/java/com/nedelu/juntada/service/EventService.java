@@ -348,7 +348,7 @@ public class EventService {
                 .build();
 
         ServerInterface server = retrofit.create(ServerInterface.class);
-        AssitanceRequest request = new AssitanceRequest();
+        final AssitanceRequest request = new AssitanceRequest();
         request.setUserId(userId);
         request.setEventId(eventId);
         request.setAssistance(assistance);
@@ -359,16 +359,16 @@ public class EventService {
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == 200) {
                     Event event = saveEvent(response.body());
-                    eventActivity.assistanceSaved(event);
+                    eventActivity.assistanceSaved(event, request.getAssistance());
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    eventActivity.assistanceSaved(null);
+                    eventActivity.assistanceSaved(null, null);
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
-                eventActivity.assistanceSaved(null);
+                eventActivity.assistanceSaved(null, null);
                 Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
             }
         });
