@@ -252,6 +252,7 @@ public class EventDao {
             for (InvitedUser invitedUser : result){
                 Event event = getEvent(invitedUser.getEventId());
                 if (event != null) {
+                    event.answered = isEventAnswered(event.getId(), userId);
                     events.add(event);
                 }
             }
@@ -260,6 +261,16 @@ public class EventDao {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    public Boolean isEventAnswered(Long eventId, Long userId) {
+        try {
+            Long result = helper.getVotedUsersDao().queryBuilder().where().eq("event", eventId).and().eq("user",userId).countOf();
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void saveInvitedUser(InvitedUser invitedUser) {

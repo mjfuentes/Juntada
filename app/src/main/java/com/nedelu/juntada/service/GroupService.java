@@ -320,6 +320,7 @@ public class GroupService extends Observable {
     public List<Event> getEvents(Long groupId){
         List<Event> events = groupDao.getEvents(groupId);
         for (Event event : events){
+            event.answered = eventDao.isEventAnswered(event.getId(), userId);
             eventService.populateUsers(event);
         }
 
@@ -367,7 +368,9 @@ public class GroupService extends Observable {
     public Group loadGroupData(Long groupId, GroupTabbedActivity groupActivity){
 
        Group group = groupDao.loadGroupData(groupId);
-
+        for (Event event : group.getEvents()){
+            event.answered = eventDao.isEventAnswered(event.getId(),userId);
+        }
         for (GroupMember member : groupDao.getGroupMembers(group.getId())){
             group.getUsers().add(userService.getUser(member.getUserId()));
         }

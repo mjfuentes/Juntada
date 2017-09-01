@@ -36,29 +36,17 @@
             android:layout_marginTop="8dp"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent" />
-        
-        <ImageView
-            android:src="@drawable/people"
-            android:layout_margin="5dp"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="right"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/users"
-            tools:layout_editor_absoluteX="254dp"
-            app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
-            android:id="@+id/users"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
-            android:text="05"
-            android:textColor="#ffffff"
-            android:textSize="15dp"
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/unanswered"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            android:layout_margin="10dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:src="@mipmap/ic_unread"/>
 
     </android.support.constraint.ConstraintLayout>
 
@@ -68,26 +56,59 @@
         android:background="#ffffff"
         android:layout_height="90dp">
         
-        <LinearLayout
+        <RelativeLayout
             android:padding="5dp"
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="30dp">
+
             <ImageView
                 android:src="@drawable/calendar"
                 android:layout_marginLeft="5dp"
                 android:layout_gravity="center_vertical"
                 android:layout_width="15dp"
-                android:layout_height="15dp" />
+                android:layout_height="15dp"
+                android:id="@+id/imageView"/>
 
             <TextView
+                android:layout_toRightOf="@id/imageView"
                 android:id="@+id/event_date"
-                android:layout_width="match_parent"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:text="14/07/17" />
-        </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:layout_toLeftOf="@+id/users"
+                android:src="@drawable/fatys_green"
+                android:layout_marginRight="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/users"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="254dp" />
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:id="@+id/users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:text="05"
+                android:textSize="15dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/time"

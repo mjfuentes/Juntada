@@ -1,9 +1,11 @@
 package com.nedelu.juntada.fragment;
 
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nedelu.juntada.R;
@@ -71,12 +73,18 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         TextView eventTime = (TextView) holder.mView.findViewById(R.id.event_time);
         TextView eventLocation = (TextView) holder.mView.findViewById(R.id.event_location);
         TextView eventParticipants = (TextView) holder.mView.findViewById(R.id.users);
-
+        ImageView unanswered = (ImageView) holder.mView.findViewById(R.id.unanswered);
         eventName.setText(StringEscapeUtils.unescapeJava(mValues.get(position).getTitle()));
         eventDate.setText(mValues.get(position).getDate());
         eventTime.setText(mValues.get(position).getTime());
         eventLocation.setText(mValues.get(position).getLocation());
         eventParticipants.setText(String.valueOf(mValues.get(position).getConfirmedUsers().size()));
+
+        if (!holder.mItem.answered){
+            unanswered.setVisibility(View.VISIBLE);
+        } else {
+            unanswered.setVisibility(View.GONE);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

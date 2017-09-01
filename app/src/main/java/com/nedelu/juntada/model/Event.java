@@ -38,6 +38,7 @@ public class Event {
     private List<User> confirmedUsers = new ArrayList<>();
     private List<User> doNotKnowUsers = new ArrayList<>();
     private List<User> notGoingUsers = new ArrayList<>();
+    public Boolean answered = false;
 
     public Event(){
 
