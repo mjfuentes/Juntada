@@ -647,7 +647,9 @@ public class EventService {
             List<Long> eventsId = new ArrayList<>();
             for (InvitedEventDTO eventDTO : events){
                 System.out.println("running task");
-                savedEvents.add(saveEvent(eventDTO));
+                Event event = saveEvent(eventDTO);
+                event.answered = eventDao.isEventAnswered(event.getId(), userId);
+                savedEvents.add(event);
                 eventsId.add(eventDTO.getId());
             }
 
