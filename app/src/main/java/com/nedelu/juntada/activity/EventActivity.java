@@ -283,7 +283,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        if (event != null && event.getCreator().getId().equals(userId)) {
+        if (event != null && event.getCreator()!= null && event.getCreator().getId().equals(userId)) {
             getMenuInflater().inflate(R.menu.event, menu);
             menu.findItem(R.id.edit).getActionView().setOnClickListener(new View.OnClickListener() {
                 @Override
