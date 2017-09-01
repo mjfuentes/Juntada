@@ -247,14 +247,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                         switch (choice) {
                             case DialogInterface.BUTTON_POSITIVE:
                                 try {
-                                    Intent intent = new Intent(Intent.ACTION_EDIT);
-                                    intent.setType("vnd.android.cursor.item/event");
-                                    intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getTimeInMillis(e.getDate(), e.getTime()));
-                                    intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getTimeInMillis(e.getDate(), e.getTime()) + (60 * 60 * 1000));
-                                    intent.putExtra(CalendarContract.Events.TITLE, StringEscapeUtils.unescapeJava(e.getTitle()));
-                                    intent.putExtra(CalendarContract.Events.DESCRIPTION, StringEscapeUtils.unescapeJava(e.getDescription()));
-                                    intent.putExtra(CalendarContract.Events.EVENT_LOCATION, e.getLocation());
-                                    startActivity(intent);
+                                    saveToCalendar(e);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -273,6 +266,19 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             }
             refreshInfo(e);
 
+        }
+    }
+
+    private void saveToCalendar(Event e){
+        if (e != null) {
+            Intent intent = new Intent(Intent.ACTION_EDIT);
+            intent.setType("vnd.android.cursor.item/event");
+            intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getTimeInMillis(e.getDate(), e.getTime()));
+            intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getTimeInMillis(e.getDate(), e.getTime()) + (60 * 60 * 1000));
+            intent.putExtra(CalendarContract.Events.TITLE, StringEscapeUtils.unescapeJava(e.getTitle()));
+            intent.putExtra(CalendarContract.Events.DESCRIPTION, StringEscapeUtils.unescapeJava(e.getDescription()));
+            intent.putExtra(CalendarContract.Events.EVENT_LOCATION, e.getLocation());
+            startActivity(intent);
         }
     }
 
@@ -325,6 +331,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             eventService.deleteEvent(eventId, this);
         }
 
+        if (id == R.id.save) {
+            saveToCalendar(event);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -332,7 +341,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     public boolean onCreateOptionsMenu(Menu menu) {
 
         if (event != null && event.getCreator()!= null && event.getCreator().getId().equals(userId)) {
-            getMenuInflater().inflate(R.menu.event, menu);
+            getMenuInflater().inflate(R.menu.event_admin, menu);
             menu.findItem(R.id.edit).getActionView().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -341,6 +350,8 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                     startActivity(intent);
                 }
             });
+        } else {
+            getMenuInflater().inflate(R.menu.event, menu);
         }
 
         return true;
