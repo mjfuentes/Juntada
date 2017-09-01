@@ -9,6 +9,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.Message;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollOptionVote;
@@ -30,7 +31,7 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME    = "juntada2.db";
-    private static final int DATABASE_VERSION = 43;
+    private static final int DATABASE_VERSION = 44;
 
     private Dao<User, Long> mUserDao = null;
     private Dao<Group, Long> mGroupDao = null;
@@ -46,6 +47,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<PushNotification, Long> mPushNotificationDao = null;
     private Dao<VotedUser, Long> mVotedUsersDao = null;
     private Dao<PollVotedUser, Long> mPollVoteduserDao = null;
+    private Dao<Message, Long> messageDao = null;
 
 
     public DatabaseHelper(Context context) {
@@ -70,6 +72,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTableIfNotExists(connectionSource, PushNotification.class);
             TableUtils.createTableIfNotExists(connectionSource, VotedUser.class);
             TableUtils.createTableIfNotExists(connectionSource, PollVotedUser.class);
+            TableUtils.createTableIfNotExists(connectionSource, Message.class);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -95,6 +98,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource,PushNotification.class, true);
             TableUtils.dropTable(connectionSource,VotedUser.class, true);
             TableUtils.dropTable(connectionSource,PollVotedUser.class, true);
+            TableUtils.dropTable(connectionSource,Message.class, true);
 
             onCreate(db, connectionSource);
         } catch (SQLException e) {
@@ -214,6 +218,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
 
         return mPollVoteduserDao;
+    }
+
+    public Dao<Message, Long> getMessageDao() throws SQLException {
+        if (messageDao == null) {
+            messageDao  = getDao(Message.class);
+        }
+
+        return messageDao;
     }
 
     @Override

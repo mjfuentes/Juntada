@@ -11,6 +11,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +33,9 @@ import android.widget.TextView;
 
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.UserAdapter;
+import com.nedelu.juntada.fragment.EventFragment;
+import com.nedelu.juntada.fragment.EventMessagingFragment;
+import com.nedelu.juntada.fragment.PollFragment;
 import com.nedelu.juntada.model.Assistance;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
@@ -63,6 +73,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private User user;
     private UserService userService;
     private ImageView addMembersButton;
+    private EventMessagingFragment eventFragment;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private View buttons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +115,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         blur = findViewById(R.id.blur_background);
 
+        buttons = findViewById(R.id.buttons);
         yesButton = findViewById(R.id.yes);
         noButton = findViewById(R.id.no);
         maybeButton = findViewById(R.id.maybe);
@@ -146,6 +162,13 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
             setTaskDescription(taskDesc);
         }
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         Event event = eventService.getEvent(eventId);
         if (event != null){
@@ -229,6 +252,31 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userAdapter.notifyItemRangeInserted(0, userAdapter.getItemCount());
         userAdapter.notifyDataSetChanged();
 
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    if (collapsingToolbarLayout != null) {
+                        collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
+                        buttons.setVisibility(View.GONE);
+                        isShow = true;
+                    }
+                } else if (isShow) {
+                    if (collapsingToolbarLayout != null) {
+                        collapsingToolbarLayout.setTitle(" ");
+                        buttons.setVisibility(View.VISIBLE);
+                        isShow = false;
+                    }
+                }
+            }
+        });
     }
 
     void saveAssistance(Assistance assistance){
@@ -373,5 +421,45 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         noButton.setClickable(true);
         maybeButton.setClickable(true);
         progressBar.setVisibility(View.GONE);
+    }
+
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case 0:
+                    eventFragment = EventMessagingFragment.newInstance(1L);
+                    return eventFragment;
+                case 1:
+                    return EventMessagingFragment.newInstance(1L);
+                default:
+                    return EventMessagingFragment.newInstance(1L);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Mensajes";
+                case 1:
+                    return "Encuestas";
+            }
+            return null;
+        }
+
+        public void refresh() {
+            eventFragment.refresh();
+        }
     }
 }

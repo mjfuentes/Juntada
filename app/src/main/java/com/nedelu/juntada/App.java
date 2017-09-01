@@ -5,6 +5,7 @@ import android.os.StrictMode;
 
 import com.codeslap.persistence.DatabaseSpec;
 import com.codeslap.persistence.PersistenceConfig;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.nedelu.juntada.model.*;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.squareup.picasso.OkHttpDownloader;
@@ -30,5 +31,7 @@ public class App extends Application {
         Picasso built = picassoBuilder.build();
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
+
+        AndroidThreeTen.init(this);
     }
 }
