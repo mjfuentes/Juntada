@@ -75,7 +75,14 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
 
         if (poll.getCreator().getId().equals(mUserId)){
             voteImage.setVisibility(View.GONE);
-            vote.setText("CONFIRMAR");
+            vote.setVisibility(View.VISIBLE);
+        } else {
+            vote.setVisibility(View.GONE);
+            if (poll.voted){
+                voteImage.setVisibility(View.GONE);
+            } else {
+                voteImage.setVisibility(View.VISIBLE);
+            }
         }
 
         try {

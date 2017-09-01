@@ -328,7 +328,11 @@ public class GroupService extends Observable {
     }
 
     public List<Poll> getPolls(Long groupId){
-        return groupDao.getPolls(groupId);
+        List<Poll> polls = groupDao.getPolls(groupId);
+        for (Poll poll : polls){
+            poll.voted = eventDao.isPollVoted(poll.getId(), userId);
+        }
+        return polls;
     }
 
     public PollRequest savePollRequest(PollRequest request){

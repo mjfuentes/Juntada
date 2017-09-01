@@ -29,16 +29,6 @@
             android:layout_alignParentBottom="true"
             android:layout_margin="10dp" />
 
-        <ImageView
-            android:id="@+id/vote_image"
-            android:scaleType="centerInside"
-            android:layout_alignTop="@+id/vote_title"
-            android:layout_alignBottom="@+id/vote_title"
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/vote_title"
-            android:src="@drawable/voto_white" />
-
         <TextView
             android:id="@+id/vote_title"
             android:textSize="15dp"
@@ -47,9 +37,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="10dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
-            android:text="VOTAR" />
+            android:text="Confirmar" />
+
+        <ImageView
+            android:id="@+id/vote_image"
+            android:scaleType="centerInside"
+            android:layout_width="25dp"
+            android:layout_centerVertical="true"
+            android:layout_height="25dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/voto_white" />
 
     </RelativeLayout>
 

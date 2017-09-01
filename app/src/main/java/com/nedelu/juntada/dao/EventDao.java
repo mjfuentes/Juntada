@@ -273,6 +273,16 @@ public class EventDao {
         return false;
     }
 
+    public boolean isPollVoted(Long pollId, Long userId) {
+        try {
+            Long result = helper.getPollVotedUserDao().queryBuilder().where().eq("poll", pollId).and().eq("user",userId).countOf();
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void saveInvitedUser(InvitedUser invitedUser) {
         try {
             helper.getInvitedUsersDao().create(invitedUser);
@@ -331,5 +341,7 @@ public class EventDao {
             e.printStackTrace();
         }
     }
+
+
 }
 

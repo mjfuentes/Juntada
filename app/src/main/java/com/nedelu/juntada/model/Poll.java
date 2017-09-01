@@ -34,6 +34,8 @@ public class Poll {
     @ForeignCollectionField(columnName = "options", eager = true)
     private ForeignCollection<PollOption> options;
 
+    public boolean voted;
+
     public Poll(){
 
     }
