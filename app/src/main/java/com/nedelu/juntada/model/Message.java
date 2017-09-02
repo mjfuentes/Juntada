@@ -26,7 +26,10 @@ public class Message {
     private Long creatorId;
 
     @DatabaseField(columnName = "time")
-    private Instant time;
+    private String time;
+
+    public String userImage;
+    public String userName;
 
     public String getMessage() {
         return message;
@@ -68,11 +71,11 @@ public class Message {
         this.creatorId = creatorId;
     }
 
-    public Instant getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Instant time) {
+    public void setTime(String time) {
         this.time = time;
     }
 }

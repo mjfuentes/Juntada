@@ -17,6 +17,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private List<Message> messages;
 
+
     public MessageAdapter(List<Message> messages) {
         this.messages = messages;
     }
@@ -35,9 +36,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         TextView message = (TextView) holder.mView.findViewById(R.id.message);
         ImageView imageView = (ImageView) holder.mView.findViewById(R.id.user_image);
+        TextView userName = (TextView) holder.mView.findViewById(R.id.user_name);
 
         message.setText(holder.mItem.getMessage());
-        Picasso.with(holder.mView.getContext()).load(holder.mItem.getCreatorImageUrl()).into(imageView);
+        userName.setText(holder.mItem.userName);
+        Picasso.with(holder.mView.getContext()).load(holder.mItem.userImage).into(imageView);
 
     }
 
@@ -49,6 +52,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public void setItems(List<Message> items) {
+        this.messages = items;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

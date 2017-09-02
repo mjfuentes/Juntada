@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -33,9 +32,9 @@ import android.widget.TextView;
 
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.UserAdapter;
-import com.nedelu.juntada.fragment.EventFragment;
 import com.nedelu.juntada.fragment.EventMessagingFragment;
-import com.nedelu.juntada.fragment.PollFragment;
+import com.nedelu.juntada.fragment.MessagingRootFragment;
+import com.nedelu.juntada.fragment.NoMessagingFragment;
 import com.nedelu.juntada.model.Assistance;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
@@ -43,8 +42,6 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
-import com.nedelu.juntada.util.SpacesItemDecoration;
-import com.squareup.picasso.Picasso;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +75,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private ViewPager mViewPager;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private View buttons;
-
+    private Boolean messagingLoaded = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,15 +262,25 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 if (scrollRange + verticalOffset == 0) {
                     if (collapsingToolbarLayout != null) {
                         collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
-                        buttons.setVisibility(View.GONE);
                         isShow = true;
+                        if (!messagingLoaded) {
+                           mSectionsPagerAdapter.showMessages();
+                            messagingLoaded = true;
+                        }
                     }
                 } else if (isShow) {
                     if (collapsingToolbarLayout != null) {
                         collapsingToolbarLayout.setTitle(" ");
-                        buttons.setVisibility(View.VISIBLE);
                         isShow = false;
                     }
+                }
+
+                if (verticalOffset == 0){
+                    buttons.setVisibility(View.VISIBLE);
+                    mSectionsPagerAdapter.hideMessages();
+                    messagingLoaded = false;
+                } else {
+                    buttons.setVisibility(View.GONE);
                 }
             }
         });
@@ -424,21 +431,21 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        MessagingRootFragment messagingRootFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+
         @Override
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    eventFragment = EventMessagingFragment.newInstance(1L);
-                    return eventFragment;
-                case 1:
-                    return EventMessagingFragment.newInstance(1L);
+                    messagingRootFragment = new MessagingRootFragment();
+                    return messagingRootFragment;
                 default:
-                    return EventMessagingFragment.newInstance(1L);
+                    return null;
             }
         }
 
@@ -453,13 +460,21 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 case 0:
                     return "Mensajes";
                 case 1:
-                    return "Encuestas";
+                    return "Gastos";
             }
             return null;
         }
 
         public void refresh() {
             eventFragment.refresh();
+        }
+
+        public void showMessages() {
+            messagingRootFragment.showMessages(eventId, userId);
+        }
+
+        public void hideMessages() {
+            messagingRootFragment.hideMessages();
         }
     }
 }

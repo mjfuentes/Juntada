@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class EventMessagingFragment extends Fragment implements MessageService.MessageSentListener {
+public class EventMessagingFragment extends Fragment implements MessageService.MessageSentListener, MessageService.MessagesLoadedListener {
     private Long eventId;
     private Long userId;
     private RecyclerView recyclerView;
@@ -40,6 +42,7 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
     private FloatingActionButton sendMessageButton;
     private EditText messageText;
     private BroadcastReceiver mNotificationsReceiver;
+    private ProgressBar progressBar;
 
     public EventMessagingFragment() {
     }
@@ -73,13 +76,32 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
         messageAdapter = new MessageAdapter(messageService.getMessages(eventId));
         messageText = (EditText) view.findViewById(R.id.input);
         recyclerView = (RecyclerView) view.findViewById(R.id.list_of_messages);
+        progressBar = (ProgressBar) view.findViewById(R.id.button_progress_bar);
         sendMessageButton = (FloatingActionButton) view.findViewById(R.id.send_message);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(messageAdapter);
+        scrollToBottom();
+        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v,
+                                       int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom) {
+                    recyclerView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollToBottom();
+                        }
+                    }, 100);
+                }
+            }
+        });
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (StringUtils.isNotBlank(messageText.getText().toString())) {
+                    progressBar.setVisibility(View.VISIBLE);
                     User user = userService.getUser(userId);
                     messageService.sendMessage(user, messageText.getText().toString(), MessageType.EVENT, eventId, EventMessagingFragment.this);
                 }
@@ -90,15 +112,21 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
             @Override
             public void onReceive(Context context, Intent intent) {
                 Message message = new Message();
-                if (intent.getStringExtra("type").equals("event") && eventId.equals(intent.getLongExtra("type_id",0L))) {
-                    message.setMessage(intent.getStringExtra("message"));
+                if (intent.getStringExtra("type").equals("EVENT") && eventId.equals(intent.getLongExtra("type_id",0L)) && !userId.equals(intent.getLongExtra("creator_id", 0L))) {
+                    message.setId(intent.getLongExtra("message_id", 0L));
                     message.setMessage(intent.getStringExtra("message"));
                     message.setCreatorId(intent.getLongExtra("creator_id", 0L));
+                    message.setType(MessageType.EVENT);
+                    message.setTypeId(eventId);
+                    User user = userService.getUser(message.getCreatorId());
+                    message.userImage = user.getImageUrl();
+                    message.userName = user.getFirstName() + " " + user.getLastName();
                     messageAdapter.addItem(message);
-
+                    scrollToBottom();
                 }
             }
         };
+        messageService.loadMessages(eventId, this);
 
         return view;
     }
@@ -119,11 +147,15 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
     @Override
     public void messageSent(Message message) {
         messageText.setText("");
+        message.userImage = userService.getUser(message.getCreatorId()).getImageUrl();
         messageAdapter.addItem(message);
+        scrollToBottom();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void messageFailed() {
+        progressBar.setVisibility(View.INVISIBLE);
         Toast.makeText(getActivity(),"El mensaje no pudo ser enviado", Toast.LENGTH_SHORT);
     }
 
@@ -139,5 +171,22 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
         super.onPause();
         LocalBroadcastManager.getInstance(getActivity())
                 .unregisterReceiver(mNotificationsReceiver);
+    }
+
+    @Override
+    public void messagesLoaded(List<Message> messages) {
+        messageAdapter.setItems(messages);
+        scrollToBottom();
+    }
+
+    private void scrollToBottom(){
+        if (recyclerView.getAdapter().getItemCount() > 0){
+            recyclerView.smoothScrollToPosition(
+                    recyclerView.getAdapter().getItemCount() - 1);
+        }
+    }
+    @Override
+    public void messagesNotLoaded() {
+
     }
 }

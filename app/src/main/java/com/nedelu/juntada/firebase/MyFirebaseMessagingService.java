@@ -15,6 +15,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.NotificationsActivity;
+import com.nedelu.juntada.dao.MessageDao;
+import com.nedelu.juntada.model.Message;
+import com.nedelu.juntada.model.MessageType;
 import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.util.PushNotificationsRepository;
 
@@ -29,12 +32,11 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private PushNotificationsRepository pushNotificationsRepository;
+    private MessageDao messageDao;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         sendNotification(remoteMessage.getData());
-        displayNotification(remoteMessage.getData());
-
     }
 
     private void displayNotification(Map<String, String> data) {
@@ -63,25 +65,49 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(Map<String, String> data) {
-        Intent intent = new Intent("NEW_NOTIFICATION");
-        intent.putExtra("title", data.get("title"));
-        intent.putExtra("description", data.get("description"));
-        LocalBroadcastManager.getInstance(getApplicationContext())
-                .sendBroadcast(intent);
+        if (data.get("notification").equals("true")) {
+            Intent intent = new Intent("NEW_NOTIFICATION");
+            intent.putExtra("title", data.get("title"));
+            intent.putExtra("description", data.get("description"));
+            LocalBroadcastManager.getInstance(getApplicationContext())
+                    .sendBroadcast(intent);
 
-        PushNotification notification = new PushNotification();
-        notification.setTitle(data.get("title"));
-        notification.setDescription( data.get("description"));
-        notification.setmType(data.get("type"));
-        notification.setmValue(data.get("id"));
-        notification.setCreatorId(Long.valueOf(data.get("creator")));
+            PushNotification notification = new PushNotification();
+            notification.setTitle(data.get("title"));
+            notification.setDescription(data.get("description"));
+            notification.setmType(data.get("type"));
+            notification.setmValue(data.get("id"));
+            notification.setCreatorId(Long.valueOf(data.get("creator")));
 
-        pushNotificationsRepository.savePushNotification(notification);
+            pushNotificationsRepository.savePushNotification(notification);
+            displayNotification(data);
+
+        } else {
+            Intent intent = new Intent("MESSAGE");
+            intent.putExtra("type", data.get("type"));
+            intent.putExtra("type_id", Long.valueOf(data.get("type_id")));
+            intent.putExtra("message", data.get("message"));
+            intent.putExtra("creator_id", Long.valueOf(data.get("creator_id")));
+            intent.putExtra("message_id", Long.valueOf(data.get("message_id")));
+
+            LocalBroadcastManager.getInstance(getApplicationContext())
+                    .sendBroadcast(intent);
+
+            Message message = new Message();
+            message.setId(Long.valueOf(data.get("message_id")));
+            message.setCreatorId(Long.valueOf(data.get("creator_id")));
+            message.setMessage(data.get("message"));
+            message.setTypeId(Long.valueOf(data.get("type_id")));
+            message.setType(MessageType.valueOf(data.get("type")));
+            messageDao.saveMessage(message);
+
+        }
     }
 
     @Override
     public void onCreate() {
         pushNotificationsRepository = new PushNotificationsRepository(getBaseContext());
+        messageDao = new MessageDao(getBaseContext());
         super.onCreate();
     }
 }

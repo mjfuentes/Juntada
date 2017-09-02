@@ -1,6 +1,7 @@
 package com.nedelu.juntada.service.interfaces;
 
 import com.nedelu.juntada.model.Message;
+import com.nedelu.juntada.model.MessageType;
 import com.nedelu.juntada.model.PollRequest;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.dto.AssitanceRequest;
@@ -34,4 +35,7 @@ public interface MessagingInterface {
 
     @POST("messages")
     Call<Message> createMessage(@Body Message message);
+
+    @GET("messages/{type}/{eventId}")
+    Call<List<Message>> getMessages(@Path("type") String type,@Path("eventId") Long eventId);
 }

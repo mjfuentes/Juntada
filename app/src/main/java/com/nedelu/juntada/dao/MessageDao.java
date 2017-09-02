@@ -3,6 +3,7 @@ package com.nedelu.juntada.dao;
 import android.content.Context;
 
 import com.nedelu.juntada.model.Message;
+import com.nedelu.juntada.model.MessageType;
 import com.nedelu.juntada.util.DatabaseHelper;
 
 import java.sql.SQLException;
@@ -24,7 +25,7 @@ public class MessageDao {
 
     public List<Message> getMessagesForEvent(Long eventId) {
         try {
-            List<Message> messages = helper.getMessageDao().queryBuilder().where().eq("type","event").and().eq("type_id",eventId).query();
+            List<Message> messages = helper.getMessageDao().queryBuilder().where().eq("type", MessageType.EVENT).and().eq("type_id",eventId).query();
             return messages;
         } catch (SQLException e) {
             e.printStackTrace();
