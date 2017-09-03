@@ -16,6 +16,8 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private List<Message> messages;
+    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
+    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
 
     public MessageAdapter(List<Message> messages) {
@@ -24,8 +26,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.message_item, parent, false);
+        View view;
+        if (viewType == VIEW_TYPE_MESSAGE_SENT){
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.message_sent_item, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.message_item, parent, false);
+        }
 
         return new ViewHolder(view);
     }
@@ -33,16 +41,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = messages.get(position);
-
         TextView message = (TextView) holder.mView.findViewById(R.id.message);
-        ImageView imageView = (ImageView) holder.mView.findViewById(R.id.user_image);
-        TextView userName = (TextView) holder.mView.findViewById(R.id.user_name);
-
         message.setText(holder.mItem.getMessage());
-        userName.setText(holder.mItem.userName);
-        Picasso.with(holder.mView.getContext()).load(holder.mItem.userImage).into(imageView);
+
+        if (!holder.mItem.mine) {
+            ImageView imageView = (ImageView) holder.mView.findViewById(R.id.user_image);
+            TextView userName = (TextView) holder.mView.findViewById(R.id.user_name);
+            userName.setText(holder.mItem.userName);
+            Picasso.with(holder.mView.getContext()).load(holder.mItem.userImage).into(imageView);
+        }
 
     }
+
+    public int getItemViewType(int position) {
+        Message message = messages.get(position);
+
+        if (message.mine) {
+            return VIEW_TYPE_MESSAGE_SENT;
+        } else {
+            return VIEW_TYPE_MESSAGE_RECEIVED;
+        }
+    }
+
 
     public void addItem(Message message){
         this.messages.add(message);

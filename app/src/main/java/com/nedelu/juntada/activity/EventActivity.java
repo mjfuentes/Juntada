@@ -76,6 +76,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private View buttons;
     private Boolean messagingLoaded = false;
+    private Boolean toolbarExpanded = true;
+    private AppBarLayout appBarLayout;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -249,7 +254,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userAdapter.notifyItemRangeInserted(0, userAdapter.getItemCount());
         userAdapter.notifyDataSetChanged();
 
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -262,6 +267,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 if (scrollRange + verticalOffset == 0) {
                     if (collapsingToolbarLayout != null) {
                         collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
+                        toolbarExpanded = false;
                         isShow = true;
                         if (!messagingLoaded) {
                            mSectionsPagerAdapter.showMessages();
@@ -278,6 +284,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 if (verticalOffset == 0){
                     buttons.setVisibility(View.VISIBLE);
                     mSectionsPagerAdapter.hideMessages();
+                    toolbarExpanded = true;
                     messagingLoaded = false;
                 } else {
                     buttons.setVisibility(View.GONE);
@@ -374,6 +381,18 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     }
 
     @Override
+    public void onBackPressed() {
+        if (toolbarExpanded){
+            this.finish();
+        } else {
+            if (appBarLayout != null){
+                appBarLayout.setExpanded(true);
+            }
+
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -388,6 +407,17 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         if (id == R.id.save) {
             saveToCalendar(event);
+        }
+
+        if (id ==android.R.id.home) {
+            if (toolbarExpanded){
+                this.finish();
+            } else {
+                if (appBarLayout != null){
+                    appBarLayout.setExpanded(true);
+                }
+
+            }
         }
         return super.onOptionsItemSelected(item);
     }

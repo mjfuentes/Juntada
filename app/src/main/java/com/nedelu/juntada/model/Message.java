@@ -30,6 +30,7 @@ public class Message {
 
     public String userImage;
     public String userName;
+    public Boolean mine;
 
     public String getMessage() {
         return message;

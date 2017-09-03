@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -73,11 +74,11 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
         View view = inflater.inflate(R.layout.messaging, container, false);
 
         Context context = view.getContext();
-        messageAdapter = new MessageAdapter(messageService.getMessages(eventId));
-        messageText = (EditText) view.findViewById(R.id.input);
+        messageAdapter = new MessageAdapter(messageService.getMessages(eventId, userId));
+        messageText = (EditText) view.findViewById(R.id.edittext_chatbox);
         recyclerView = (RecyclerView) view.findViewById(R.id.list_of_messages);
         progressBar = (ProgressBar) view.findViewById(R.id.button_progress_bar);
-        sendMessageButton = (FloatingActionButton) view.findViewById(R.id.send_message);
+        sendMessageButton = (FloatingActionButton) view.findViewById(R.id.button_chatbox_send);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(messageAdapter);
         scrollToBottom();
@@ -118,15 +119,20 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
                     message.setCreatorId(intent.getLongExtra("creator_id", 0L));
                     message.setType(MessageType.EVENT);
                     message.setTypeId(eventId);
-                    User user = userService.getUser(message.getCreatorId());
-                    message.userImage = user.getImageUrl();
-                    message.userName = user.getFirstName() + " " + user.getLastName();
+                    if (message.getCreatorId() != userId) {
+                        User user = userService.getUser(message.getCreatorId());
+                        message.userImage = user.getImageUrl();
+                        message.userName = user.getFirstName() + " " + user.getLastName();
+                        message.mine = false;
+                    } else {
+                        message.mine =true;
+                    }
                     messageAdapter.addItem(message);
                     scrollToBottom();
                 }
             }
         };
-        messageService.loadMessages(eventId, this);
+        messageService.loadMessages(eventId, userId, this);
 
         return view;
     }
@@ -181,7 +187,7 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
 
     private void scrollToBottom(){
         if (recyclerView.getAdapter().getItemCount() > 0){
-            recyclerView.smoothScrollToPosition(
+            recyclerView.scrollToPosition(
                     recyclerView.getAdapter().getItemCount() - 1);
         }
     }

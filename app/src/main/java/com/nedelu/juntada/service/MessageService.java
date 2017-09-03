@@ -73,9 +73,10 @@ public class MessageService {
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response.code() == 200) {
                     Message message = response.body();
-                    User user = userDao.getUser(message.getCreatorId());
-                    message.userImage = user.getImageUrl();
-                    message.userName = user.getFirstName() + " " + user.getLastName();
+                    message.mine = true;
+//                    User user = userDao.getUser(message.getCreatorId());
+//                    message.userImage = user.getImageUrl();
+//                    message.userName = user.getFirstName() + " " + user.getLastName();
                     listener.messageSent(message);
                     saveMessage(response.body());
                 } else {
@@ -92,7 +93,7 @@ public class MessageService {
 
     }
 
-    public void loadMessages(final Long eventId, final MessagesLoadedListener listener){
+    public void loadMessages(final Long eventId, final Long userId, final MessagesLoadedListener listener){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -107,7 +108,7 @@ public class MessageService {
                 if (response.code() == 200) {
                     List<Message> messages = response.body();
                     saveMessages(messages);
-                    listener.messagesLoaded(getMessages(eventId));
+                    listener.messagesLoaded(getMessages(eventId, userId));
                 } else {
                     listener.messagesNotLoaded();
                 }
@@ -127,11 +128,14 @@ public class MessageService {
         }
     }
 
-    public List<Message> getMessages(Long eventId) {
+    public List<Message> getMessages(Long eventId, Long currentUser) {
         List<Message> messages = messageDao.getMessagesForEvent(eventId);
         Map<Long,List<Message>> map = new HashMap<>();
         for (Message message : messages){
-            if (map.containsKey(message.getCreatorId())){
+            if (message.getCreatorId().equals(currentUser)){
+                message.mine = true;
+            }
+            else if (map.containsKey(message.getCreatorId())){
                 map.get(message.getCreatorId()).add(message);
             } else {
                 List<Message> list = new ArrayList<>();
@@ -144,6 +148,7 @@ public class MessageService {
             for (Message message : map.get(userId)){
                 message.userImage = user.getImageUrl();
                 message.userName = user.getFirstName() + " " + user.getLastName();
+                message.mine=false;
             }
         }
         return messages;

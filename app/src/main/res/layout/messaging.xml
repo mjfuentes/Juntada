@@ -1,82 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:gravity="fill_vertical"
-    android:layout_height="match_parent"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activity.GroupTabbedActivity">
+<android.support.constraint.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+    android:background="@drawable/chat_background_gray"
+tools:context=".activity.EventActivity">
 
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/list_of_messages"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginBottom="10dp"
+    app:layout_constraintBottom_toTopOf="@+id/layout_chatbox"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    android:layout_marginTop="0dp"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintVertical_bias="0.0">
+</android.support.v7.widget.RecyclerView>
 
-    <LinearLayout
-        android:id="@+id/new_message_layout"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content">
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/new_message"
+<!-- A horizontal line between the chatbox and RecyclerView -->
+<View
+    android:id="@+id/line"
+    android:layout_width="0dp"
+    android:layout_height="2dp"
+    android:background="#dfdfdf"
+    app:layout_constraintBottom_toTopOf="@+id/layout_chatbox"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"/>
+
+<LinearLayout
+    android:id="@+id/layout_chatbox"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:minHeight="48dp"
+    android:background="#ffffff"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent">
+
+    <EditText
+        android:id="@+id/edittext_chatbox"
+        android:hint="Ingresar mensaje"
+        android:background="@android:color/transparent"
+        android:layout_gravity="center"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:maxLines="6"/>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nuevo mensaje"
-            android:id="@+id/input"
-            />
-    </android.support.design.widget.TextInputLayout>
-        <com.dmitrymalkovich.android.ProgressFloatingActionButton
-            android:id="@+id/add_event_parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+    <com.dmitrymalkovich.android.ProgressFloatingActionButton
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clickable="true">
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_chatbox_send"
             android:elevation="0dp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:clickable="true">
+            android:layout_margin="5dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            app:backgroundTint="@color/colorPrimary"
+            android:scaleType="center"
+            app:srcCompat="@mipmap/ic_send_new" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/send_message"
-                android:elevation="0dp"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:backgroundTint="@color/colorPrimary"
-                app:srcCompat="@mipmap/ic_send" />
+        <ProgressBar
+            android:visibility="invisible"
+            android:indeterminateTint="@color/colorPrimaryDark"
+            android:id="@+id/button_progress_bar"
+            android:layout_margin="5dp"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="35dp"
+            android:layout_height="35dp" />
 
-            <ProgressBar
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                android:indeterminateTint="@color/colorPrimaryDark"
-                android:id="@+id/button_progress_bar"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+    </com.dmitrymalkovich.android.ProgressFloatingActionButton>
 
-        </com.dmitrymalkovich.android.ProgressFloatingActionButton>
-    </LinearLayout>
+</LinearLayout>
 
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="15dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:dividerHeight="16dp"
-        android:divider="@android:color/transparent"
-        android:id="@+id/list_of_messages"
-        android:layout_alignParentLeft="true"
-        android:layout_above="@+id/new_message_layout" />
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
