@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -64,20 +65,21 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private UserAdapter userAdapter;
     private View blur;
     private ProgressBar progressBar;
-    private View yesButton;
-    private View noButton;
-    private View maybeButton;
     private User user;
+    private Boolean openMessages;
     private UserService userService;
     private ImageView addMembersButton;
     private EventMessagingFragment eventFragment;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private View buttons;
+//    private View buttons;
     private Boolean messagingLoaded = false;
     private Boolean toolbarExpanded = true;
     private AppBarLayout appBarLayout;
+    private com.github.clans.fab.FloatingActionMenu fab;
+    private com.github.clans.fab.FloatingActionButton going;
+    private com.github.clans.fab.FloatingActionButton notGoing;
 
 
 
@@ -95,6 +97,14 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         eventId = userPref.getLong("eventId", 0L);
+        openMessages = false;
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            eventId = bundle.getLong("eventId");
+            openMessages = bundle.getBoolean("showMessages");
+        }
 
         userService = new UserService(this);
         user = userService.getUser(userId);
@@ -117,37 +127,54 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         blur = findViewById(R.id.blur_background);
 
-        buttons = findViewById(R.id.buttons);
-        yesButton = findViewById(R.id.yes);
-        noButton = findViewById(R.id.no);
-        maybeButton = findViewById(R.id.maybe);
+        fab = (com.github.clans.fab.FloatingActionMenu) findViewById(R.id.fab);
+        going = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.going);
+        notGoing = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.not_going);
 
-        yesButton.setOnClickListener(new View.OnClickListener() {
+        going.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE);
-                blur.setVisibility(View.VISIBLE);
                 saveAssistance(Assistance.GOING);
+                fab.close(true);
             }
         });
 
-        noButton.setOnClickListener(new View.OnClickListener() {
+        notGoing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE);
-                blur.setVisibility(View.VISIBLE);
                 saveAssistance(Assistance.NOT_GOING);
+                fab.close(true);
             }
         });
-
-        maybeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                blur.setVisibility(View.VISIBLE);
-                saveAssistance(Assistance.MAYBE);
-            }
-        });
+//        fab.add
+//        yesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                progressBar.setVisibility(View.VISIBLE);
+//                blur.setVisibility(View.VISIBLE);
+//                saveAssistance(Assistance.GOING);
+//            }
+//        });
+//
+//        noButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                progressBar.setVisibility(View.VISIBLE);
+//                blur.setVisibility(View.VISIBLE);
+//                saveAssistance(Assistance.NOT_GOING);
+//            }
+//        });
+//
+//        maybeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                progressBar.setVisibility(View.VISIBLE);
+//                blur.setVisibility(View.VISIBLE);
+//                saveAssistance(Assistance.MAYBE);
+//            }
+//        });
 
         addMembersButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,12 +205,25 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            eventId = bundle.getLong("eventId");
+            openMessages = bundle.getBoolean("showMessages");
+            Event event = eventService.getEvent(eventId);
+            refreshInfo(event);
+        }
+    }
 
 
     public void refreshInfo(final Event event){
         invalidateOptionsMenu();
         progressBar.setVisibility(View.GONE);
-        TextView title = (TextView) findViewById(R.id.event_title);
+//        TextView title = (TextView) findViewById(R.id.event_title);
         TextView description = (TextView) findViewById(R.id.event_description);
         TextView location = (TextView) findViewById(R.id.event_location);
         TextView weekday = (TextView) findViewById(R.id.event_weekday);
@@ -208,7 +248,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         Date optionDate = null;
         try {
             optionDate = completeFormat.parse(event.getDate());
-            title.setText(StringEscapeUtils.unescapeJava(event.getTitle()));
+//            title.setText(StringEscapeUtils.unescapeJava(event.getTitle()));
             description.setText(StringEscapeUtils.unescapeJava(event.getDescription()));
             location.setText(event.getLocation());
             weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0,3)));
@@ -221,32 +261,22 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             e.printStackTrace();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            yesButton.setBackgroundColor(getColor(R.color.confirmButton));
-            noButton.setBackgroundColor(getColor(R.color.confirmButton));
-            maybeButton.setBackgroundColor(getColor(R.color.confirmButton));
-        }
-
-        yesButton.setClickable(true);
-        noButton.setClickable(true);
-        maybeButton.setClickable(true);
-
-        if (event.getConfirmedUsers().contains(user)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                yesButton.setBackgroundColor(getColor(R.color.colorPrimary));
-                yesButton.setClickable(false);
-            }
-        } else if (event.getNotGoingUsers().contains(user)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                noButton.setBackgroundColor(getColor(R.color.colorPrimary));
-                noButton.setClickable(false);
-            }
-        } else if (event.getDoNotKnowUsers().contains(user)){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                maybeButton.setBackgroundColor(getColor(R.color.colorPrimary));
-                maybeButton.setClickable(false);
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            yesButton.setBackgroundColor(getColor(R.color.confirmButton));
+//            noButton.setBackgroundColor(getColor(R.color.confirmButton));
+//            maybeButton.setBackgroundColor(getColor(R.color.confirmButton));
+//        }
+//
+//        yesButton.setClickable(true);
+//        noButton.setClickable(true);
+//        maybeButton.setClickable(true);
+//
+//        if (event.getConfirmedUsers().contains(user)){
+//            going.setClickable(false);
+//            fab.semenuim
+//        } else if (event.getNotGoingUsers().contains(user)){
+//            going.setClickable(false);
+//        }
 
         userAdapter.setItems(event.getConfirmedUsers());
         userList.removeAllViews();
@@ -255,6 +285,8 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userAdapter.notifyDataSetChanged();
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
+
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -266,7 +298,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 }
                 if (scrollRange + verticalOffset == 0) {
                     if (collapsingToolbarLayout != null) {
-                        collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
                         toolbarExpanded = false;
                         isShow = true;
                         if (!messagingLoaded) {
@@ -276,21 +307,25 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                     }
                 } else if (isShow) {
                     if (collapsingToolbarLayout != null) {
-                        collapsingToolbarLayout.setTitle(" ");
+//                        collapsingToolbarLayout.setTitle(" ");
                         isShow = false;
                     }
                 }
 
                 if (verticalOffset == 0){
-                    buttons.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.VISIBLE);
                     mSectionsPagerAdapter.hideMessages();
                     toolbarExpanded = true;
                     messagingLoaded = false;
                 } else {
-                    buttons.setVisibility(View.GONE);
+                    fab.setVisibility(View.GONE);
                 }
             }
         });
+
+        if (openMessages){
+            appBarLayout.setExpanded(false);
+        }
     }
 
     void saveAssistance(Assistance assistance){
@@ -398,9 +433,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         if (id == R.id.delete){
             addMembersButton.setClickable(false);
-            yesButton.setClickable(false);
-            noButton.setClickable(false);
-            maybeButton.setClickable(false);
+//            yesButton.setClickable(false);
+//            noButton.setClickable(false);
+//            maybeButton.setClickable(false);
             progressBar.setVisibility(View.VISIBLE);
             eventService.deleteEvent(eventId, this);
         }
@@ -454,9 +489,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         }
 
         addMembersButton.setClickable(true);
-        yesButton.setClickable(true);
-        noButton.setClickable(true);
-        maybeButton.setClickable(true);
+//        yesButton.setClickable(true);
+//        noButton.setClickable(true);
+//        maybeButton.setClickable(true);
         progressBar.setVisibility(View.GONE);
     }
 

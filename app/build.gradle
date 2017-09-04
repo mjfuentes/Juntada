@@ -5,10 +5,10 @@ android {
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.nedelu.juntada"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 25
-        versionCode 30
-        versionName "1.29"
+        versionCode 33
+        versionName "1.32"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
         vectorDrawables.useSupportLibrary = true
@@ -56,6 +56,7 @@ dependencies {
     compile 'com.dmitrymalkovich.android:progress-fab:1.6'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+    compile 'com.github.clans:fab:1.6.4'
     testCompile 'junit:junit:4.12'
 }
 

@@ -47,8 +47,13 @@ import com.nedelu.juntada.model.dto.PollVoteRequest;
 import com.nedelu.juntada.model.dto.UserDTO;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.FormatStyle;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,6 +76,7 @@ public class EventService {
     private GroupService groupService;
     private String baseUrl = "http://10.1.1.16:8080";
     private Long userId;
+    private DateTimeFormatter dateTimeFormatter;
 
     public EventService(Context context) {
         this.context = context;

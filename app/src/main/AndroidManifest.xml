@@ -135,7 +135,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="notifications" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

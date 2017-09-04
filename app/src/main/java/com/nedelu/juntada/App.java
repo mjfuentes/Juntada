@@ -11,6 +11,8 @@ import com.nedelu.juntada.model.aux.GroupMember;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
+import org.threeten.bp.Instant;
+
 /**
  * Created by matiasj.fuentes@gmail.com.
  */

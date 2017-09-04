@@ -16,15 +16,19 @@ import com.nedelu.juntada.service.interfaces.MessagingInterface;
 import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +37,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MessageService {
+    private final DateTimeFormatter dateTimeFormatter;
+    private final DateTimeFormatter dateTimeFormatter2;
     private Context context;
     private MessageDao messageDao;
     private String baseUrl;
@@ -44,14 +50,16 @@ public class MessageService {
         this.userDao = new UserDao(context);
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
         baseUrl = userPref.getString("server_url", "http://www.juntada.nedelu.com");
+
+
+        dateTimeFormatter= DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                .withLocale( Locale.ENGLISH );
+
+        dateTimeFormatter2 = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                .withLocale( Locale.ENGLISH ).withZone(ZoneId.systemDefault());
     }
 
     public void sendMessage(User user, String messageString, MessageType type, Long typeId, final MessageSentListener listener){
-
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
-                        .withLocale( Locale.getDefault() )
-                        .withZone( ZoneId.systemDefault() );
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -65,7 +73,7 @@ public class MessageService {
         message.setMessage(messageString);
         message.setType(type);
         message.setTypeId(typeId);
-        message.setTime(formatter.format(Instant.now()));
+        message.setTime(Instant.now().toString());
 
         Call<Message> call = server.createMessage(message);
         call.enqueue(new Callback<Message>() {
@@ -74,9 +82,6 @@ public class MessageService {
                 if (response.code() == 200) {
                     Message message = response.body();
                     message.mine = true;
-//                    User user = userDao.getUser(message.getCreatorId());
-//                    message.userImage = user.getImageUrl();
-//                    message.userName = user.getFirstName() + " " + user.getLastName();
                     listener.messageSent(message);
                     saveMessage(response.body());
                 } else {
@@ -124,6 +129,7 @@ public class MessageService {
 
     private void saveMessages(List<Message> messages) {
         for (Message message : messages){
+    //            message.setTime(dateTimeFormatter2.format(dateTimeFormatter.parse(message.getTime())));
             saveMessage(message);
         }
     }
@@ -146,8 +152,12 @@ public class MessageService {
         for (Long userId : map.keySet()){
             User user = userDao.getUser(userId);
             for (Message message : map.get(userId)){
-                message.userImage = user.getImageUrl();
-                message.userName = user.getFirstName() + " " + user.getLastName();
+                try {
+                    message.userImage = user.getImageUrl();
+                    message.userName = user.getFirstName() + " " + user.getLastName();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
                 message.mine=false;
             }
         }

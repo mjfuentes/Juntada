@@ -85,8 +85,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.SimpleViewHold
 
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, int position) {
-        String url = mItems.get(position).getImageUrl();
-        Picasso.with(mContext).load(url).into(holder.userImage);
+        try {
+            String url = mItems.get(position).getImageUrl();
+            Picasso.with(mContext).load(url).into(holder.userImage);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.nedelu.juntada.fragment;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +8,14 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,7 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.MessageService;
 import com.nedelu.juntada.service.UserService;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -44,6 +48,8 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
     private EditText messageText;
     private BroadcastReceiver mNotificationsReceiver;
     private ProgressBar progressBar;
+    private KeyListener keyListener;
+    private NotificationManager notificationManager;
 
     public EventMessagingFragment() {
     }
@@ -66,6 +72,9 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
         }
         this.messageService = new MessageService(getActivity());
         this.userService = new UserService(getActivity());
+
+        notificationManager =
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override
@@ -102,9 +111,12 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
             @Override
             public void onClick(View view) {
                 if (StringUtils.isNotBlank(messageText.getText().toString())) {
+                    sendMessageButton.setClickable(false);
+                    keyListener = messageText.getKeyListener();
+                    messageText.setKeyListener(null);
                     progressBar.setVisibility(View.VISIBLE);
                     User user = userService.getUser(userId);
-                    messageService.sendMessage(user, messageText.getText().toString(), MessageType.EVENT, eventId, EventMessagingFragment.this);
+                    messageService.sendMessage(user, StringEscapeUtils.escapeJava(messageText.getText().toString()), MessageType.EVENT, eventId, EventMessagingFragment.this);
                 }
             }
         });
@@ -113,10 +125,12 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
             @Override
             public void onReceive(Context context, Intent intent) {
                 Message message = new Message();
+                notificationManager.cancel(Integer.valueOf(String.valueOf(MessageType.EVENT.ordinal()) + String.valueOf(eventId)));
                 if (intent.getStringExtra("type").equals("EVENT") && eventId.equals(intent.getLongExtra("type_id",0L)) && !userId.equals(intent.getLongExtra("creator_id", 0L))) {
                     message.setId(intent.getLongExtra("message_id", 0L));
                     message.setMessage(intent.getStringExtra("message"));
                     message.setCreatorId(intent.getLongExtra("creator_id", 0L));
+                    message.setTime(intent.getStringExtra("time"));
                     message.setType(MessageType.EVENT);
                     message.setTypeId(eventId);
                     if (message.getCreatorId() != userId) {
@@ -153,6 +167,9 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
     @Override
     public void messageSent(Message message) {
         messageText.setText("");
+        messageText.setKeyListener(keyListener);
+        sendMessageButton.setClickable(true);
+        messageText.setEnabled(true);
         message.userImage = userService.getUser(message.getCreatorId()).getImageUrl();
         messageAdapter.addItem(message);
         scrollToBottom();
@@ -161,6 +178,8 @@ public class EventMessagingFragment extends Fragment implements MessageService.M
 
     @Override
     public void messageFailed() {
+        sendMessageButton.setClickable(true);
+        messageText.setKeyListener(keyListener);
         progressBar.setVisibility(View.INVISIBLE);
         Toast.makeText(getActivity(),"El mensaje no pudo ser enviado", Toast.LENGTH_SHORT);
     }
