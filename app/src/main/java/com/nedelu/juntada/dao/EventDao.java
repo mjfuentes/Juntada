@@ -354,7 +354,7 @@ public class EventDao {
 
     public int getConfirmedCount(Long id) {
         try {
-            Long.valueOf(helper.getConfirmedUsersDao().queryBuilder().where().eq("event",id).countOf()).intValue();
+            return Long.valueOf(helper.getConfirmedUsersDao().queryBuilder().where().eq("event",id).countOf()).intValue();
         } catch (SQLException e) {
             e.printStackTrace();
         }
