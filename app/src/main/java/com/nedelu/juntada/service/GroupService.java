@@ -222,12 +222,18 @@ public class GroupService extends Observable {
                 if (response.code() == 200) {
                     new SaveGroupsTask().execute(response.body(), listener);
                 } else {
+                    if (listener != null) {
+                        listener.updateGroups(false);
+                    }
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
+                if (listener != null) {
+                    listener.updateGroups(false);
+                }
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
@@ -579,7 +585,9 @@ public class GroupService extends Observable {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            listener.updateGroups(true);
+            if (listener != null) {
+                listener.updateGroups(true);
+            }
         }
 
 
