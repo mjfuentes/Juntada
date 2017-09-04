@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, GroupService.Callbacks, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
+public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, GroupService.GroupsLoadedListener, NavigationView.OnNavigationItemSelectedListener, GroupAdapter.ClickListener {
 
     private GroupAdapter groupAdapter;
     private RecyclerView recyclerView;
@@ -127,10 +127,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setItemViewCacheSize(6);
         recyclerView.setAdapter(groupAdapter);
-
-        groupService.registerClient(this);
-        groupService.loadGroups(userId);
-
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.groups);
 
@@ -214,11 +210,9 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     protected void onResume() {
         super.onResume();
         navigationView.setCheckedItem(R.id.groups);
-
-        groupService.loadGroups(userId);
-
         List<Group> groups = groupService.getUserGroups(userId);
         if (groups.size() == 0){
+            groupService.loadGroups(userId, this);
             firstGroup.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         } else {
@@ -313,6 +307,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
     @Override
     public void onRefresh() {
-        groupService.loadGroups(userId);
+        groupService.loadGroups(userId, this);
     }
 }

@@ -60,7 +60,6 @@ public class GroupService extends Observable {
     private static GroupService instance;
     private Context context;
     private UserService userService;
-    private Callbacks activity;
     private GroupDao groupDao;
     private EventDao eventDao;
     private EventService eventService;
@@ -81,10 +80,6 @@ public class GroupService extends Observable {
 
     private Context getContext(){
         return this.context;
-    }
-
-    public void registerClient(Activity activity){
-        this.activity = (Callbacks)activity;
     }
 
     public static GroupService getInstance(Context context){
@@ -212,7 +207,7 @@ public class GroupService extends Observable {
         return type;
     }
 
-    public void loadGroups(final Long userId){
+    public void loadGroups(final Long userId, final GroupsLoadedListener listener){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -225,22 +220,20 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<List<GroupDTO>> call, Response<List<GroupDTO>> response) {
                 if (response.code() == 200) {
-                    new SaveGroupsTask().execute(response.body());
+                    new SaveGroupsTask().execute(response.body(), listener);
                 } else {
-                    activity.updateGroups(false);
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<GroupDTO>> call, Throwable t) {
-                activity.updateGroups(false);
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    public void loadGroup(final Long groupId, final GroupTabbedActivity groupActivity){
+    public void loadGroup(final Long groupId){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -253,17 +246,16 @@ public class GroupService extends Observable {
             @Override
             public void onResponse(Call<GroupDTO> call, Response<GroupDTO> response) {
                 if (response.code() == 200) {
-                    new SaveGroupTask().execute(response.body(), groupActivity);
+                    new SaveGroupTask().execute(response.body());
                 } else {
+
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    groupActivity.refreshGroup(false);
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                groupActivity.refreshGroup(false);
             }
         });
     }
@@ -321,7 +313,7 @@ public class GroupService extends Observable {
         List<Event> events = groupDao.getEvents(groupId);
         for (Event event : events){
             event.answered = eventDao.isEventAnswered(event.getId(), userId);
-            eventService.populateUsers(event);
+            event.confirmed = eventDao.getConfirmedCount(event.getId());
         }
 
         return events;
@@ -353,23 +345,29 @@ public class GroupService extends Observable {
             public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                 if (response.code() == 200) {
                     groupDao.deleteGroup(userId, group);
-                    groupActivity.groupDeleted(true);
+                    if (groupActivity != null) {
+                        groupActivity.groupDeleted(true);
+                    }
                 } else {
-                    groupActivity.groupDeleted(false);
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    if (groupActivity != null) {
+                        Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                        groupActivity.groupDeleted(false);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<UserDTO> call, Throwable t) {
-                groupActivity.groupDeleted(false);
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                if (groupActivity != null) {
+                    groupActivity.groupDeleted(false);
+                    Toast.makeText(context, "Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
 
 
-    public Group loadGroupData(Long groupId, GroupTabbedActivity groupActivity){
+    public Group loadGroupData(Long groupId){
 
        Group group = groupDao.loadGroupData(groupId);
         for (Event event : group.getEvents()){
@@ -379,7 +377,7 @@ public class GroupService extends Observable {
             group.getUsers().add(userService.getUser(member.getUserId()));
         }
 
-        loadGroup(groupId, groupActivity);
+        loadGroup(groupId);
 
         return group;
     }
@@ -545,8 +543,12 @@ public class GroupService extends Observable {
 
     }
 
+    public void deleteGroup(Long id) {
+        groupDao.deleteGroup(userId, groupDao.getGroup(id));
+    }
 
-    public interface Callbacks{
+
+    public interface GroupsLoadedListener{
         public void updateGroups(Boolean result);
     }
 
@@ -554,9 +556,11 @@ public class GroupService extends Observable {
         return groupDao.getUnansweredEventsAndPolls(userId, eventId);
     }
 
-    private class SaveGroupsTask extends AsyncTask<List<GroupDTO>, Void, Void> {
-        protected Void doInBackground(List<GroupDTO>... lists) {
-            List<GroupDTO> groups = lists[0];
+    private class SaveGroupsTask extends AsyncTask<Object, Void, Void> {
+        private GroupsLoadedListener listener;
+        protected Void doInBackground(Object... params) {
+            List<GroupDTO> groups = (List<GroupDTO>) params[0];
+            listener = (GroupsLoadedListener) params[1];
             List<Long> groupIds = new ArrayList<>();
             for (GroupDTO groupDTO:groups){
                 System.out.println("running task");
@@ -574,8 +578,8 @@ public class GroupService extends Observable {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            activity.updateGroups(true);
             super.onPostExecute(aVoid);
+            listener.updateGroups(true);
         }
 
 
@@ -583,17 +587,14 @@ public class GroupService extends Observable {
 
     private class SaveGroupTask extends AsyncTask<Object, Void, Void> {
         private Group group;
-        private GroupTabbedActivity groupActivity;
         protected Void doInBackground(Object... params) {
             GroupDTO groupDTO = (GroupDTO) params[0];
-            groupActivity = (GroupTabbedActivity) params[1];
             group = saveGroup(groupDTO);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void params) {
-            groupActivity.refreshGroup(true);
         }
 
 

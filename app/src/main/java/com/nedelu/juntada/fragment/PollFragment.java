@@ -2,6 +2,7 @@ package com.nedelu.juntada.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -80,6 +81,8 @@ public class PollFragment extends Fragment {
         myPollRecyclerViewAdapter = new MyPollRecyclerViewAdapter(polls, userId, mListener);
         recyclerView.setAdapter(myPollRecyclerViewAdapter);
         recyclerView.setHasFixedSize(true);
+        RecyclerView.ItemDecoration spaceItemDecoration = new VerticalSpaceItemDecoration(15);
+        recyclerView.addItemDecoration(spaceItemDecoration);
 
         if (polls.size() > 0) {
             recyclerView.setVisibility(View.VISIBLE);
@@ -128,5 +131,20 @@ public class PollFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Poll item);
+    }
+
+    public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+        private final int verticalSpaceHeight;
+
+        public VerticalSpaceItemDecoration(int verticalSpaceHeight) {
+            this.verticalSpaceHeight = verticalSpaceHeight;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            outRect.bottom = verticalSpaceHeight;
+        }
     }
 }

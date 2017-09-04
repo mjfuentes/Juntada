@@ -238,7 +238,7 @@ public class NewEventActivity extends AppCompatActivity {
                         request.setLocation(editLocation.getEditText().getText().toString());
 
                         List<PollOption> options = null;
-                        if (radioButton.getText().equals("Votacion")) {
+                        if (radioButton.getText().equals("Encuesta")) {
                             PollRequest savedRequest = groupService.savePollRequest(request);
                             Intent main = new Intent(NewEventActivity.this, NewPollActivity.class);
                             main.putExtra("userId", userId);
@@ -303,7 +303,7 @@ public class NewEventActivity extends AppCompatActivity {
 
     private boolean checkFields(RadioButton radioButton) {
 
-        if ((editName.getEditText().getText().toString().equals("") || editLocation.getEditText().getText().toString().equals("")) || (editTime.getText().toString().equals("") && !radioButton.getText().equals("Votacion"))) {
+        if ((editName.getEditText().getText().toString().equals("") || editLocation.getEditText().getText().toString().equals("")) || (editTime.getText().toString().equals("") && !radioButton.getText().equals("Encuesta"))) {
             Toast.makeText(getApplicationContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
             return false;
         }

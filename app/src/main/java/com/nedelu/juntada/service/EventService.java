@@ -519,7 +519,7 @@ public class EventService {
         });
     }
 
-    public void loadEvent(Long eventId, final EventActivity eventActivity) {
+    public void loadEvent(Long eventId) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -534,22 +534,19 @@ public class EventService {
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == 200) {
                     Event event = saveEvent(response.body());
-                    eventActivity.refreshInfo(event);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    eventActivity.finish();
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                eventActivity.finish();
             }
         });
     }
 
-    public void loadPoll(Long pollId, final VoteActivity voteActivity) {
+    public void loadPoll(Long pollId) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -564,17 +561,14 @@ public class EventService {
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
                 if (response.code() == 200) {
                     Poll poll = savePoll(response.body());
-                    voteActivity.refreshPoll(poll);
                 } else {
                     Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                    voteActivity.finish();
                 }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
-                voteActivity.finish();
             }
         });
     }
@@ -644,12 +638,18 @@ public class EventService {
 
     }
 
+    public void deleteEvent(Long id) {
+        eventDao.deleteEvent(id);
+    }
+
+    public void deletePoll(Long id) {
+        eventDao.deletePoll(id);
+    }
+
     private class SaveEventsTask extends AsyncTask<Object, Void, Void> {
-        private EventsActivity eventsActivity;
         private List<Event> savedEvents = new ArrayList<>();
         protected Void doInBackground(Object... lists) {
             List<InvitedEventDTO> events = (List<InvitedEventDTO>) lists[0];
-            eventsActivity = (EventsActivity) lists[1];
             List<Long> eventsId = new ArrayList<>();
             for (InvitedEventDTO eventDTO : events){
                 System.out.println("running task");
@@ -669,7 +669,6 @@ public class EventService {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            eventsActivity.refreshEvents(savedEvents);
             super.onPostExecute(aVoid);
         }
 

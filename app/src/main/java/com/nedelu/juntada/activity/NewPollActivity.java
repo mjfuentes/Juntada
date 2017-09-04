@@ -182,14 +182,18 @@ public class NewPollActivity extends AppCompatActivity {
 
 
         button = (FloatingActionButton) findViewById(R.id.add_event);
-        button.setVisibility(View.INVISIBLE);
+        button.setVisibility(View.VISIBLE);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                button.setClickable(false);
-                progressBar.setVisibility(View.VISIBLE);
-                request.setOptions(dateAdapter.getItems());
-                groupService.createPoll(request, NewPollActivity.this);
+                if (dateAdapter.getCount() >= 2) {
+                    button.setClickable(false);
+                    progressBar.setVisibility(View.VISIBLE);
+                    request.setOptions(dateAdapter.getItems());
+                    groupService.createPoll(request, NewPollActivity.this);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Necesitas ingresar al menos 2 fechas para poder crear una encuesta", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -217,7 +221,13 @@ public class NewPollActivity extends AppCompatActivity {
 
     public void pollCreated(Poll poll) {
         if (poll != null) {
-            this.finish();
+            Intent eventIntent = new Intent(this, VoteActivity.class);
+            SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = userPref.edit();
+            editor.putLong("pollId", poll.getId());
+            editor.apply();
+            startActivity(eventIntent);
+            finish();
         } else {
             button.setClickable(true);
             progressBar.setVisibility(View.GONE);

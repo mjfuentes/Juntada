@@ -78,7 +78,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         eventDate.setText(mValues.get(position).getDate());
         eventTime.setText(mValues.get(position).getTime());
         eventLocation.setText(mValues.get(position).getLocation());
-        eventParticipants.setText(String.valueOf(mValues.get(position).getConfirmedUsers().size()));
+        eventParticipants.setText(String.valueOf(mValues.get(position).confirmed));
 
         if (!holder.mItem.answered){
             unanswered.setVisibility(View.VISIBLE);

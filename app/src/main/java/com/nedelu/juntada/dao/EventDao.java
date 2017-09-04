@@ -342,6 +342,23 @@ public class EventDao {
         }
     }
 
+    public void deletePoll(Long id) {
+        try {
+            DeleteBuilder<Poll, Long> builder2 = helper.getPollDao().deleteBuilder();
+            builder2.where().eq("id", id);
+            builder2.delete();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public int getConfirmedCount(Long id) {
+        try {
+            Long.valueOf(helper.getConfirmedUsersDao().queryBuilder().where().eq("event",id).countOf()).intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }
 

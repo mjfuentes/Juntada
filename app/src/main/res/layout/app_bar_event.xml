@@ -31,34 +31,31 @@
                 android:layout_width="match_parent"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.9"
-                android:layout_marginTop="70dp"
                 android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="0dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/header"
+                    android:src="@drawable/header_background"
+                    tools:layout_editor_absoluteX="8dp" />
                 <LinearLayout
+                    android:layout_marginTop="70dp"
 
                     android:id="@+id/header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
                     android:orientation="vertical"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <!--<TextView-->
-                        <!--android:id="@+id/event_title"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_gravity="center"-->
-                        <!--android:layout_marginLeft="10dp"-->
-                        <!--android:layout_marginRight="10dp"-->
-                        <!--android:layout_marginTop="40dp"-->
-                        <!--android:layout_marginBottom="10dp"-->
-                        <!--android:fontFamily="serif"-->
-                        <!--android:text=""-->
-                        <!--android:textColor="#FFFFFF"-->
-                        <!--android:textSize="25dp"-->
-                        <!--android:textStyle="bold" />-->
+
+
 
                     <TextView
                         android:id="@+id/event_description"
@@ -128,15 +125,13 @@
                     android:layout_width="0dp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/header"
+                    app:layout_constraintTop_toBottomOf="@+id/header"
                     tools:context="com.nedelu.juntada.activity.VoteActivity"
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     xmlns:tools="http://schemas.android.com/tools"
                     android:background="@color/colorLight"
-                    android:layout_height="wrap_content"
-                    tools:layout_editor_absoluteY="73dp"
-                    tools:layout_editor_absoluteX="8dp">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="wrap_content"
@@ -252,6 +247,7 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 android:text="Participantes"
                                 android:textSize="16dp"
+                                android:textColor="@color/colorGrey"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/textView3"
                                 android:layout_marginStart="5dp" />

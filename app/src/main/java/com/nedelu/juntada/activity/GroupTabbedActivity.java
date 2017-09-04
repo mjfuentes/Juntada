@@ -87,6 +87,7 @@ public class GroupTabbedActivity extends AppCompatActivity
     private EventFragment eventFragment;
     private PollFragment pollFragment;
     private ImageView groupImage;
+    private Boolean firstRun = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +226,10 @@ public class GroupTabbedActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        groupService.loadGroupData(groupId, this);
+        if (!firstRun) {
+            refreshGroup(true);
+        }
+        firstRun = false;
         super.onResume();
     }
 
@@ -327,9 +331,6 @@ public class GroupTabbedActivity extends AppCompatActivity
         }
     }
 
-    public void onRefresh() {
-        groupService.loadGroup(groupId,GroupTabbedActivity.this);
-    }
 
     @Override
     public void onUserClicked(int position, View v) {
@@ -366,13 +367,13 @@ public class GroupTabbedActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    eventFragment = EventFragment.newInstance(GroupTabbedActivity.this);
+                    eventFragment = EventFragment.newInstance();
                     return eventFragment;
                 case 1:
                     pollFragment = PollFragment.newInstance(GroupTabbedActivity.this);
                     return pollFragment;
                 default:
-                    return EventFragment.newInstance(GroupTabbedActivity.this);
+                    return EventFragment.newInstance();
             }
         }
 
@@ -393,8 +394,12 @@ public class GroupTabbedActivity extends AppCompatActivity
         }
 
         public void refresh() {
-            pollFragment.refresh();
-            eventFragment.refresh();
+            if (pollFragment != null) {
+                pollFragment.refresh();
+            }
+            if (eventFragment != null) {
+                eventFragment.refresh();
+            }
         }
     }
 

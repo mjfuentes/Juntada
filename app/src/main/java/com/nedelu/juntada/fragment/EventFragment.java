@@ -2,9 +2,11 @@ package com.nedelu.juntada.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,8 @@ import android.view.ViewGroup;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.service.GroupService;
+
+import org.lucasr.twowayview.widget.SpacingItemDecoration;
 
 import java.util.List;
 
@@ -38,17 +42,16 @@ public class EventFragment extends Fragment {
     public EventFragment() {
     }
 
-    public static EventFragment newInstance(Context context) {
+    public static EventFragment newInstance() {
         EventFragment fragment = new EventFragment();
-        fragment.setGroupService(GroupService.getInstance(context));
-        fragment.setContext(context);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        groupService = GroupService.getInstance(getActivity());
+        mContext = getActivity();
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -62,11 +65,11 @@ public class EventFragment extends Fragment {
         // Set the adapter
         Context context = view.getContext();
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
-        if (mColumnCount <= 1) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        } else {
-            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-        }
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        RecyclerView.ItemDecoration spaceItemDecoration = new VerticalSpaceItemDecoration(15);
+        recyclerView.addItemDecoration(spaceItemDecoration);
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         groupId = userPref.getLong("groupId", 0L);
@@ -134,5 +137,20 @@ public class EventFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(Event item);
+    }
+
+    public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+
+        private final int verticalSpaceHeight;
+
+        public VerticalSpaceItemDecoration(int verticalSpaceHeight) {
+            this.verticalSpaceHeight = verticalSpaceHeight;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            outRect.bottom = verticalSpaceHeight;
+        }
     }
 }

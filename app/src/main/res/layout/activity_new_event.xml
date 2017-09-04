@@ -24,7 +24,7 @@
         android:id="@+id/tipo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tipo de juntada"
+        android:text="Tipo"
         android:textColor="@color/colorPrimaryDark"
         android:layout_marginTop="36dp"
         app:layout_constraintTop_toBottomOf="@+id/edit_description"
@@ -146,21 +146,19 @@
         android:layout_marginTop="5dp"
         app:layout_constraintTop_toBottomOf="@+id/tipo"
         app:layout_constraintLeft_toLeftOf="@+id/tipo">
+        <RadioButton android:id="@+id/simple"
+            android:buttonTint="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Juntada" />
         <RadioButton
+            android:layout_marginLeft="20dp"
             android:buttonTint="#000000"
             android:id="@+id/votacion"
             android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Votacion" />
-        <RadioButton android:id="@+id/simple"
-            android:buttonTint="#000000"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha predefinida" />
-
-
+            android:text="Encuesta" />
     </RadioGroup>
 
     <TextView

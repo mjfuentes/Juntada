@@ -1,21 +1,16 @@
 package com.nedelu.juntada.firebase;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.service.notification.StatusBarNotification;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -23,17 +18,20 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.EventActivity;
 import com.nedelu.juntada.activity.NotificationsActivity;
 import com.nedelu.juntada.dao.EventDao;
+import com.nedelu.juntada.dao.GroupDao;
 import com.nedelu.juntada.dao.MessageDao;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Event;
+import com.nedelu.juntada.model.Group;
 import com.nedelu.juntada.model.Message;
 import com.nedelu.juntada.model.MessageType;
 import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.EventService;
+import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.util.PushNotificationsRepository;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
@@ -54,10 +52,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private EventDao eventDao;
     private Long userId;
     private DateTimeFormatter formatter;
+    private GroupService groupService;
+    private EventService eventService;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        sendNotification(remoteMessage.getData());
+        processMessage(remoteMessage.getData());
     }
 
     private void displayMessageNotification(Map<String, String> data, Message message) {
@@ -152,7 +152,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0, notificationBuilder.build());
     }
 
-    private void sendNotification(Map<String, String> data) {
+    private void processMessage(Map<String, String> data) {
         if (data.get("notification").equals("true")) {
             Intent intent = new Intent("NEW_NOTIFICATION");
             intent.putExtra("title", data.get("title"));
@@ -171,32 +171,96 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             displayNotification(data);
 
         } else {
-            Message message = new Message();
-            message.setId(Long.valueOf(data.get("message_id")));
-            message.setCreatorId(Long.valueOf(data.get("creator_id")));
-            message.setMessage(data.get("message"));
-            message.setTypeId(Long.valueOf(data.get("type_id")));
-            message.setType(MessageType.valueOf(data.get("type")));
-            messageDao.saveMessage(message);
-
-            if (userId != message.getCreatorId()) {
-                displayMessageNotification(data, message);
+            String updateType = data.get("update_type");
+            
+            switch (updateType){
+                case "message":
+                    handleMessage(data);
+                    break;
+                case "update":
+                    handleUpdate(data);
+                    break;
+                default:
+                    handleMessage(data);
+                    break;
             }
-
-            Intent intent = new Intent("MESSAGE");
-            intent.putExtra("type", data.get("type"));
-            intent.putExtra("type_id", Long.valueOf(data.get("type_id")));
-            intent.putExtra("message", data.get("message"));
-            intent.putExtra("creator_id", Long.valueOf(data.get("creator_id")));
-            intent.putExtra("message_id", Long.valueOf(data.get("message_id")));
-            intent.putExtra("time", data.get("time"));
-
-            LocalBroadcastManager.getInstance(getApplicationContext())
-                    .sendBroadcast(intent);
         }
     }
 
-        private NotificationCompat.InboxStyle getStyleForNotification(String messageBody) {
+    private void handleUpdate(Map<String, String> data) {
+
+        String type = data.get("type");
+        String action = data.get("action");
+        Long id = Long.valueOf(data.get("type_id"));
+        switch (type) {
+            case "group":
+                switch (action) {
+                    case "delete":
+                        groupService.deleteGroup(id);
+                        break;
+                    case "update":
+                        groupService.loadGroup(id);
+                        break;
+                    case "new":
+                        groupService.loadGroup(id);
+                        break;
+                }
+                break;
+            case "event":
+                switch (action) {
+                    case "delete":
+                        eventService.deleteEvent(id);
+                        break;
+                    case "update":
+                        eventService.loadEvent(id);
+                        break;
+                    case "new":
+                        eventService.loadEvent(id);
+                        break;
+                }
+                break;
+            case "poll":
+                switch (action) {
+                    case "delete":
+                        eventService.deletePoll(id);
+                        break;
+                    case "update":
+                        eventService.loadPoll(id);
+                        break;
+                    case "new":
+                        eventService.loadPoll(id);
+                        break;
+                }
+
+        }
+    }
+
+    private void handleMessage(Map<String, String> data) {
+        Message message = new Message();
+        message.setId(Long.valueOf(data.get("message_id")));
+        message.setCreatorId(Long.valueOf(data.get("creator_id")));
+        message.setMessage(data.get("message"));
+        message.setTypeId(Long.valueOf(data.get("type_id")));
+        message.setType(MessageType.valueOf(data.get("type")));
+        messageDao.saveMessage(message);
+
+        if (userId != message.getCreatorId()) {
+            displayMessageNotification(data, message);
+        }
+
+        Intent intent = new Intent("MESSAGE");
+        intent.putExtra("type", data.get("type"));
+        intent.putExtra("type_id", Long.valueOf(data.get("type_id")));
+        intent.putExtra("message", data.get("message"));
+        intent.putExtra("creator_id", Long.valueOf(data.get("creator_id")));
+        intent.putExtra("message_id", Long.valueOf(data.get("message_id")));
+        intent.putExtra("time", data.get("time"));
+
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .sendBroadcast(intent);
+    }
+
+    private NotificationCompat.InboxStyle getStyleForNotification(String messageBody) {
         NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
         SharedPreferences sharedPref = getSharedPreferences("NotificationData", 0);
         Map<String, String> notificationMessages = (Map<String, String>) sharedPref.getAll();
@@ -223,7 +287,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         messageDao = new MessageDao(getBaseContext());
         userDao = new UserDao(getBaseContext());
         eventDao = new EventDao(getBaseContext());
-
+        groupService = GroupService.getInstance(getBaseContext());
+        eventService = new EventService(getBaseContext());
 
         formatter= DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
                         .withLocale( Locale.ENGLISH )

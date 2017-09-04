@@ -67,6 +67,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private ProgressBar progressBar;
     private User user;
     private Boolean openMessages;
+    private Boolean notification = false;
     private UserService userService;
     private ImageView addMembersButton;
     private EventMessagingFragment eventFragment;
@@ -104,6 +105,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         if (bundle != null) {
             eventId = bundle.getLong("eventId");
             openMessages = bundle.getBoolean("showMessages");
+            notification = true;
         }
 
         userService = new UserService(this);
@@ -113,7 +115,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
-        eventService.loadEvent(eventId, this);
 
         addMembersButton = (ImageView) findViewById(R.id.add_members_button);
         userList = (RecyclerView) findViewById(R.id.userList);
@@ -205,20 +206,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Bundle bundle = getIntent().getExtras();
-
-        if (bundle != null) {
-            eventId = bundle.getLong("eventId");
-            openMessages = bundle.getBoolean("showMessages");
-            Event event = eventService.getEvent(eventId);
-            refreshInfo(event);
-        }
-    }
-
 
     public void refreshInfo(final Event event){
         invalidateOptionsMenu();
@@ -261,23 +248,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             e.printStackTrace();
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            yesButton.setBackgroundColor(getColor(R.color.confirmButton));
-//            noButton.setBackgroundColor(getColor(R.color.confirmButton));
-//            maybeButton.setBackgroundColor(getColor(R.color.confirmButton));
-//        }
-//
-//        yesButton.setClickable(true);
-//        noButton.setClickable(true);
-//        maybeButton.setClickable(true);
-//
-//        if (event.getConfirmedUsers().contains(user)){
-//            going.setClickable(false);
-//            fab.semenuim
-//        } else if (event.getNotGoingUsers().contains(user)){
-//            going.setClickable(false);
-//        }
-
         userAdapter.setItems(event.getConfirmedUsers());
         userList.removeAllViews();
         userAdapter.notifyItemRangeRemoved(0, userAdapter.getItemCount());
@@ -314,7 +284,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
                 if (verticalOffset == 0){
                     fab.setVisibility(View.VISIBLE);
-                    mSectionsPagerAdapter.hideMessages();
+                    if (mSectionsPagerAdapter != null) {
+                        mSectionsPagerAdapter.hideMessages();
+                    }
                     toolbarExpanded = true;
                     messagingLoaded = false;
                 } else {
@@ -325,6 +297,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         if (openMessages){
             appBarLayout.setExpanded(false);
+            openMessages = false;
         }
     }
 
@@ -479,7 +452,16 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
     @Override
     public void onResume(){
-        eventService.loadEvent(eventId, this);
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null && !notification) {
+            eventId = bundle.getLong("eventId");
+            openMessages = bundle.getBoolean("showMessages");
+        }
+
+        Event event = eventService.getEvent(eventId);
+        refreshInfo(event);
+        notification = false;
         super.onResume();
     }
 

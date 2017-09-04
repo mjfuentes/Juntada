@@ -95,6 +95,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
 
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         final CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        toolbarLayout.setTitle(StringEscapeUtils.unescapeJava(poll.getTitle()));
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -106,12 +107,10 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                 }
                 if (scrollRange + verticalOffset == 0) {
                     if (toolbarLayout != null) {
-                        toolbarLayout.setTitle(StringEscapeUtils.unescapeJava(poll.getTitle()));
                         isShow = true;
                     }
                 } else if (isShow) {
                     if (toolbarLayout != null) {
-                        toolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
                         isShow = false;
                     }
                 }
@@ -119,7 +118,6 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         });
         poll = eventService.getPoll(pollId);
 
-        eventService.loadPoll(pollId, this);
         if (poll != null){
             refreshPoll(poll);
         } else {
@@ -159,9 +157,6 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             }
             items.add(item);
         }
-
-        TextView pollTitle = (TextView) findViewById(R.id.poll_title);
-        pollTitle.setText(StringEscapeUtils.unescapeJava(poll.getTitle()));
 
         TextView pollDescription = (TextView) findViewById(R.id.poll_description);
         pollDescription.setText(StringEscapeUtils.unescapeJava(poll.getDescription()));
