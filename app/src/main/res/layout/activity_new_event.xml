@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.nedelu.juntada.activity.NewEventActivity">
 
-
-
     <TextView
         android:id="@+id/time_view"
         android:layout_width="wrap_content"
@@ -130,7 +128,6 @@
             android:inputType="textMultiLine|textCapSentences"
             android:maxLines="5"
             android:gravity="start"
-            android:lines="3"
             android:text=""
             android:textColorHint="@color/colorPrimary"
             android:textCursorDrawable="@null">

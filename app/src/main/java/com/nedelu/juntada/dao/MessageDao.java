@@ -25,7 +25,7 @@ public class MessageDao {
 
     public List<Message> getMessagesForEvent(Long eventId) {
         try {
-            List<Message> messages = helper.getMessageDao().queryBuilder().where().eq("type", MessageType.EVENT).and().eq("type_id",eventId).query();
+            List<Message> messages = helper.getMessageDao().queryBuilder().orderBy("id", true).where().eq("type", MessageType.EVENT).and().eq("type_id",eventId).query();
             return messages;
         } catch (SQLException e) {
             e.printStackTrace();

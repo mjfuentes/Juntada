@@ -253,6 +253,7 @@ public class EventDao {
                 Event event = getEvent(invitedUser.getEventId());
                 if (event != null) {
                     event.answered = isEventAnswered(event.getId(), userId);
+                    event.confirmed = getConfirmedCount(event.getId());
                     events.add(event);
                 }
             }

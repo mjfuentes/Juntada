@@ -40,6 +40,7 @@ public class EventsActivity extends AppCompatActivity
 
     private EventService eventService;
     private RecyclerView eventsList;
+    private View noEvents;
     private MyEventRecyclerViewAdapter eventsAdapter;
     private Long userId;
     private User user;
@@ -73,9 +74,16 @@ public class EventsActivity extends AppCompatActivity
         ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
         Picasso.with(EventsActivity.this).load(user.getImageUrl()).into(user_image);
 
-        eventsAdapter = new MyEventRecyclerViewAdapter(eventService.loadEventsForUser(userId,this), EventsActivity.this);
+        List<Event> events = eventService.loadEventsForUser(userId,this);
+        eventsAdapter = new MyEventRecyclerViewAdapter(events, EventsActivity.this);
         eventsList = (RecyclerView) findViewById(R.id.events_list);
+        noEvents = findViewById(R.id.noInvitations);
         eventsList.setAdapter(eventsAdapter);
+
+        if (events.size() == 0){
+            eventsList.setVisibility(View.GONE);
+            noEvents.setVisibility(View.VISIBLE);
+        }
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
@@ -87,8 +95,15 @@ public class EventsActivity extends AppCompatActivity
 
     public void refreshEvents(List<Event> events){
         if (events != null){
-            eventsAdapter.setItems(events);
-            eventsAdapter.notifyDataSetChanged();
+            if (events.size() > 0) {
+                eventsList.setVisibility(View.VISIBLE);
+                noEvents.setVisibility(View.GONE);
+                eventsAdapter.setItems(events);
+                eventsAdapter.notifyDataSetChanged();
+            } else {
+                eventsList.setVisibility(View.GONE);
+                noEvents.setVisibility(View.VISIBLE);
+            }
         }
 
     }

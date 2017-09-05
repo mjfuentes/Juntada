@@ -36,6 +36,8 @@
                 tools:showIn="@layout/app_bar_group">
 
                 <ImageView
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackground"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -85,6 +87,8 @@
                         android:id="@+id/textView3" />
 
                     <ImageButton
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:clickable="true"
                         android:id="@+id/add_members_button"
                         android:background="#FAFAFA"
                         android:src="@drawable/add_friend"

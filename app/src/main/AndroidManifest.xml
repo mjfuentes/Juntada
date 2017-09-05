@@ -61,6 +61,7 @@
         <activity
             android:name=".activity.NewGroupActivity"
             android:label="Nuevo Grupo"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".activity.GroupsActivity"
             android:screenOrientation="portrait" />
         <activity

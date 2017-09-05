@@ -1,5 +1,6 @@
 package com.nedelu.juntada.firebase;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -140,9 +141,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(StringEscapeUtils.unescapeJava(data.get("title")))
-                .setContentText(StringEscapeUtils.unescapeJava(data.get("description")))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(StringEscapeUtils.unescapeJava(data.get("description"))))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentIntent(pendingIntent);
 
