@@ -98,9 +98,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.logo)
                     .setContentTitle(title)
-                    .setContentText(description)
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setContentIntent(pendingIntent);
 
