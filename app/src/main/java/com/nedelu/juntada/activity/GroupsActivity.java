@@ -63,6 +63,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         long startTime = System.nanoTime();
+        super.onCreate(savedInstanceState);
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
@@ -71,12 +72,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
         groupService = GroupService.getInstance(GroupsActivity.this);
         groupService.getUserGroups(userId, this);
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         long partialTime = System.nanoTime();
         long duration1 = (partialTime - startTime);  //divide by 1000000 to get milliseconds.

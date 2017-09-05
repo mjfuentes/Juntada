@@ -26,10 +26,6 @@
         <item name="android:layout">@layout/preference_category</item>
     </style>
 
-    <style name="PreferenceThemeOverlay" parent="PreferenceThemeOverlay.v14.Material">
-        <item name="preferenceCategoryStyle">@style/CategoryStyle</item>
-    </style>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -42,10 +38,6 @@
         <item name="colorControlNormal">#000000</item>
         <item name="colorControlActivated">#000000</item>
         <item name="colorControlHighlight">#000000</item>
-
-        <item name="preferenceTheme">
-            @style/PreferenceThemeOverlay
-        </item>
     </style>
 
     <style name="GroupTheme" parent="Theme.AppCompat.Light.DarkActionBar">
