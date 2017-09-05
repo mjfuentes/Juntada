@@ -41,6 +41,10 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter android:label="Juntada">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -61,9 +65,9 @@
         <activity
             android:name=".activity.NewGroupActivity"
             android:label="Nuevo Grupo"
-            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".activity.GroupsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.NewGroupTwoActivity"
             android:label="Nuevo Grupo"
@@ -72,11 +76,6 @@
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <provider
@@ -104,12 +103,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.JoinActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.EventActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.ProfileActivity"
             android:label="@string/title_activity_profile"
@@ -120,7 +119,7 @@
             android:label="@string/title_activity_group_tabbed"
             android:parentActivityName=".activity.GroupsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.EventsActivity"
             android:label="@string/title_activity_events"
@@ -136,12 +135,17 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="notifications" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.VisitProfileActivity"
-            android:screenOrientation="portrait"
-            android:label="Ver Perfil"></activity>
+        <activity
+            android:name=".activity.VisitProfileActivity"
+            android:label="Ver Perfil"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.HomeActivity">
+
+        </activity>
     </application>
 
 </manifest>

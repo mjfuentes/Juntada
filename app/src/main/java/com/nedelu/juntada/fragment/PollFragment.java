@@ -31,7 +31,6 @@ public class PollFragment extends Fragment {
     private int mColumnCount = 1;
     private PollFragment.OnListFragmentInteractionListener mListener;
     private GroupService groupService;
-    private Context mContext;
     private Long userId;
     private Long groupId;
     private View mNoMessagesView;
@@ -42,8 +41,6 @@ public class PollFragment extends Fragment {
 
     public static PollFragment newInstance(Context context) {
         PollFragment fragment = new PollFragment();
-        fragment.setContext(context);
-        fragment.setGroupService(GroupService.getInstance(context));
 
         return fragment;
     }
@@ -77,6 +74,7 @@ public class PollFragment extends Fragment {
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(getContext());
         Long groupId =  userPref.getLong("groupId", 0L);
 
+        groupService = GroupService.getInstance(getContext());
         List<Poll> polls = groupService.getPolls(groupId);
         myPollRecyclerViewAdapter = new MyPollRecyclerViewAdapter(polls, userId, mListener);
         recyclerView.setAdapter(myPollRecyclerViewAdapter);
@@ -111,10 +109,6 @@ public class PollFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-    public void setContext(Context context) {this.mContext = context; }
-    public void setGroupService(GroupService groupService) {
-        this.groupService = groupService;
     }
 
     public void refresh() {

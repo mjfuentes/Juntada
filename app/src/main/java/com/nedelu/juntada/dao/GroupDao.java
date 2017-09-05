@@ -41,19 +41,16 @@ public class GroupDao {
 
     public List<Group> getUserGroups(Long userId){
         try {
-            List<Group> groups = new ArrayList<>();
-            List<GroupMember> groupsMember = helper.getGroupMemberDao().queryBuilder()
-                    .where()
-                    .eq("user_id", userId)
-                    .query();
 
-            for (GroupMember groupMember: groupsMember){
-                Group group = helper.getGroupDao().queryForId(groupMember.getGroupId());
-                group.unansweredEventsAndPolls = getUnansweredEventsAndPolls(userId, group.getId());
-                groups.add(group);
-
+            QueryBuilder<GroupMember, Long> qb = helper.getGroupMemberDao().queryBuilder();
+            qb.where().eq("user_id", userId);
+            List<Group> groups = helper.getGroupDao().queryBuilder().join("id", "group_id", qb).query();
+            for (Group group : groups) {
+                group.unansweredEventsAndPolls =  getUnansweredEventsAndPolls(userId, group.getId());
             }
+
             return groups;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();

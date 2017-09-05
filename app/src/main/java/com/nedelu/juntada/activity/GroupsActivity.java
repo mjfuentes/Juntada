@@ -25,9 +25,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.GroupAdapter;
@@ -36,10 +34,8 @@ import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
-import com.nedelu.juntada.util.SpacesItemDecoration;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -62,12 +58,29 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     private Toolbar toolbar;
     private ImageView logo;
     private static final int ANIM_DURATION_TOOLBAR = 300;
-    private static final int ANIM_DURATION_FAB = 400;
+    private static final int ANIM_DURATION_FAB = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        long startTime = System.nanoTime();
+
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+        userId = userPref.getLong("userId", 0L);
+
+        if (userId == 0L) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        groupService = GroupService.getInstance(GroupsActivity.this);
+        groupService.getUserGroups(userId, this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
+        long partialTime = System.nanoTime();
+        long duration1 = (partialTime - startTime);  //divide by 1000000 to get milliseconds.
+        System.out.println("Partial duration: " + duration1 / 1000000);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -92,9 +105,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             }
         });
 
-
-        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
-        userId = userPref.getLong("userId", 0L);
         userService = new UserService(GroupsActivity.this);
         eventService = new EventService(GroupsActivity.this);
         user = userService.getUser(userId);
@@ -115,20 +125,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         toggle.syncState();
 
-        groupService = GroupService.getInstance(GroupsActivity.this);
-
-        List<Group> groups = groupService.getUserGroups(userId);
-        Collections.sort(groups, new Comparator<Group>() {
-            @Override
-            public int compare(Group group, Group t1) {
-                return t1.getId().compareTo(group.getId());
-            }
-        });
-
-        if (groups.size() == 0){
-            firstGroup.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        }
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.groups);
@@ -137,7 +133,9 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             pendingIntroAnimation = true;
         }
 
-        setupGroups();
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        System.out.println("Total duration: " + duration / 1000000);
 
     }
 
@@ -173,26 +171,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         }
 
         if (result) {
-            List<Group> groups = groupService.getUserGroups(userId);
-            if (groups.size() == 0){
-                firstGroup.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
-            } else {
-                firstGroup.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-                Collections.sort(groups, new Comparator<Group>() {
-                    @Override
-                    public int compare(Group group, Group t1) {
-                        return t1.getId().compareTo(group.getId());
-                    }
-                });
-                firstGroup.setVisibility(View.INVISIBLE);
-                recyclerView.removeAllViews();
-                groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
-                groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-                groupAdapter.notifyDataSetChanged();
-            }
-
+            groupService.getUserGroups(userId, this);
         }
     }
 
@@ -229,9 +208,8 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     }
 
     private void startIntroAnimation() {
-        fab.setTranslationY(2 * 50);
-
         int actionbarSize = (int) (56 * getResources().getDisplayMetrics().density);
+        fab.setTranslationY(actionbarSize * 2);
         toolbar.setTranslationY(-actionbarSize);
         logo.setTranslationY(-actionbarSize);
         notificationsMenuItem.getActionView().setTranslationY(-actionbarSize);
@@ -239,59 +217,38 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         toolbar.animate()
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
-                .setStartDelay(300);
+                .setStartDelay(0);
         logo.animate()
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
-                .setStartDelay(400);
+                .setStartDelay(200);
 
         notificationsMenuItem.getActionView().animate()
                 .translationY(0)
                 .setDuration(ANIM_DURATION_TOOLBAR)
-                .setStartDelay(500)
+                .setStartDelay(400)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        startContentAnimation();
+                        fab.animate()
+                                .translationY(0)
+                                .setInterpolator(new OvershootInterpolator(1.f))
+                                .setDuration(ANIM_DURATION_FAB)
+                                .start();
                     }
                 })
                 .start();
+
+
     }
 
-    private void startContentAnimation() {
-        fab.animate()
-                .translationY(0)
-                .setInterpolator(new OvershootInterpolator(1.f))
-                .setStartDelay(300)
-                .setDuration(ANIM_DURATION_FAB)
-                .start();
-        recyclerView.setAdapter(groupAdapter);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         navigationView.setCheckedItem(R.id.groups);
-        List<Group> groups = groupService.getUserGroups(userId);
-        if (groups.size() == 0){
-            groupService.loadGroups(userId, this);
-            firstGroup.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            firstGroup.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-            Collections.sort(groups, new Comparator<Group>() {
-                @Override
-                public int compare(Group group, Group t1) {
-                    return t1.getId().compareTo(group.getId());
-                }
-            });
-            firstGroup.setVisibility(View.INVISIBLE);
-            groupAdapter.setData(groups);
-            recyclerView.removeAllViews();
-            groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
-            groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
-            groupAdapter.notifyDataSetChanged();
+        if(!pendingIntroAnimation) {
+            groupService.getUserGroups(userId, this);
         }
     }
 
@@ -368,10 +325,24 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         groupService.loadGroups(userId, this);
     }
 
-    private void setupGroups() {
+    public void setupGroups(List<Group> groups) {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
-        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(userId));
+        if (groups.size() == 0){
+            firstGroup.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            firstGroup.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            Collections.sort(groups, new Comparator<Group>() {
+                @Override
+                public int compare(Group group, Group t1) {
+                    return t1.getId().compareTo(group.getId());
+                }
+            });
+        }
+        groupAdapter = new GroupAdapter(GroupsActivity.this, groups);
         groupAdapter.setOnItemClickListener(this);
+        recyclerView.setAdapter(groupAdapter);
     }
 }

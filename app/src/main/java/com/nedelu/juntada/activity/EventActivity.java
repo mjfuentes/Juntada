@@ -133,6 +133,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         going = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.going);
         notGoing = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.not_going);
 
+        if (event.getConfirmedUsers().contains(user)){
+            going.setSelected(true);
+        } else if (event.getNotGoingUsers().contains(user)){
+            notGoing.setSelected(true);
+        }
         going.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,33 +155,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 fab.close(true);
             }
         });
-//        fab.add
-//        yesButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                progressBar.setVisibility(View.VISIBLE);
-//                blur.setVisibility(View.VISIBLE);
-//                saveAssistance(Assistance.GOING);
-//            }
-//        });
-//
-//        noButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                progressBar.setVisibility(View.VISIBLE);
-//                blur.setVisibility(View.VISIBLE);
-//                saveAssistance(Assistance.NOT_GOING);
-//            }
-//        });
-//
-//        maybeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                progressBar.setVisibility(View.VISIBLE);
-//                blur.setVisibility(View.VISIBLE);
-//                saveAssistance(Assistance.MAYBE);
-//            }
-//        });
 
         addMembersButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +191,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     public void refreshInfo(final Event event){
         invalidateOptionsMenu();
         progressBar.setVisibility(View.GONE);
-//        TextView title = (TextView) findViewById(R.id.event_title);
         TextView description = (TextView) findViewById(R.id.event_description);
         TextView location = (TextView) findViewById(R.id.event_location);
         TextView weekday = (TextView) findViewById(R.id.event_weekday);
@@ -238,7 +215,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         Date optionDate = null;
         try {
             optionDate = completeFormat.parse(event.getDate());
-//            title.setText(StringEscapeUtils.unescapeJava(event.getTitle()));
             description.setText(StringEscapeUtils.unescapeJava(event.getDescription()));
             location.setText(event.getLocation());
             weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0,3)));
@@ -280,7 +256,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                     }
                 } else if (isShow) {
                     if (collapsingToolbarLayout != null) {
-//                        collapsingToolbarLayout.setTitle(" ");
                         isShow = false;
                     }
                 }
@@ -409,9 +384,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         if (id == R.id.delete){
             addMembersButton.setClickable(false);
-//            yesButton.setClickable(false);
-//            noButton.setClickable(false);
-//            maybeButton.setClickable(false);
             progressBar.setVisibility(View.VISIBLE);
             eventService.deleteEvent(eventId, this);
         }

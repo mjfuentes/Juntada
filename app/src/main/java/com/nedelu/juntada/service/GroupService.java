@@ -1,20 +1,17 @@
 package com.nedelu.juntada.service;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.text.Editable;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nedelu.juntada.activity.GroupTabbedActivity;
 import com.nedelu.juntada.activity.GroupsActivity;
-import com.nedelu.juntada.activity.JoinActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
 import com.nedelu.juntada.activity.NewGroupActivity;
 import com.nedelu.juntada.activity.NewPollActivity;
@@ -282,8 +279,8 @@ public class GroupService extends Observable {
 
     // DATABASE
 
-    public List<Group> getUserGroups(Long userId){
-        return groupDao.getUserGroups(userId);
+    public void getUserGroups(Long userId, GroupsActivity groupsActivity){
+        new GetGroupsTask().execute(userId, groupsActivity);
     }
 
     private void updateGroups(Long userId, List<Group> groups){
@@ -574,7 +571,7 @@ public class GroupService extends Observable {
                 groupIds.add(groupDTO.getId());
             }
 
-            for (Group group : getUserGroups(userId)){
+            for (Group group : groupDao.getUserGroups(userId)){
                 if (!groupIds.contains(group.getId())){
                     groupDao.deleteGroup(userId, group);
                 }
@@ -603,6 +600,22 @@ public class GroupService extends Observable {
 
         @Override
         protected void onPostExecute(Void params) {
+        }
+    }
+
+    private class GetGroupsTask extends AsyncTask<Object, Void, Void> {
+        private Long userId;
+        private GroupsActivity activity;
+        private List<Group> groups;
+        protected Void doInBackground(Object... params) {
+            groups = groupDao.getUserGroups((Long) params[0]);
+            activity = (GroupsActivity) params[1];
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            activity.setupGroups(groups);
         }
 
 
