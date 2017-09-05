@@ -76,7 +76,7 @@ public interface ServerInterface {
     Call<EventTokenDTO> getEventToken(@Path("eventId") Long eventId);
 
     @POST("events/member")
-    Call<EventDTO> joinEvent(@Body JoinEventDTO joinEvent);
+    Call<InvitedEventDTO> joinEvent(@Body JoinEventDTO joinEvent);
 
     @POST("groups/{groupId}")
     Call<GroupDTO> updateGroupName(@Path("groupId") Long groupId,@Body GroupDTO groupDTO);

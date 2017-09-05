@@ -78,36 +78,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        User user = userDao.getUser(message.getCreatorId());
+
 
         if (message.getType().equals(MessageType.EVENT)) {
             Event event = eventDao.getEvent(message.getTypeId());
-            int id = Integer.valueOf(String.valueOf(message.getType().ordinal()) + message.getTypeId());
-            String title = "";
-            String description = "";
-            Integer unread = activeNotificationsForId(id);
-            if (unread > 0) {
-                title = StringEscapeUtils.unescapeJava(event.getTitle()) + " @ " + StringEscapeUtils.unescapeJava(event.getGroup().getName());
-                description = "Nuevos mensajes sin leer";
+            User user = userDao.getUser(message.getCreatorId());
+            if (user == null || event == null) {
+                eventService.loadEvent(message.getTypeId());
             } else {
-                title = StringEscapeUtils.unescapeJava(user.getFirstName() + " " + user.getLastName() + " @ " + event.getTitle());
-                description = StringEscapeUtils.unescapeJava(message.getMessage());
+                int id = Integer.valueOf(String.valueOf(message.getType().ordinal()) + message.getTypeId());
+                String title = "";
+                String description = "";
+                Integer unread = activeNotificationsForId(id);
+                if (unread > 0) {
+                    title = StringEscapeUtils.unescapeJava(event.getTitle()) + " @ " + StringEscapeUtils.unescapeJava(event.getGroup().getName());
+                    description = "Nuevos mensajes sin leer";
+                } else {
+                    title = StringEscapeUtils.unescapeJava(user.getFirstName() + " " + user.getLastName() + " @ " + event.getTitle());
+                    description = StringEscapeUtils.unescapeJava(message.getMessage());
+                }
+
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.logo)
+                        .setContentTitle(title)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setContentIntent(pendingIntent);
+
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                notificationManager.notify(id, notificationBuilder.build());
             }
-
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.logo)
-                    .setContentTitle(title)
-                    .setAutoCancel(true)
-                    .setSound(defaultSoundUri)
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setContentIntent(pendingIntent);
-
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            notificationManager.notify(id, notificationBuilder.build());
 
         }
 
