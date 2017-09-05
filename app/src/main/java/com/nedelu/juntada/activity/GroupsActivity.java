@@ -200,7 +200,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             }
         });
         if (pendingIntroAnimation) {
-            pendingIntroAnimation = false;
             startIntroAnimation();
         }
         
@@ -343,6 +342,11 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         }
         groupAdapter = new GroupAdapter(GroupsActivity.this, groups);
         groupAdapter.setOnItemClickListener(this);
+        if (pendingIntroAnimation){
+            pendingIntroAnimation = false;
+        } else {
+            groupAdapter.setLockedAnimations(true);
+        }
         recyclerView.setAdapter(groupAdapter);
     }
 }

@@ -199,6 +199,7 @@ public class GroupTabbedActivity extends AppCompatActivity
         mViewPager.setAdapter(mEventPagerAdapter);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorPrimaryDark),android.graphics.PorterDuff.Mode.SRC_IN);
 
         addEventButton.setOnClickListener(new View.OnClickListener() {
             @Override

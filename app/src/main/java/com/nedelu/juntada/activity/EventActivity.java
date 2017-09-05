@@ -116,6 +116,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
+        progressBar.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorPrimaryDark),android.graphics.PorterDuff.Mode.SRC_IN);
 
         addMembersButton = (ImageView) findViewById(R.id.add_members_button);
         userList = (RecyclerView) findViewById(R.id.userList);

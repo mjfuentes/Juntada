@@ -80,8 +80,8 @@ tools:context=".activity.EventActivity">
             android:id="@+id/button_chatbox_send"
             android:elevation="0dp"
             android:layout_margin="5dp"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             app:backgroundTint="@color/colorPrimary"
             android:scaleType="center"
             app:srcCompat="@mipmap/ic_send_new" />
@@ -92,8 +92,8 @@ tools:context=".activity.EventActivity">
             android:id="@+id/button_progress_bar"
             android:layout_margin="5dp"
             style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_width="35dp"
-            android:layout_height="35dp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
 
     </com.dmitrymalkovich.android.ProgressFloatingActionButton>
 

@@ -31,18 +31,19 @@
         tools:layout_editor_absoluteY="81dp"
         tools:layout_editor_absoluteX="8dp">
         <ImageView
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/ic_message_icon"/>
+            android:src="@drawable/slide"/>
 
         <TextView
             android:textSize="17dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Desliza para ver mensajes."/>
+            android:text="Desliza para ver los mensajes"/>
 
     </LinearLayout>
     </android.support.constraint.ConstraintLayout>
