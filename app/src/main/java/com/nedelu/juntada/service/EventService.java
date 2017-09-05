@@ -527,11 +527,11 @@ public class EventService {
 
         ServerInterface server = retrofit.create(ServerInterface.class);
 
-        Call<EventDTO> call = server.getEvent(eventId);
+        Call<InvitedEventDTO> call = server.getEvent(eventId);
 
-        call.enqueue(new Callback<EventDTO>() {
+        call.enqueue(new Callback<InvitedEventDTO>() {
             @Override
-            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+            public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
                 if (response.code() == 200) {
                     Event event = saveEvent(response.body());
                 } else {
@@ -540,7 +540,7 @@ public class EventService {
             }
 
             @Override
-            public void onFailure(Call<EventDTO> call, Throwable t) {
+            public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
                 Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });

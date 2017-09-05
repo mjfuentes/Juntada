@@ -7,8 +7,8 @@ android {
         applicationId "com.nedelu.juntada"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 39
-        versionName "1.38"
+        versionCode 40
+        versionName "1.39"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //important
         vectorDrawables.useSupportLibrary = true
@@ -57,6 +57,7 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.android.support:preference-v14:25.0.0'
     testCompile 'junit:junit:4.12'
 }
 

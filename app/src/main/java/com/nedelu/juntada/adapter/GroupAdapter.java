@@ -78,6 +78,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     }
 
     private void bindPhoto(final ViewHolder holder, int position) {
+        holder.root.setVisibility(View.INVISIBLE);
         Picasso.with(mContext)
                 .load(mData.get(position).getImageUrl())
                 .error(R.drawable.no_picture)
@@ -98,6 +99,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     }
 
     private void animatePhoto(ViewHolder viewHolder) {
+        viewHolder.root.setVisibility(View.VISIBLE);
         if (!lockedAnimations) {
             if (lastAnimatedItem == viewHolder.getPosition()) {
                 setLockedAnimations(true);
@@ -132,6 +134,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
     public void setLockedAnimations(boolean lockedAnimations) {
         this.lockedAnimations = lockedAnimations;
+    }
+
+    public void updateItems() {
+        notifyDataSetChanged();
     }
 
     public interface ClickListener {

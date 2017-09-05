@@ -121,6 +121,16 @@ public class EventsActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.events, menu);
+        MenuItem notificationsMenuItem = menu.findItem(R.id.notifications);
+        notificationsMenuItem.setActionView(R.layout.notifications_item);
+        notificationsMenuItem.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent notifications = new Intent(EventsActivity.this, NotificationsActivity.class);
+                startActivity(notifications);
+            }
+        });
+
         return true;
     }
 

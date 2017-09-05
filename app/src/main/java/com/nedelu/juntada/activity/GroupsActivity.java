@@ -1,5 +1,7 @@
 package com.nedelu.juntada.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,19 +53,27 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     private EventService eventService;
     private Long userId;
     private NavigationView navigationView;
-    ImageView firstGroup;
+    private ImageView firstGroup;
     private User user;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Boolean pendingIntroAnimation = false;
+    private FloatingActionButton fab;
+    private MenuItem notificationsMenuItem;
+    private Toolbar toolbar;
+    private ImageView logo;
+    private static final int ANIM_DURATION_TOOLBAR = 300;
+    private static final int ANIM_DURATION_FAB = 400;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
-
+        logo = (ImageView) findViewById(R.id.logo);
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         ActivityManager.TaskDescription taskDesc = null;
@@ -71,7 +82,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             setTaskDescription(taskDesc);
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,9 +108,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
         Picasso.with(GroupsActivity.this).load(user.getImageUrl()).into(user_image);
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -122,13 +130,14 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             recyclerView.setVisibility(View.GONE);
         }
 
-        groupAdapter = new GroupAdapter(GroupsActivity.this, groups);
-        groupAdapter.setOnItemClickListener(this);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerView.setItemViewCacheSize(6);
-        recyclerView.setAdapter(groupAdapter);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.groups);
+
+        if (savedInstanceState == null) {
+            pendingIntroAnimation = true;
+        }
+
+        setupGroups();
 
     }
 
@@ -178,7 +187,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                     }
                 });
                 firstGroup.setVisibility(View.INVISIBLE);
-                groupAdapter.setData(groups);
                 recyclerView.removeAllViews();
                 groupAdapter.notifyItemRangeRemoved(0, groupAdapter.getItemCount());
                 groupAdapter.notifyItemRangeInserted(0, groupAdapter.getItemCount());
@@ -203,7 +211,61 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.groups, menu);
+        notificationsMenuItem = menu.findItem(R.id.notifications);
+        notificationsMenuItem.setActionView(R.layout.notifications_item);
+        notificationsMenuItem.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent notifications = new Intent(GroupsActivity.this, NotificationsActivity.class);
+                startActivity(notifications);
+            }
+        });
+        if (pendingIntroAnimation) {
+            pendingIntroAnimation = false;
+            startIntroAnimation();
+        }
+        
         return true;
+    }
+
+    private void startIntroAnimation() {
+        fab.setTranslationY(2 * 50);
+
+        int actionbarSize = (int) (56 * getResources().getDisplayMetrics().density);
+        toolbar.setTranslationY(-actionbarSize);
+        logo.setTranslationY(-actionbarSize);
+        notificationsMenuItem.getActionView().setTranslationY(-actionbarSize);
+
+        toolbar.animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(300);
+        logo.animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(400);
+
+        notificationsMenuItem.getActionView().animate()
+                .translationY(0)
+                .setDuration(ANIM_DURATION_TOOLBAR)
+                .setStartDelay(500)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        startContentAnimation();
+                    }
+                })
+                .start();
+    }
+
+    private void startContentAnimation() {
+        fab.animate()
+                .translationY(0)
+                .setInterpolator(new OvershootInterpolator(1.f))
+                .setStartDelay(300)
+                .setDuration(ANIM_DURATION_FAB)
+                .start();
+        recyclerView.setAdapter(groupAdapter);
     }
 
     @Override
@@ -256,17 +318,13 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         } else if (id == R.id.groups) {
 
         } else if (id == R.id.events) {
-            Intent events = new Intent(this, EventsActivity.class);
+            Intent events = new Intent(GroupsActivity.this, EventsActivity.class);
             events.putExtra("id", userId);
             startActivity(events);
         } else if (id == R.id.configuration) {
-//            Intent events = new Intent(this, SettingsActivity.class);
-//            events.putExtra("id", userId);
-//            startActivity(events);
-            Toast.makeText(getApplicationContext(), "Proximamente!", Toast.LENGTH_SHORT).show();
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return false;
+            Intent config = new Intent(this, SettingsActivity.class);
+            config.putExtra("id", userId);
+            startActivity(config);
 
         } else if (id == R.id.share) {
             try {
@@ -308,5 +366,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     @Override
     public void onRefresh() {
         groupService.loadGroups(userId, this);
+    }
+
+    private void setupGroups() {
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        recyclerView.setLayoutManager(layoutManager);
+        groupAdapter = new GroupAdapter(GroupsActivity.this, groupService.getUserGroups(userId));
+        groupAdapter.setOnItemClickListener(this);
     }
 }

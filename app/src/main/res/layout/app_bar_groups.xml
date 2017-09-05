@@ -19,6 +19,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
             
             <ImageView
+                android:id="@+id/logo"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/juntada"

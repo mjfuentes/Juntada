@@ -4,24 +4,86 @@
          when checked/unchecked. -->
     <SwitchPreference
         android:defaultValue="true"
-        android:key="notifications_new_message"
+        android:key="notifications"
+        android:contentDescription="Activar notificaciones dentro de la aplicacion"
         android:title="@string/pref_title_new_message_notifications" />
 
     <!-- Allows the user to choose a ringtone in the 'notification' category. -->
     <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
     <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
+    <PreferenceCategory
+        android:title="Encuestas"
+        android:dependency="notifications"
+        android:layout="@layout/preference_category"
+        android:key="pref_key_storage_settings">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="poll_notifications"
+            android:contentDescription="Activar notificaciones relacionadas a encuestas"
+            android:title="@string/pref_title_new_message_notifications" />
     <RingtonePreference
+        android:dependency="poll_notifications"
         android:defaultValue="content://settings/system/notification_sound"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_ringtone"
+        android:key="poll_notifications_ringtone"
         android:ringtoneType="notification"
         android:title="@string/pref_title_ringtone" />
 
     <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
     <SwitchPreference
+        android:dependency="poll_notifications"
         android:defaultValue="true"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_vibrate"
+        android:key="poll_notifications_vibration"
         android:title="@string/pref_title_vibrate" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:dependency="notifications"
+        android:layout="@layout/preference_category"
+        android:title="Juntadas"
+        android:key="event_notifications_category">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="event_notifications"
+            android:contentDescription="Activar notificaciones relacionadas a tus juntadas"
+            android:title="@string/pref_title_new_message_notifications" />
+        <RingtonePreference
+            android:defaultValue="content://settings/system/notification_sound"
+            android:key="event_notifications_ringtone"
+            android:dependency="event_notifications"
+            android:ringtoneType="notification"
+            android:title="@string/pref_title_ringtone" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <SwitchPreference
+            android:dependency="event_notifications"
+            android:defaultValue="true"
+            android:key="event_notifications_vibration"
+            android:title="@string/pref_title_vibrate" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Mensajes"
+        android:layout="@layout/preference_category"
+        android:dependency="notifications"
+        android:key="pref_key_storage_settings">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="messages_notifications"
+            android:contentDescription="Activar notificaciones de mensajes nuevos"
+            android:title="@string/pref_title_new_message_notifications" />
+        <RingtonePreference
+            android:dependency="messages_notifications"
+            android:defaultValue="content://settings/system/notification_sound"
+            android:key="messages_notifications_ringtone"
+            android:ringtoneType="notification"
+            android:title="@string/pref_title_ringtone" />
+
+        <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+        <SwitchPreference
+            android:dependency="messages_notifications"
+            android:defaultValue="true"
+            android:key="messages_notifications_vibration"
+            android:title="@string/pref_title_vibrate" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
