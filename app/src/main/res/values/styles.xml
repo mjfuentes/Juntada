@@ -11,7 +11,16 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <!--<style name="newTextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">-->
+        <!--<item name="android:textColor">#fff</item>-->
+        <!--<item name="android:textSize">14sp</item>-->
+    <!--</style>-->
+
+
     <style name="LoginTheme" parent="FirebaseUI">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -21,6 +30,49 @@
         <item name="android:gravity">bottom</item>
 
     </style>
+
+
+
+    <style name="FirebaseUI.AuthMethodPicker.ButtonHolder" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/fui_auth_method_button_width</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+    </style>
+
+    <!--<style name="FirebaseUI.TextInputLayout.EmailField">-->
+        <!--<item name="android:hint">@string/fui_email_hint</item>-->
+        <!--<item name="hintTextAppearance">@style/newTextAppearance.App.TextInputLayout</item>-->
+        <!--<item name="android:textColorHint">#fff</item>-->
+
+    <!--</style>-->
+
+    <!--<style name="FirebaseUI.TextInputEditText.EmailField">-->
+        <!--<item name="android:textColorHint">#fff</item>-->
+        <!--<item name="android:backgroundTint">#fff</item>-->
+        <!--<item name="android:textCursorDrawable">@null</item>-->
+    <!--</style>-->
+
+
+
+    <style name="FirebaseUI.EditText">
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorControlActivated">#fff</item>
+        <item name="colorControlHighlight">#fff</item>
+        <item name="android:textColorHint">#fff</item>
+        <item name="android:textColor">#fff</item>
+    </style>
+
+    <style name="FirebaseUI.Text.TextInputLayout" parent="@style/FirebaseUI.EditText" />
+
+    <style name="FirebaseUI.Text.HintText" parent="@style/FirebaseUI.EditText" />
 
     <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
