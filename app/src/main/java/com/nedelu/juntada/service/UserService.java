@@ -46,7 +46,7 @@ public class UserService {
         eventService = new EventService(context);
     }
 
-    public User createUser(final LoginActivity activity, String facebookId, String name, String lastName, String imageUrl) throws IOException {
+    public User createUser(final LoginActivity activity, final String firebaseId, String name, String lastName, String imageUrl) {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -58,7 +58,7 @@ public class UserService {
         final User user = new User();
         user.setFirstName(name);
         user.setLastName(lastName);
-        user.setFacebookId(facebookId);
+        user.setFirebaseId(firebaseId);
         user.setImageUrl(imageUrl);
         Call<UserDTO> call = server.createUser(user);
         call.enqueue(new Callback<UserDTO>() {
@@ -67,6 +67,7 @@ public class UserService {
 
                 if (response.code() == 200) {
                     UserDTO userDTO = response.body();
+                    userDTO.setFirebaseId(firebaseId);
                     User newUser = saveUser(userDTO);
                     activity.nextActivity(newUser, true);
                 } else {
@@ -145,7 +146,7 @@ public class UserService {
     public User saveUser(UserDTO userDTO) {
         User user = new User();
         user.setId(userDTO.getId());
-        user.setFacebookId(userDTO.getFacebookId());
+        user.setFirebaseId(userDTO.getFirebaseId());
         user.setImageUrl(userDTO.getImageUrl());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
@@ -153,5 +154,9 @@ public class UserService {
         saveUser(user);
 
         return getUser(user.getId());
+    }
+
+    public User getUserByFirebaseId(String firebaseId) {
+        return userDao.getUserByFirebaseId(firebaseId);
     }
 }

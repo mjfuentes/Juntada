@@ -1,6 +1,8 @@
 package com.nedelu.juntada.dao;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 
 import com.codeslap.persistence.Persistence;
@@ -19,10 +21,13 @@ public class UserDao {
 
     private Context context;
     private DatabaseHelper helper;
+    private Long userId;
 
     public UserDao(Context context){
         this.context = context;
         this.helper = new DatabaseHelper(context);
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
+        userId = userPref.getLong("userId",0L);
     }
 
     public User getUser(Long id) {
@@ -47,7 +52,9 @@ public class UserDao {
 
     public void saveUser(User user) {
         try {
-            helper.getUserDao().createOrUpdate(user);
+            if (!user.getId().equals(userId)) {
+                helper.getUserDao().createOrUpdate(user);
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -61,6 +68,17 @@ public class UserDao {
             groupMember.setGroupId(groupId);
             groupMember.setUserId(userId);
             adapter.store(groupMember);
+        }
+    }
+
+    public User getUserByFirebaseId(String firebaseId) {
+        try {
+            return helper.getUserDao().queryBuilder()
+                    .where()
+                    .eq("firebase_id",firebaseId).queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

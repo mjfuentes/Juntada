@@ -8,21 +8,20 @@
     android:elevation="0dp"
     tools:context="com.nedelu.juntada.activity.LoginActivity">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="210dp"
-        android:layout_height="41dp"
+
+    <TextView
+        android:id="@+id/or"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/o"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"
+        android:textColor="#fff"
+        android:gravity="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:paddingBottom="12dp"
-        android:paddingTop="12dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        tools:layout_editor_absoluteX="86dp"
-        android:layout_marginBottom="140dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintVertical_bias="0.428" />
+
 
     <ImageView
         android:id="@+id/imageView3"

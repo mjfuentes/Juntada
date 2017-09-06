@@ -1,40 +1,27 @@
 package com.nedelu.juntada.activity;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
-import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.internal.ca;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.service.UserService;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -47,114 +34,146 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.3:8080");
-        editor.putString("server_url", "http://www.demo.juntada.nedelu.com");
+        editor.putString("server_url", "http://10.1.1.3:8080");
+//        editor.putString("server_url", "http://www.demo.juntada.nedelu.com");
         editor.apply();
-
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-        ActivityManager.TaskDescription taskDesc = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
-            setTaskDescription(taskDesc);
-        }
-
-
-
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.nedelu.juntada", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                String hashKey = new String(Base64.encode(md.digest(), 0));
-                Log.i("HASH", "printHashKey() Hash Key: " + hashKey);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            Log.e("HASH", "printHashKey()", e);
-        } catch (Exception e) {
-            Log.e("HASH", "printHashKey()", e);
-        }
-
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-            }
-        };
-
-        accessTokenTracker.startTracking();
-
-
+//
+//        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+//        ActivityManager.TaskDescription taskDesc = null;
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
+//            setTaskDescription(taskDesc);
+//        }
+//
+//        accessTokenTracker = new AccessTokenTracker() {
+//            @Override
+//            protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+//            }
+//        };
+//
+//        accessTokenTracker.startTracking();
+//
+//
+//
+//
+//
+//        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+//        LoginButton loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
+//        loginButton.setReadPermissions("email", "public_profile");
+//        FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                if(Profile.getCurrentProfile() == null) {
+//                    profileTracker = new ProfileTracker() {
+//                        @Override
+//                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+//                            checkUser(profile2);
+//                            profileTracker.stopTracking();
+//                        }
+//                    };
+//                }
+//                else {
+//                    Profile profile = Profile.getCurrentProfile();
+//                    checkUser(profile);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//            }
+//
+//            @Override
+//            public void onError(FacebookException e) {
+//            }
+//        };
+//        loginButton.setReadPermissions("user_friends");
+//        loginButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                loginClicked= true;
+//            }
+//        });
+//        loginButton.registerCallback(callbackManager, callback);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         userService = new UserService(LoginActivity.this);
-
-
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
-        FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                if(Profile.getCurrentProfile() == null) {
-                    profileTracker = new ProfileTracker() {
-                        @Override
-                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
-                            checkUser(profile2);
-                            profileTracker.stopTracking();
-                        }
-                    };
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() != null){
+                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                    SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+                    SharedPreferences.Editor editor = userPref.edit();
+
+                    User user = userService.getUserByFirebaseId(firebaseUser.getUid());
+                    if (user == null) {
+                        userService.createUser(LoginActivity.this, firebaseUser.getUid(), firebaseUser.getDisplayName(), "", firebaseUser.getPhotoUrl().toString());
+                    } else {
+                        nextActivity(user, false);
+                    }
                 }
-                else {
-                    Profile profile = Profile.getCurrentProfile();
-                    checkUser(profile);
-                }
-            }
-
-            @Override
-            public void onCancel() {
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-            }
-        };
-        loginButton.setReadPermissions("user_friends");
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loginClicked= true;
             }
         });
-        loginButton.registerCallback(callbackManager, callback);
+
+        showSignInScreen();
 
     }
 
-    private void checkUser(Profile profile){
-        if(profile != null){
-            User currentUser = userService.getUserByFacebookId(profile.getId());
-            if (currentUser == null) {
-                try {
-                    userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());
-                } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), R.string.error_user_creation, Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                nextActivity(currentUser, false);
-            }
-        }
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+//        if (requestCode == 1) {
+//            IdpResponse response = IdpResponse.fromResultIntent(data);
+//
+//            // Successfully signed in
+//            if (resultCode == RESULT_OK) {
+//                finish();
+//                return;
+//            } else {
+//                // Sign in failed
+//                if (response == null) {
+//                    // User pressed back button
+//                    return;
+//                }
+//
+//                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+//                    showSnackbar(R.string.no_internet_connection);
+//                    return;
+//                }
+//
+//                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+//                    showSnackbar(R.string.unknown_error);
+//                    return;
+//                }
+//            }
+//
+//        }
+//    }
+
+    private void showSnackbar(int stringId){
+
     }
+
+    private void showSignInScreen() {
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(Arrays.asList(
+                                new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
+                        .setIsSmartLockEnabled(false)
+                        .setTheme(R.style.LoginTheme)
+                        .build(),
+                1);
+    }
+
 
     public void nextActivity(User user, Boolean newUser){
         Intent main = new Intent(LoginActivity.this, GroupsActivity.class);
-        main.putExtra("id", user.getId());
-        main.putExtra("name", user.getFirstName());
-        main.putExtra("surname", user.getLastName());
-        main.putExtra("imageUrl", user.getImageUrl());
+        main.putExtra("reload",true);
         if (newUser){
-            main.putExtra("reload",true);
             try {
                 userService.registerUserToken(user, FirebaseInstanceId.getInstance().getToken());
             } catch (Exception e){
@@ -171,31 +190,8 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Profile profile = Profile.getCurrentProfile();
-        checkUser(profile);
-    }
 
-    @Override
-    protected void onPause() {
 
-        super.onPause();
-    }
 
-    protected void onStop() {
-        super.onStop();
-        //Facebook login
-        accessTokenTracker.stopTracking();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-        super.onActivityResult(requestCode, responseCode, intent);
-        //Facebook login
-        callbackManager.onActivityResult(requestCode, responseCode, intent);
-
-    }
 
 }

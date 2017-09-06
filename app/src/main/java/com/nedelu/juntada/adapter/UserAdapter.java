@@ -8,11 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.nedelu.juntada.R;
-import com.nedelu.juntada.manager.GroupManager;
 import com.nedelu.juntada.model.User;
 import com.squareup.picasso.Picasso;
-
-import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;
 import java.util.List;

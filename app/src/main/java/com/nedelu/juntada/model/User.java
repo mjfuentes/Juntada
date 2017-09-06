@@ -23,8 +23,8 @@ public class User {
     @DatabaseField(columnName = "last_name")
     private String lastName;
 
-    @DatabaseField(columnName = "facebook_id")
-    private String facebookId;
+    @DatabaseField(columnName = "firebase_id")
+    private String firebaseId;
 
     @DatabaseField(columnName = "image_url")
     private String imageUrl;
@@ -52,12 +52,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getFacebookId() {
-        return facebookId;
+    public String getFirebaseId() {
+        return firebaseId;
     }
 
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
+    public void setFirebaseId(String facebookId) {
+        this.firebaseId = facebookId;
     }
 
     public Long getId() {

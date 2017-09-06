@@ -12,7 +12,7 @@ public class UserDTO {
 	private Long id;
     private String firstName;
     private String lastName;
-    private String facebookId;
+    private String firebaseId;
     private String imageUrl;
 
 
@@ -32,12 +32,12 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
-    public String getFacebookId() {
-        return facebookId;
+    public String getFirebaseId() {
+        return firebaseId;
     }
 
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
+    public void setFirebaseId(String facebookId) {
+        this.firebaseId = facebookId;
     }
 
     public String getImageUrl() {

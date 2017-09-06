@@ -295,7 +295,7 @@ public class GroupService extends Observable {
         groupDao.clearMembers(groupDTO.getId());
 
         for (UserDTO user : groupDTO.getUsers()){
-            userService.saveUser(user);
+            if (!userId.equals(user.getId())) userService.saveUser(user);
             groupDao.saveGroupMember(groupDTO.getId(), user.getId());
         }
 

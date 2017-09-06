@@ -6,8 +6,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +16,6 @@ import com.nedelu.juntada.R;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.service.GroupService;
 
-import org.lucasr.twowayview.widget.SpacingItemDecoration;
 
 import java.util.List;
 

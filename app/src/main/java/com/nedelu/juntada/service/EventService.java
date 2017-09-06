@@ -322,7 +322,7 @@ public class EventService {
     public User saveUser(UserDTO userDTO) {
         User user = new User();
         user.setId(userDTO.getId());
-        user.setFacebookId(userDTO.getFacebookId());
+        user.setFirebaseId(userDTO.getFirebaseId());
         user.setImageUrl(userDTO.getImageUrl());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());

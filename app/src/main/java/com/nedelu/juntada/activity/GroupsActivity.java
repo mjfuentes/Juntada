@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.adapter.GroupAdapter;
 import com.nedelu.juntada.model.Group;
@@ -62,30 +63,38 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        long startTime = System.nanoTime();
+
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_groups);
 
-        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
-        userId = userPref.getLong("userId", 0L);
-
-        if (userId == 0L) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
             return;
         }
+        long startTime = System.nanoTime();
+        userService = new UserService(GroupsActivity.this);
 
+
+        User user = userService.getUserByFirebaseId(auth.getCurrentUser().getUid());
+        userId = user.getId();
         groupService = GroupService.getInstance(GroupsActivity.this);
         groupService.getUserGroups(userId, this);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("reload")){
+            swipeRefreshLayout.setRefreshing(true);
+            groupService.loadGroups(userId, this);
 
-        setContentView(R.layout.activity_groups);
+        }
+
         long partialTime = System.nanoTime();
         long duration1 = (partialTime - startTime);  //divide by 1000000 to get milliseconds.
         System.out.println("Partial duration: " + duration1 / 1000000);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         logo = (ImageView) findViewById(R.id.logo);
 
@@ -106,9 +115,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             }
         });
 
-        userService = new UserService(GroupsActivity.this);
         eventService = new EventService(GroupsActivity.this);
-        user = userService.getUser(userId);
         firstGroup = (ImageView) findViewById(R.id.first_group);
         recyclerView = (RecyclerView) findViewById(R.id.groups_view);
 
@@ -139,6 +146,8 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         System.out.println("Total duration: " + duration / 1000000);
 
     }
+
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -296,7 +305,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
                 //e.toString();
             }
         } else if (id == R.id.exit) {
-            LoginManager.getInstance().logOut();
+            FirebaseAuth.getInstance().signOut();
             Intent login = new Intent(this, LoginActivity.class);
             startActivity(login);
             finish();

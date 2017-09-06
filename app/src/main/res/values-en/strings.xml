@@ -77,6 +77,8 @@
     <string name="title_activity_settings">Settings</string>
     <string name="going">GOING</string>
     <string name="not_going">NOT GOING</string>
+    <style name="server_client_id">896422881603-trdvh64brq938ava9u8pou4rerc0cv2l.apps.googleusercontent.com</style>
+    <string name="facebook_application_id" translatable="false">397218834007949</string>
 
 
 

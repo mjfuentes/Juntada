@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.nedelu.juntada"
         minSdkVersion 18
@@ -40,8 +40,6 @@ dependencies {
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
     compile 'com.codeslap:persistence:0.9.24'
     compile 'com.facebook.android:facebook-android-sdk:4.18.0'
-    compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
-    compile 'org.lucasr.twowayview:layouts:1.0.0-SNAPSHOT@aar'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.makeramen:roundedimageview:2.3.0'
@@ -51,13 +49,16 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.google.android.gms:play-services:11.0.2'
-    compile 'com.google.firebase:firebase-messaging:11.0.2'
+    compile 'com.google.android.gms:play-services:11.2.0'
+    compile 'com.google.firebase:firebase-core:11.2.0'
+    compile 'com.google.firebase:firebase-messaging:11.2.0'
     compile 'com.dmitrymalkovich.android:progress-fab:1.6'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.android.support:preference-v14:25.0.0'
+    compile 'com.firebaseui:firebase-ui-auth:2.3.0'
+
     testCompile 'junit:junit:4.12'
 }
 
