@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/remove_item"
-        android:title="Borrar opciones"
+        android:title="@string/remove_options"
         android:icon="@drawable/ic_delete"
         app:showAsAction="always"/>
 </menu>

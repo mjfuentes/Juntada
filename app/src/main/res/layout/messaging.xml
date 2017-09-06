@@ -55,7 +55,7 @@ tools:context=".activity.EventActivity">
 
     <EditText
         android:id="@+id/edittext_chatbox"
-        android:hint="Ingresar mensaje"
+        android:hint="@string/insert_message"
         android:maxLength="250"
         android:inputType="textCapSentences"
         android:background="@android:color/transparent"

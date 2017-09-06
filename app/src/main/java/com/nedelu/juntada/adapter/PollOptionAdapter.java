@@ -84,9 +84,9 @@ public class PollOptionAdapter extends RecyclerView.Adapter<PollOptionAdapter.Vi
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mItems.get(position);
-        SimpleDateFormat dayMonthFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+        SimpleDateFormat dayMonthFormat = new SimpleDateFormat(mContext.getString(R.string.day_month), Locale.ENGLISH);
         SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(mContext.getString(R.string.locale), mContext.getString(R.string.country)));
         TextView weekday= (TextView) holder.mView.findViewById(R.id.option_weekday);
         TextView date = (TextView) holder.mView.findViewById(R.id.option_date);
         TextView time = (TextView) holder.mView.findViewById(R.id.option_time);

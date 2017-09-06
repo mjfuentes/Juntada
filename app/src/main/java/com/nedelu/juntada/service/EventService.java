@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.EventActivity;
 import com.nedelu.juntada.activity.EventsActivity;
 import com.nedelu.juntada.activity.GroupTabbedActivity;
@@ -105,14 +106,14 @@ public class EventService {
                     savePoll(response.body());
                     listener.pollVoted(true, 0l);
                 } else {
-                    Toast.makeText(context,"No se pudo realizar la operacion", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     listener.pollVoted(false, 0l);
                 }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 listener.pollVoted(false, 0l);
             }
         });
@@ -367,7 +368,7 @@ public class EventService {
                     Event event = saveEvent(response.body());
                     eventActivity.assistanceSaved(event, request.getAssistance());
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     eventActivity.assistanceSaved(null, null);
                 }
             }
@@ -375,7 +376,7 @@ public class EventService {
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
                 eventActivity.assistanceSaved(null, null);
-                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -398,7 +399,7 @@ public class EventService {
                     saveEvent(response.body());
                     voteActivity.pollVoted(true, response.body().getId());
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     voteActivity.pollVoted(false, 0l);
                 }
             }
@@ -406,7 +407,7 @@ public class EventService {
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
                 voteActivity.pollVoted(false, 0l);
-                Toast.makeText(context,"Sin conexion", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -428,14 +429,14 @@ public class EventService {
                     eventActivity.tokenGenerated(response.body().getToken());
                 } else {
                     eventActivity.tokenGenerated(null);
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<EventTokenDTO> call, Throwable t) {
                 eventActivity.tokenGenerated(null);
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -458,14 +459,14 @@ public class EventService {
                 if (response.code() == 200) {
                     new SaveEventsTask().execute(response.body(),eventsActivity);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     eventsActivity.refreshEvents(null);
                 }
             }
 
             @Override
             public void onFailure(Call<List<InvitedEventDTO>> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 eventsActivity.refreshEvents(null);
             }
         });
@@ -506,14 +507,14 @@ public class EventService {
                     editor.apply();
                     joinActivity.startActivity(main);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     joinActivity.finish();
                 }
             }
 
             @Override
             public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 joinActivity.finish();
             }
         });
@@ -535,13 +536,13 @@ public class EventService {
                 if (response.code() == 200) {
                     Event event = saveEvent(response.body());
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -562,13 +563,13 @@ public class EventService {
                 if (response.code() == 200) {
                     Poll poll = savePoll(response.body());
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -594,14 +595,14 @@ public class EventService {
                     Event event = saveEvent(eventDTO);
                     newEventActivity.eventCreated(event);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     newEventActivity.eventCreated(null);
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 newEventActivity.eventCreated(null);
             }
         });
@@ -624,14 +625,14 @@ public class EventService {
                         eventActivity.eventDeleted(true);
                     }
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     eventActivity.eventDeleted(false);
                 }
             }
 
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 eventActivity.eventDeleted(false);
             }
         });

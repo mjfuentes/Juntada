@@ -51,7 +51,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Aún no hay juntadas"
+            android:text="@string/no_reunions"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
     </LinearLayout>
 </FrameLayout>

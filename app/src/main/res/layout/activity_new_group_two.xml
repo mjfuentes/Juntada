@@ -24,7 +24,7 @@
         android:textStyle=""
         android:layout_width="277dp"
         android:layout_height="32dp"
-        android:text="Ahora agrega integrantes al grupo"
+        android:text="@string/now_invite_people"
         android:textSize="15sp"
         android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"

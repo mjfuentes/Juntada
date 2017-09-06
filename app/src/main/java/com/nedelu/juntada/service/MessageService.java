@@ -129,7 +129,6 @@ public class MessageService {
 
     private void saveMessages(List<Message> messages) {
         for (Message message : messages){
-    //            message.setTime(dateTimeFormatter2.format(dateTimeFormatter.parse(message.getTime())));
             saveMessage(message);
         }
     }

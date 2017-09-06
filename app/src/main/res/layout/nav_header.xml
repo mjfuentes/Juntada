@@ -26,7 +26,7 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textSize="15dp"
         android:layout_marginLeft="15dp"
-        android:text="Matias Fuentes"
+        android:text=""
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 </LinearLayout>

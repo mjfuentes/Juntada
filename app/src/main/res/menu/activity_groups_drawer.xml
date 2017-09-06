@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:id="@+id/grp1" android:checkableBehavior="single">
         <item
             android:id="@+id/groups"
             android:icon="@drawable/ic_groups"
-            android:title="Mis grupos" />
+            android:title="@string/my_groups" />
         <item
             android:id="@+id/events"
             android:icon="@drawable/ic_events"
-            android:title="Mis invitaciones" />
+            android:title="@string/my_invitations" />
         <item
             android:id="@+id/profile"
             android:icon="@drawable/ic_profile"
-            android:title="Perfil" />
+            android:title="@string/profile" />
         <item
             android:id="@+id/configuration"
             android:icon="@drawable/ic_settings"
-            android:title="Configuracion" />
-    </group>
+            android:title="@string/configuration" />
 
-    <group android:id="@+id/grp2" android:checkableBehavior="single">
         <item
             android:id="@+id/share"
             android:icon="@drawable/ic_menu_share"
-            android:title="Compartir" />
+            android:title="@string/share" />
         <item
             android:id="@+id/exit"
             android:icon="@drawable/ic_exit"
-            android:title="Salir de Juntada" />
-</group>
+            android:title="@string/exit" />
+    </group>
 
 </menu>

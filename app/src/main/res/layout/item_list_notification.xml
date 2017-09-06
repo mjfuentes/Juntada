@@ -35,7 +35,7 @@
             android:layout_alignParentTop="true"
             android:text="New Text"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            tools:text="¡Cyberlunes!" />
+            tools:text="" />
 
         <TextView
             android:layout_toRightOf="@id/image"
@@ -44,19 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_title"
             android:text="New Text"
-            tools:text="Compra en línea ahora mismo y ahorra hasta un 50% en el seguro de tu automóvil" />
+            tools:text="" />
 
-       <!-- <TextView
-            android:id="@+id/tv_description2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_description"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textStyle="italic"
-            tools:text="Valido hasta el 7/07/2016" />-->
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

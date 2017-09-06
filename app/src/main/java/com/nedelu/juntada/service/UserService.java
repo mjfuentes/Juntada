@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.widget.Toast;
 
+import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
 import com.nedelu.juntada.model.Event;
@@ -69,14 +70,14 @@ public class UserService {
                     User newUser = saveUser(userDTO);
                     activity.nextActivity(newUser, true);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
 
             }
 
             @Override
             public void onFailure(Call<UserDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -106,7 +107,6 @@ public class UserService {
 
             @Override
             public void onFailure(Call<UserDTO> call, Throwable t) {
-//                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
             }
         });
 

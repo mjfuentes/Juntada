@@ -52,7 +52,7 @@ tools:visibility="gone">
     android:layout_gravity="center"
     android:layout_marginTop="8dp"
     android:gravity="center"
-    android:text="Aún no hay encuestas"
+    android:text="@string/no_polls"
     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 </LinearLayout>
 </FrameLayout>

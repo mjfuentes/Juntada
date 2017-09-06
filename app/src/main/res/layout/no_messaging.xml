@@ -43,7 +43,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Desliza para ver los mensajes"/>
+            android:text="@string/slide_to_see_messages"/>
 
     </LinearLayout>
     </android.support.constraint.ConstraintLayout>

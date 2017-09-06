@@ -1,6 +1,81 @@
 <resources>
     <string name="app_name">Juntada</string>
 
+    <string name="error_user_creation">Error al crear usuario</string>
+    <string name="try_juntada">Probá Juntada para Android, disponible en:</string>
+    <string name="choose_app">Elegir aplicacion</string>
+    <string name="error_connecting">Hubo un error al conectarse al servidor</string>
+    <string name="invitations">Invitaciones</string>
+    <string name="day_month">dd/MM</string>
+    <string name="day_month_year">dd/MM/yyyy</string>
+    <string name="locale">es</string>
+    <string name="country">ES</string>
+    <string name="save_to_calendar">Guardar evento en calendario?</string>
+    <string name="yes">SI</string>
+    <string name="no">NO</string>
+    <string name="complete_date">dd/MM/yyyy HH:mm</string>
+    <string name="group_invitation">Te invite a mi evento de Juntada! Para ingresar usa el siguiente link:</string>
+    <string name="messages">Mensajes</string>
+    <string name="expenses">Gastos</string>
+    <string name="edit_name">Editar nombre</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="reunions">Juntadas</string>
+    <string name="polls">Encuestas</string>
+    <string name="choose_an_option">SELECCIONA UNA OPCION</string>
+    <string name="confirm_event">CONFIRMAR EVENTO</string>
+    <string name="vote">VOTAR</string>
+    <string name="votes_saved">Seleccion guardada!</string>
+    <string name="no_date">NO PUEDO NINGÚN DÍA</string>
+    <string name="confirm_event_no_caps">Confirmar evento</string>
+    <string name="confirm_for_day">Seguro que desea confirmar el evento para el día</string>
+    <string name="and_time">a la hora</string>
+    <string name="confirm">CONFIRMAR</string>
+    <string name="add_options">Agregar opciones</string>
+    <string name="at_least_two_options">Necesitas ingresar al menos DOS opciones para poder crear una encuesta</string>
+    <string name="edit_reunion">Editar Juntada</string>
+    <string name="poll">Encuesta</string>
+    <string name="description_too_long">La descripcion es muy larga. (Max 150 caracteres)</string>
+    <string name="please_fill_all_fields">Por favor completa todos los campos.</string>
+    <string name="participants">Participantes</string>
+    <string name="members">Integrantes</string>
+    <string name="time">Hora</string>
+    <string name="type">Tipo</string>
+    <string name="name">Nombre</string>
+    <string name="location">Ubicacion</string>
+    <string name="description">Descripcion</string>
+    <string name="reunion">Juntada</string>
+    <string name="my_group">Mi grupo</string>
+    <string name="insert_a_name_for_the_group">Ingresa un nombre para el grupo</string>
+    <string name="now_invite_people">Ahora agrega integrantes al grupo</string>
+    <string name="no_notifications">No hay notificaciones</string>
+    <string name="add_new_option">Agregar una nueva opcion</string>
+    <string name="choose_options">SELECCIONA UNA O MÁS OPCIONES</string>
+    <string name="no_invitations">Aún no te han invitado a ningun evento</string>
+    <string name="no_reunions">Aún no hay juntadas</string>
+    <string name="no_polls">Aún no hay encuestas</string>
+    <string name="insert_message">Ingresar mensaje</string>
+    <string name="slide_to_see_messages">Desliza para ver los mensajes</string>
+    <string name="my_groups">Mis grupos</string>
+    <string name="my_invitations">Mis invitaciones</string>
+    <string name="profile">Perfil</string>
+    <string name="configuration">Configuracion</string>
+    <string name="share">Compartir</string>
+    <string name="exit">Salir de Juntada</string>
+    <string name="save_to_calendar_no_question">Guardar en calendario</string>
+    <string name="edit">Editar</string>
+    <string name="delete_event">Eliminar evento</string>
+    <string name="leave_group">Abandonar grupo</string>
+    <string name="delete_group">Eliminar grupo</string>
+    <string name="remove_options">Borrar opciones</string>
+
+
+
+
+
+
+
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="facebook_app_id">397218834007949</string>
@@ -85,4 +160,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
 </resources>

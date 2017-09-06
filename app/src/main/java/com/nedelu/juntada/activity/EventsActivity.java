@@ -52,7 +52,7 @@ public class EventsActivity extends AppCompatActivity
         setContentView(R.layout.activity_events);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Invitaciones");
+        getSupportActionBar().setTitle(R.string.invitations);
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         userId = userPref.getLong("userId", 0L);
         eventService = new EventService(this);
@@ -170,22 +170,19 @@ public class EventsActivity extends AppCompatActivity
             startActivity(events);
             finish();
         } else if (id == R.id.configuration) {
-//            Intent events = new Intent(this, SettingsActivity.class);
-//            events.putExtra("id", userId);
-//            startActivity(events);
-            Toast.makeText(getApplicationContext(), "Proximamente!", Toast.LENGTH_SHORT).show();
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            Intent events = new Intent(this, SettingsActivity.class);
+            events.putExtra("id", userId);
+            startActivity(events);
             return false;
         } else if (id == R.id.share) {
             try {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-                String sAux = "\nProbá Juntada para Android, disponible en: \n\n";
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+                String sAux = getString(R.string.try_juntada);
                 sAux = sAux + "https://play.google.com/store/apps/details?id=com.nedelu.juntada \n\n";
                 i.putExtra(Intent.EXTRA_TEXT, sAux);
-                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+                startActivity(Intent.createChooser(i, getString(R.string.choose_app)));
             } catch(Exception e) {
                 //e.toString();
             }

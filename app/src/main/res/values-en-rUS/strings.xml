@@ -1,0 +1,141 @@
+<resources>
+    <string name="app_name">Juntada</string>
+
+    <string name="error_user_creation">Error during user creation</string>
+    <string name="try_juntada">Try Juntada for Android, available in:</string>
+    <string name="choose_app">Choose an app</string>
+    <string name="error_connecting">There was an error reaching the server</string>
+    <string name="invitations">Invitations</string>
+    <string name="day_month">MM/dd</string>
+    <string name="day_month_year">MM/dd/yyyy</string>
+    <string name="locale">en</string>
+    <string name="country">US</string>
+    <string name="save_to_calendar">Save event to calendar?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="complete_date">dd/MM/yyyy HH:mm</string>
+    <string name="group_invitation">I invited you to my event in Juntada! Join using the following link:</string>
+    <string name="messages">Messages</string>
+    <string name="expenses">Expenses</string>
+    <string name="edit_name">Edit name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="reunions">Events</string>
+    <string name="polls">Polls</string>
+    <string name="choose_an_option">SELECT AN OPTION</string>
+    <string name="confirm_event">CONFIRM EVENT</string>
+    <string name="vote">VOTE</string>
+    <string name="votes_saved">Votes saved!</string>
+    <string name="no_date">I CAN\'T ANY DAY</string>
+    <string name="confirm_event_no_caps">Confirm event</string>
+    <string name="confirm_for_day">Are you sure you want to confirm the event for the day</string>
+    <string name="and_time">and time</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="add_options">Add options</string>
+    <string name="at_least_two_options">You need to add at least two options to create the poll</string>
+    <string name="edit_reunion">Edit event</string>
+    <string name="poll">Poll</string>
+    <string name="description_too_long">Description is too long. (Max 150 chars)</string>
+    <string name="please_fill_all_fields">Please fill all the fields</string>
+    <string name="participants">Participants</string>
+    <string name="members">Members</string>
+    <string name="time">Time</string>
+    <string name="type">Type</string>
+    <string name="name">Name</string>
+    <string name="location">Location</string>
+    <string name="description">Description</string>
+    <string name="reunion">Event</string>
+    <string name="my_group">My group</string>
+    <string name="insert_a_name_for_the_group">Enter a name for the group</string>
+    <string name="now_invite_people">Now add people to the group</string>
+    <string name="no_notifications">No notifications</string>
+    <string name="add_new_option">Add a new option</string>
+    <string name="choose_options">SELECT ONE OR MORE OPTIONS</string>
+    <string name="no_invitations">You have no event invitations yet</string>
+    <string name="no_reunions">No events yet</string>
+    <string name="no_polls">No open polls yet</string>
+    <string name="insert_message">Enter a message</string>
+    <string name="slide_to_see_messages">Slide to see messages</string>
+    <string name="my_groups">My groups</string>
+    <string name="my_invitations">My invitations</string>
+    <string name="profile">Profile</string>
+    <string name="configuration">Settings</string>
+    <string name="share">Share</string>
+    <string name="exit">Exit</string>
+    <string name="save_to_calendar_no_question">Save to calendar</string>
+    <string name="edit">Edit</string>
+    <string name="delete_event">Delete event</string>
+    <string name="leave_group">Leave group</string>
+    <string name="delete_group">Delete group</string>
+    <string name="remove_options">Delete options</string>
+    <string name="date">Date</string>
+    <string name="new_group">New group</string>
+    <string name="title_activity_profile">View profile</string>
+    <string name="notifications">Notifications</string>
+    <string name="view_profile">View profile</string>
+    <string name="voted">Voted</string>
+
+
+
+
+
+
+
+
+    <!-- Strings related to Settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+    <string name="environment">Entorno</string>
+    <string-array name="pref_example_list_titles">
+        <item>Local</item>
+        <item>Demo</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>http://10.1.1.4:8080</item>
+        <item>http://www.juntada.nedelu.com</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="multi_select_list_preference_default_value" />
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_new_message_notifications">Activate notifications</string>
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+
+</resources>

@@ -202,7 +202,7 @@ public class NewEventActivity extends AppCompatActivity {
                 editName.getEditText().setText(StringEscapeUtils.unescapeJava(event.getTitle()));
                 editDescription.getEditText().setText(StringEscapeUtils.unescapeJava(event.getDescription()));
                 editLocation.getEditText().setText(event.getLocation());
-                getSupportActionBar().setTitle("Editar Juntada");
+                getSupportActionBar().setTitle(R.string.edit_reunion);
             }
         }
 
@@ -238,7 +238,7 @@ public class NewEventActivity extends AppCompatActivity {
                         request.setLocation(editLocation.getEditText().getText().toString());
 
                         List<PollOption> options = null;
-                        if (radioButton.getText().equals("Encuesta")) {
+                        if (radioButton.getText().equals(getString(R.string.poll))) {
                             PollRequest savedRequest = groupService.savePollRequest(request);
                             Intent main = new Intent(NewEventActivity.this, NewPollActivity.class);
                             main.putExtra("userId", userId);
@@ -295,7 +295,7 @@ public class NewEventActivity extends AppCompatActivity {
 
     private boolean checkDescription() {
         if (editDescription.getEditText().getText().toString().length() > 150){
-            Toast.makeText(getApplicationContext(), "La descripcion es muy larga. (Max 150 caracteres)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.description_too_long, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -303,8 +303,8 @@ public class NewEventActivity extends AppCompatActivity {
 
     private boolean checkFields(RadioButton radioButton) {
 
-        if ((editName.getEditText().getText().toString().equals("") || editLocation.getEditText().getText().toString().equals("")) || (editTime.getText().toString().equals("") && !radioButton.getText().equals("Encuesta"))) {
-            Toast.makeText(getApplicationContext(), "Por favor completa todos los campos.", Toast.LENGTH_SHORT).show();
+        if ((editName.getEditText().getText().toString().equals("") || editLocation.getEditText().getText().toString().equals("")) || (editTime.getText().toString().equals("") && !radioButton.getText().equals(getString(R.string.poll)))) {
+            Toast.makeText(getApplicationContext(), R.string.please_fill_all_fields, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -327,7 +327,7 @@ public class NewEventActivity extends AppCompatActivity {
 
     private void updateLabel() {
 
-        String myFormat = "dd/MM/yy";
+        String myFormat = getString(R.string.day_month_year);
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
         editDate.setText(sdf.format(myCalendar.getTime()));

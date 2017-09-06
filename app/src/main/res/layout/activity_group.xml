@@ -8,8 +8,6 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-
-
     <include
         layout="@layout/activity_group_tabbed"
         android:layout_width="match_parent"

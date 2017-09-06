@@ -143,16 +143,16 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
 
         isCreator = poll.getCreator().getId().equals(userId);
         if (isCreator) {
-            selectText.setText("SELECCIONA UNA OPCION");
+            selectText.setText(R.string.choose_an_option);
             button.setVisibility(View.INVISIBLE);
-            buttonText.setText("CONFIRMAR EVENTO");
+            buttonText.setText(R.string.confirm_event);
         }
         for (PollOption option : options) {
             VotingItem item = new VotingItem(option);
             if (!isCreator) {
                 if (option.isVotedByUser(userId)) {
                     item.setVoted(true);
-                    buttonText.setText("VOTAR");
+                    buttonText.setText(R.string.vote);
                 }
             }
             items.add(item);
@@ -201,7 +201,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                         eventService.votePoll(poll.getId(), request, VoteActivity.this);
                         progressBar.setVisibility(View.VISIBLE);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Seleccion guardada!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.votes_saved, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
@@ -219,14 +219,14 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
             }
         } else {
             if (item.getVoted()) {
-                buttonText.setText("VOTAR");
+                buttonText.setText(R.string.vote);
             } else {
                 boolean anyvotes = false;
                 for (VotingItem vItem : adapter.getItems()) {
                     if (vItem.getVoted()) anyvotes = true;
                 }
                 if (!anyvotes) {
-                    buttonText.setText("NO PUEDO NINGÚN DÍA");
+                    buttonText.setText(R.string.no_date);
                 }
             }
         }
@@ -246,7 +246,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                 startActivity(event);
                 finish();
             } else {
-                Toast.makeText(getApplicationContext(), "Votos guardados!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.votes_saved, Toast.LENGTH_SHORT).show();
             }
             finish();
         }
@@ -255,15 +255,15 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
     private void showLocationDialog(final VotingItem item) {
 
         try {
-            SimpleDateFormat dayMonthFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+            SimpleDateFormat dayMonthFormat = new SimpleDateFormat(getString(R.string.day_month), Locale.ENGLISH);
             SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(getString(R.string.locale), getString(R.string.country)));
             Date optionDate = completeFormat.parse(item.getOption().getDate());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(VoteActivity.this);
-            builder.setTitle("Confirmar evento");
-            builder.setMessage("Seguro que desea confirmar el evento para el día " + dayMonthFormat.format(optionDate) + " a la hora " + item.getOption().getTime() + "?");
-            builder.setPositiveButton("CONFIRMAR",
+            builder.setTitle(R.string.confirm_event_no_caps);
+            builder.setMessage(getString(R.string.confirm_for_day) + dayMonthFormat.format(optionDate) + getString(R.string.and_time) + item.getOption().getTime() + "?");
+            builder.setPositiveButton(R.string.confirm,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -273,7 +273,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
                         }
                     });
 
-            String negativeText = "CANCELAR";
+            String negativeText = getString(R.string.cancel);
             builder.setNegativeButton(negativeText,
                     new DialogInterface.OnClickListener() {
                         @Override

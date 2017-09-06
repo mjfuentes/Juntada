@@ -91,7 +91,7 @@ public class NewPollActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poll);
-         sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH);
+         sdf = new SimpleDateFormat(("dd/MM/yyyy"),Locale.ENGLISH);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Bundle inBundle = getIntent().getExtras();
@@ -106,7 +106,7 @@ public class NewPollActivity extends AppCompatActivity {
         groupService = GroupService.getInstance(NewPollActivity.this);
         request = groupService.getPollRequest(pollRequestId);
 
-        getSupportActionBar().setTitle("Agregar opciones");
+        getSupportActionBar().setTitle(R.string.add_options);
 
         dateAdapter = new DateAdapter(NewPollActivity.this, this);
         dateList = (GridView) findViewById(R.id.date_list);
@@ -169,23 +169,6 @@ public class NewPollActivity extends AppCompatActivity {
 
                 dialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 dialog.show();
-
-//                if (checkFields() && dateAdapter.getCount() < 20) {
-//                    PollOption option = new PollOption();
-//                    option.setDate(sdf.format(myCalendar.getTime()));
-//                    option.setTime(selectedTime);
-//                    int index = dateAdapter.addDate(option);
-//                    dateList.smoothScrollToPosition(index);
-//
-//                    if (dateAdapter.getCount() == 20){
-//                        addDate.setVisibility(View.INVISIBLE);
-//                    }
-//
-//                    if (dateAdapter.getCount() > 1){
-//                        button.setVisibility(View.VISIBLE);
-//                    }
-//
-//                }
             }
         });
 
@@ -203,17 +186,11 @@ public class NewPollActivity extends AppCompatActivity {
                     request.setOptions(dateAdapter.getItems());
                     groupService.createPoll(request, NewPollActivity.this);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Necesitas ingresar al menos DOS opciones para poder crear una encuesta", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.at_least_two_options, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-    }
-
-    private void updateLabel() {
-
-        String myFormat = "dd/MM/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
     }
 
     public void pollCreated(Poll poll) {
@@ -303,11 +280,11 @@ public class NewPollActivity extends AppCompatActivity {
             TextView timeText = (TextView) rowView.findViewById(R.id.text_time);
             TextView dayText = (TextView) rowView.findViewById(R.id.text_day);
 
-            String myFormat = "dd/MM";
+            String myFormat = getString(R.string.day_month);
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
 
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-            SimpleDateFormat formatDay = new SimpleDateFormat("EEE", new Locale("es", "ES"));
+            SimpleDateFormat formatDay = new SimpleDateFormat("EEE", new Locale(getString(R.string.locale), getString(R.string.country)));
 
             try {
                 Date date = format.parse(options.get(i).getDate());
@@ -355,13 +332,4 @@ public class NewPollActivity extends AppCompatActivity {
         }
     }
 
-//    private boolean checkFields() {
-//        for (PollOption option : dateAdapter.getItems()){
-//            if (option.getTime().equals(editTime.getText().toString()) && (option.getDate().equals(editDate.getText().toString()))){
-//                Toast.makeText(getApplicationContext(), "Ya agregaste esa opcion!", Toast.LENGTH_SHORT).show();
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 }

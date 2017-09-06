@@ -91,7 +91,7 @@ public class NewGroupActivity extends AppCompatActivity {
                     group.setName(StringEscapeUtils.escapeJava(editTextName.getText().toString()));
                     GroupService.getInstance(NewGroupActivity.this).createGroup(NewGroupActivity.this, userId, group,imageUri, NewGroupActivity.this);
                 } else {
-                    Snackbar.make(view, "Por favor completa todos los campos", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(view, R.string.please_fill_all_fields, Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
             }

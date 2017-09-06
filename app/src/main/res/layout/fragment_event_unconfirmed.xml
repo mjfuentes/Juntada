@@ -27,7 +27,7 @@
             android:id="@+id/poll_name"
             android:textSize="15dp"
             android:textColor="#ffffff"
-            android:text="Despedida de Marta"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -43,7 +43,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
-            android:text="Confirmar" />
+            android:text="@string/confirm" />
 
         <ImageView
             android:id="@+id/vote_image"
@@ -81,14 +81,14 @@
                 android:layout_width="150dp"
                 android:layout_height="30dp">
                 <TextView
-                    android:text="LUN"
+                    android:text=""
                     android:textColor="@color/colorPrimary"
                     android:id="@+id/text_day1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"/>
                 <TextView
-                    android:text="30/06"
+                    android:text=""
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_date1"
                     android:layout_width="wrap_content"
@@ -101,7 +101,7 @@
                     android:layout_height="30dp"
                     android:src="@drawable/voto_green"/>
                 <TextView
-                    android:text="02"
+                    android:text=""
                     android:textStyle="bold"
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_votes1"
@@ -131,14 +131,14 @@
                 android:layout_width="150dp"
                 android:layout_height="30dp">
                 <TextView
-                    android:text="LUN"
+                    android:text=""
                     android:textColor="@color/colorPrimary"
                     android:id="@+id/text_day2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"/>
                 <TextView
-                    android:text="30/06"
+                    android:text=""
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_date2"
                     android:layout_width="wrap_content"
@@ -151,7 +151,7 @@
                     android:layout_height="30dp"
                     android:src="@drawable/voto_green"/>
                 <TextView
-                    android:text="02"
+                    android:text=""
                     android:textStyle="bold"
                     android:layout_marginLeft="10dp"
                     android:id="@+id/text_votes2"
@@ -188,14 +188,14 @@
                     android:layout_width="150dp"
                     android:layout_height="30dp">
                     <TextView
-                        android:text="LUN"
+                        android:text=""
                         android:textColor="@color/colorPrimary"
                         android:id="@+id/text_day3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"/>
                     <TextView
-                        android:text="30/06"
+                        android:text=""
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_date3"
                         android:layout_width="wrap_content"
@@ -208,7 +208,7 @@
                         android:layout_height="30dp"
                         android:src="@drawable/voto_green"/>
                     <TextView
-                        android:text="02"
+                        android:text=""
                         android:textStyle="bold"
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_votes3"
@@ -237,14 +237,14 @@
                     android:layout_width="150dp"
                     android:layout_height="30dp">
                     <TextView
-                        android:text="LUN"
+                        android:text=""
                         android:textColor="@color/colorPrimary"
                         android:id="@+id/text_day4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"/>
                     <TextView
-                        android:text="30/06"
+                        android:text=""
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_date4"
                         android:layout_width="wrap_content"
@@ -257,7 +257,7 @@
                         android:layout_height="30dp"
                         android:src="@drawable/voto_green"/>
                     <TextView
-                        android:text="02"
+                        android:text=""
                         android:textStyle="bold"
                         android:layout_marginLeft="10dp"
                         android:id="@+id/text_votes4"

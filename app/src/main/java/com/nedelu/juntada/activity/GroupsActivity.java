@@ -287,11 +287,11 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             try {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-                String sAux = "\nProbá Juntada para Android, disponible en: \n\n";
+                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+                String sAux = getString(R.string.try_juntada);
                 sAux = sAux + "https://play.google.com/store/apps/details?id=com.nedelu.juntada \n\n";
                 i.putExtra(Intent.EXTRA_TEXT, sAux);
-                startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+                startActivity(Intent.createChooser(i, getString(R.string.choose_app)));
             } catch(Exception e) {
                 //e.toString();
             }

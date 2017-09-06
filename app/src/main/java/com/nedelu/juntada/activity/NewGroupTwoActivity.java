@@ -60,9 +60,9 @@ public class NewGroupTwoActivity extends AppCompatActivity implements TokenResul
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
         i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-        String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-        sAux += "\n"+ url;
+        String sAux = getString(R.string.group_invitation);
+        sAux += "\n\n"+ url;
         i.putExtra(Intent.EXTRA_TEXT, sAux);
-        startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+        startActivity(Intent.createChooser(i, getString(R.string.choose_app)));
     }
 }

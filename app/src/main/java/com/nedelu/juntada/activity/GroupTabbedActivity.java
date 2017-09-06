@@ -145,7 +145,7 @@ public class GroupTabbedActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(GroupTabbedActivity.this, R.style.DialogTheme);
-                    builder.setTitle("Editar nombre");
+                    builder.setTitle(R.string.edit_name);
 
                     final EditText input = new EditText(GroupTabbedActivity.this);
                     input.setText(StringEscapeUtils.unescapeJava(group.getName()));
@@ -164,14 +164,14 @@ public class GroupTabbedActivity extends AppCompatActivity
                     container.addView(input);
                     builder.setView(container);
 
-                    builder.setPositiveButton("Guardar", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             progressBar.setVisibility(View.VISIBLE);
                             groupService.updateGroupName(groupId, StringEscapeUtils.escapeJava(input.getText().toString()), GroupTabbedActivity.this);
                         }
                     });
 
-                    builder.setNegativeButton("Cancelar",
+                    builder.setNegativeButton(R.string.cancel,
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -325,10 +325,10 @@ public class GroupTabbedActivity extends AppCompatActivity
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-            String sAux = "\nTe invite a mi grupo de Juntada! Para ingresar usa el siguiente link:\n\n";
-            sAux += "\n" + url;
+            String sAux = getString(R.string.group_invitation);
+            sAux += "\n\n" + url;
             i.putExtra(Intent.EXTRA_TEXT, sAux);
-            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+            startActivity(Intent.createChooser(i, getString(R.string.choose_app)));
         }
     }
 
@@ -387,9 +387,9 @@ public class GroupTabbedActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Juntadas";
+                    return getString(R.string.reunions);
                 case 1:
-                    return "Encuestas";
+                    return getString(R.string.polls);
             }
             return null;
         }

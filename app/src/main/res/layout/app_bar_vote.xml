@@ -123,7 +123,7 @@
                         android:id="@+id/votaron"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Votaron"
+                        android:text="@string/voted"
                         android:textSize="16dp"
                         android:textColor="#FFFFFF"
                         android:layout_centerVertical="true"
@@ -144,7 +144,7 @@
                         android:id="@+id/votes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="00"
+                        android:text=""
                         android:textSize="16dp"
                         android:textColor="#FFFFFF"
                         android:layout_alignParentTop="true"
@@ -180,7 +180,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="10dp"
-                android:text="SELECCIONA UNA O MÁS OPCIONES"/>
+                android:text="@string/choose_options"/>
         </LinearLayout>
 
     </android.support.design.widget.AppBarLayout>
@@ -255,7 +255,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="#FFFFFF"
-                android:text="NO PUEDO NINGÚN DIA"/>
+                android:text="@string/no_date"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
     </FrameLayout>

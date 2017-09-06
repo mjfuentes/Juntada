@@ -64,13 +64,13 @@
         </activity>
         <activity
             android:name=".activity.NewGroupActivity"
-            android:label="Nuevo Grupo"
+            android:label="@string/new_group"
             android:parentActivityName=".activity.GroupsActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.NewGroupTwoActivity"
-            android:label="Nuevo Grupo"
+            android:label="@string/new_group"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.LoginActivity"
@@ -131,7 +131,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NotificationsActivity"
-            android:label="Notificaciones"
+            android:label="@string/notifications"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="notifications" />
@@ -141,7 +141,7 @@
         </activity>
         <activity
             android:name=".activity.VisitProfileActivity"
-            android:label="Ver Perfil"
+            android:label="@string/view_profile"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.HomeActivity">
 

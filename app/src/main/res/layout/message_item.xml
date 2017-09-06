@@ -18,7 +18,7 @@ android:paddingTop="8dp">
 
 <TextView
     android:id="@+id/user_name"
-    android:text="John Doe"
+    android:text=""
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="12sp"
@@ -29,7 +29,7 @@ android:paddingTop="8dp">
 
 <TextView
     android:id="@+id/message"
-    android:text="hi man, how are you?"
+    android:text=""
     android:background="@drawable/rounded_rectangle_sent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -43,7 +43,7 @@ android:paddingTop="8dp">
 
 <TextView
     android:id="@+id/time"
-    android:text="11:40"
+    android:text=""
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="10sp"

@@ -179,7 +179,7 @@
                                 android:textSize="22dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="22:30"
+                                android:text=""
                                 android:textColor="@color/textPrimary"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginBottom="5dp"
@@ -190,7 +190,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="LUN"
+                                android:text=""
                                 android:id="@+id/event_weekday"
                                 android:textSize="22dp"
                                 android:textColor="@color/colorPrimary"
@@ -204,7 +204,7 @@
                                 android:textSize="22dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="30/06"
+                                android:text=""
                                 android:textColor="@color/textPrimary"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginBottom="5dp"
@@ -245,7 +245,7 @@
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                android:text="Participantes"
+                                android:text="@string/participants"
                                 android:textSize="16dp"
                                 android:textColor="@color/colorGrey"
                                 android:layout_height="wrap_content"
@@ -285,17 +285,6 @@
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
-
-                    <RelativeLayout
-                        android:visibility="invisible"
-                        android:id="@+id/blur_background"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:background="#CCFFFFFF"
-                        android:layout_height="0dp"
-                        android:layout_width="0dp"></RelativeLayout>
 
 
                     <ProgressBar
@@ -368,7 +357,7 @@
             app:fab_colorPressed="@color/colorPrimaryDark"
             android:src="@mipmap/going"
             app:fab_size="normal"
-            app:fab_label="VOY" />
+            app:fab_label="@string/going" />
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/not_going"
             app:fab_colorNormal="@color/colorPrimary"
@@ -377,95 +366,7 @@
             android:layout_height="wrap_content"
             android:src="@mipmap/not_going"
             app:fab_size="normal"
-            app:fab_label="NO VOY" />
+            app:fab_label="@string/not_going" />
     </com.github.clans.fab.FloatingActionMenu>
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/buttons"-->
-
-
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_marginBottom="15dp"-->
-        <!--android:layout_height="wrap_content">-->
-
-        <!--<android.support.v7.widget.CardView-->
-            <!--android:layout_width="100dp"-->
-            <!--app:cardElevation="0dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:layout_height="wrap_content">-->
-            <!--<LinearLayout-->
-                <!--android:background="#444444"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:id="@+id/yes"-->
-                <!--android:gravity="center_horizontal"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:padding="9dp"-->
-
-                <!--tools:layout_editor_absoluteY="445dp">-->
-
-                <!--<TextView-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:gravity="center"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="#FFFFFF"-->
-                    <!--android:text="VOY"/>-->
-            <!--</LinearLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
-        <!--<android.support.v7.widget.CardView-->
-            <!--android:layout_width="100dp"-->
-            <!--app:cardElevation="0dp"-->
-            <!--android:layout_marginLeft="15dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:layout_height="wrap_content">-->
-            <!--<LinearLayout-->
-                <!--android:background="#444444"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:id="@+id/no"-->
-                <!--android:gravity="center_horizontal"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:padding="9dp"-->
-
-                <!--tools:layout_editor_absoluteY="445dp">-->
-
-                <!--<TextView-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:gravity="center"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="#FFFFFF"-->
-                    <!--android:text="NO VOY"/>-->
-            <!--</LinearLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
-
-        <!--<android.support.v7.widget.CardView-->
-            <!--android:layout_width="100dp"-->
-            <!--app:cardElevation="0dp"-->
-            <!--android:layout_marginLeft="15dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:layout_height="wrap_content">-->
-            <!--<LinearLayout-->
-                <!--android:background="#444444"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:id="@+id/maybe"-->
-                <!--android:gravity="center_horizontal"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:padding="9dp"-->
-
-                <!--tools:layout_editor_absoluteY="445dp">-->
-
-                <!--<TextView-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:gravity="center"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="#FFFFFF"-->
-                    <!--android:text="TAL VEZ"/>-->
-            <!--</LinearLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
-
-    <!--</LinearLayout>-->
-
 
 </android.support.design.widget.CoordinatorLayout>

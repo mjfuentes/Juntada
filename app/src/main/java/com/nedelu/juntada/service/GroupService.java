@@ -10,6 +10,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.GroupTabbedActivity;
 import com.nedelu.juntada.activity.GroupsActivity;
 import com.nedelu.juntada.activity.NewEventActivity;
@@ -120,7 +121,7 @@ public class GroupService extends Observable {
                     Group group = saveGroup(groupDTO);
                     newGroupActivity.groupCreated(group.getId());
                 } else {
-                    Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     newGroupActivity.groupCreated(null);
 
                 }
@@ -128,7 +129,7 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 newGroupActivity.groupCreated(null);
             }
         });
@@ -151,14 +152,14 @@ public class GroupService extends Observable {
                     Event event = eventService.saveEvent(eventDTO);
                     newEventActivity.eventCreated(event);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     newEventActivity.eventCreated(null);
                 }
             }
 
             @Override
             public void onFailure(Call<EventDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 newEventActivity.eventCreated(null);
             }
         });
@@ -181,7 +182,7 @@ public class GroupService extends Observable {
                     Poll poll = eventService.savePoll(pollDTO);
                     newPollActivity.pollCreated(poll);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     newPollActivity.pollCreated(null);
 
                 }
@@ -189,7 +190,7 @@ public class GroupService extends Observable {
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 newPollActivity.pollCreated(null);
             }
         });
@@ -222,7 +223,7 @@ public class GroupService extends Observable {
                     if (listener != null) {
                         listener.updateGroups(false);
                     }
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -231,7 +232,7 @@ public class GroupService extends Observable {
                 if (listener != null) {
                     listener.updateGroups(false);
                 }
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -252,13 +253,13 @@ public class GroupService extends Observable {
                     new SaveGroupTask().execute(response.body());
                 } else {
 
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -353,7 +354,7 @@ public class GroupService extends Observable {
                     }
                 } else {
                     if (groupActivity != null) {
-                        Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                         groupActivity.groupDeleted(false);
                     }
                 }
@@ -363,7 +364,7 @@ public class GroupService extends Observable {
             public void onFailure(Call<UserDTO> call, Throwable t) {
                 if (groupActivity != null) {
                     groupActivity.groupDeleted(false);
-                    Toast.makeText(context, "Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -417,14 +418,14 @@ public class GroupService extends Observable {
                     activity.tokenGenerated(response.body().getToken());
                 } else {
                     activity.tokenGenerated(null);
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupTokenDTO> call, Throwable t) {
                 activity.tokenGenerated(null);
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -458,14 +459,14 @@ public class GroupService extends Observable {
                     editor.apply();
                     joinActivity.startActivity(main);
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     joinActivity.finish();
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 joinActivity.finish();
             }
         });
@@ -492,14 +493,14 @@ public class GroupService extends Observable {
                     Group group = saveGroup(response.body());
                     groupTabbedActivity.updateName(group.getName());
                 } else {
-                    Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                     groupTabbedActivity.updateName(null);
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 groupTabbedActivity.updateName(null);
             }
         });
@@ -532,14 +533,14 @@ public class GroupService extends Observable {
                     Group group = saveGroup(groupDTO);
                     groupTabbedActivity.imageUpdated(group.getImageUrl());
                 } else {
-                    Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
                     groupTabbedActivity.imageUpdated(null);
                 }
             }
 
             @Override
             public void onFailure(Call<GroupDTO> call, Throwable t) {
-                Toast.makeText(context,"Hubo un error al conectarse al servidor", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
                 groupTabbedActivity.imageUpdated(null);
             }
         });

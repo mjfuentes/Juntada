@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/delete_group"
-        android:title="Eliminar grupo"
+        android:title="@string/delete_group"
         app:showAsAction="never"/>
 </menu>

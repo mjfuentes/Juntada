@@ -139,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     userService.createUser(LoginActivity.this, profile.getId(), profile.getFirstName(), profile.getLastName(), profile.getProfilePictureUri(200, 200).toString());
                 } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "Error during user creation", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.error_user_creation, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 nextActivity(currentUser, false);

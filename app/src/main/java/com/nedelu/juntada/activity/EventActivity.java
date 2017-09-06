@@ -64,7 +64,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     private EventService eventService;
     private RecyclerView userList;
     private UserAdapter userAdapter;
-    private View blur;
     private ProgressBar progressBar;
     private User user;
     private Boolean openMessages;
@@ -126,9 +125,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         userList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         userList.setAdapter(userAdapter);
-
-
-        blur = findViewById(R.id.blur_background);
 
         fab = (com.github.clans.fab.FloatingActionMenu) findViewById(R.id.fab);
         going = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.going);
@@ -204,9 +200,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             }
         });
 
-        SimpleDateFormat dayMonthFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+        SimpleDateFormat dayMonthFormat = new SimpleDateFormat(getString(R.string.day_month), Locale.ENGLISH);
         SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(getString(R.string.locale), getString(R.string.country)));
 
         Date optionDate = null;
         try {
@@ -281,7 +277,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
     public void assistanceSaved(final Event e, Assistance assistance) {
         progressBar.setVisibility(View.INVISIBLE);
-        blur.setVisibility(View.INVISIBLE);
         if (e != null) {
             if (assistance.equals(Assistance.GOING)){
 
@@ -303,9 +298,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this, R.style.DialogTheme);
-                builder.setMessage("Guardar evento en calendario?")
-                        .setPositiveButton("SI", dialogClickListener)
-                        .setNegativeButton("NO", dialogClickListener).show();
+                builder.setMessage(R.string.save_to_calendar)
+                        .setPositiveButton(R.string.yes, dialogClickListener)
+                        .setNegativeButton(R.string.no, dialogClickListener).show();
 
             }
             refreshInfo(e);
@@ -328,7 +323,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 
     public long getTimeInMillis(String date, String time){
         String completeDateString = date + " " + time;
-        SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        SimpleDateFormat completeFormat = new SimpleDateFormat(getString(R.string.complete_date), Locale.ENGLISH);
         try {
             Date completeDate = completeFormat.parse(completeDateString);
             return completeDate.getTime();
@@ -347,10 +342,10 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, "Juntada");
-            String sAux = "\nTe invite a mi evento de Juntada! Para ingresar usa el siguiente link:\n\n";
-            sAux += "\n" + url;
+            String sAux = getString(R.string.group_invitation);
+            sAux += "\n\n" + url;
             i.putExtra(Intent.EXTRA_TEXT, sAux);
-            startActivity(Intent.createChooser(i, "Elegir aplicacion"));
+            startActivity(Intent.createChooser(i, getString(R.string.choose_app)));
         }
     }
 
@@ -476,9 +471,9 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Mensajes";
+                    return getString(R.string.messages);
                 case 1:
-                    return "Gastos";
+                    return getString(R.string.expenses);
             }
             return null;
         }

@@ -62,11 +62,11 @@ public class MyPollRecyclerViewAdapter extends RecyclerView.Adapter<MyPollRecycl
             }
         });
 
-        String dayMonth = "dd/MM";
+        String dayMonth = holder.mView.getContext().getString(R.string.day_month);
         SimpleDateFormat dayMonthFormat = new SimpleDateFormat(dayMonth, Locale.ENGLISH);
 
         SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale("es", "ES"));
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(holder.mView.getContext().getString(R.string.locale), holder.mView.getContext().getString(R.string.country)));
 
         TextView pollname = (TextView) holder.mView.findViewById(R.id.poll_name);
         pollname.setText(StringEscapeUtils.unescapeJava(poll.getTitle()));
