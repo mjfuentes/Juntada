@@ -134,11 +134,6 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         going = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.going);
         notGoing = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.not_going);
 
-        if (event.getConfirmedUsers().contains(user)){
-            going.setSelected(true);
-        } else if (event.getNotGoingUsers().contains(user)){
-            notGoing.setSelected(true);
-        }
         going.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
