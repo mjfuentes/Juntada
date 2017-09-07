@@ -37,6 +37,8 @@ import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.service.UserService;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -79,7 +81,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
 
         User user = userService.getUserByFirebaseId(auth.getCurrentUser().getUid());
-        userId = user.getId();
+               userId = user.getId();
         groupService = GroupService.getInstance(GroupsActivity.this);
         groupService.getUserGroups(userId, this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
@@ -125,7 +127,9 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         user_name.setText(user.getFirstName() + " " + user.getLastName());
 
         ImageView user_image = (ImageView) headerView.findViewById(R.id.user_image);
-        Picasso.with(GroupsActivity.this).load(user.getImageUrl()).into(user_image);
+        if (StringUtils.isNotEmpty(user.getImageUrl())){
+            Picasso.with(GroupsActivity.this).load(user.getImageUrl()).into(user_image);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

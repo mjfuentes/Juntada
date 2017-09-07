@@ -3,6 +3,6 @@
 
     <item android:drawable="@drawable/new_login_background" />
 
-    <item android:top="60dp" android:gravity="center_horizontal" android:drawable="@drawable/login_logo_new" android:height="140dp" android:width="140dp"/>
+    <!--<item android:top="60dp" android:gravity="center_horizontal" android:drawable="@drawable/login_logo_new" android:height="140dp" android:width="140dp"/>-->
 
 </layer-list>

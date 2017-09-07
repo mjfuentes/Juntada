@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="horarios">
-        <item>Mañana</item>
-        <item>Mediodia</item>
-        <item>Tarde</item>
-        <item>Noche</item>
-    </string-array>
-</resources>

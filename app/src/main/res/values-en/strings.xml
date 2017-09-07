@@ -78,9 +78,25 @@
     <string name="going">GOING</string>
     <string name="not_going">NOT GOING</string>
     <style name="server_client_id">896422881603-trdvh64brq938ava9u8pou4rerc0cv2l.apps.googleusercontent.com</style>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="o">OR</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="unknown_error">An error has ocurred</string>
+
     <string name="facebook_application_id" translatable="false">397218834007949</string>
 
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="facebook_app_id">397218834007949</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_group">GroupActivity</string>
+    <string name="login">O</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</string>
+    <string name="title_activity_group_tabbed">GroupTabbedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_events">EventsActivity</string>
 
 
 

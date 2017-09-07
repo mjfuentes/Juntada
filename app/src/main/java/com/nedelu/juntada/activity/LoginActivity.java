@@ -36,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-        editor.putString("server_url", "http://10.1.1.3:8080");
-//        editor.putString("server_url", "http://www.demo.juntada.nedelu.com");
+//        editor.putString("server_url", "http://10.1.1.3:8080");
+        editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
 //
 //        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
@@ -110,7 +110,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     User user = userService.getUserByFirebaseId(firebaseUser.getUid());
                     if (user == null) {
-                        userService.createUser(LoginActivity.this, firebaseUser.getUid(), firebaseUser.getDisplayName(), "", firebaseUser.getPhotoUrl().toString());
+                        if (firebaseUser.getDisplayName() != null) {
+                            String photo = (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : "";
+                            userService.createUser(LoginActivity.this, firebaseUser.getUid(), firebaseUser.getDisplayName(), "", photo);
+                        } else {
+                           firebaseAuth.signOut();
+                        }
                     } else {
                         nextActivity(user, false);
                     }
@@ -166,6 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
                         .setIsSmartLockEnabled(false)
                         .setAllowNewEmailAccounts(true)
+                        .setLogo(R.drawable.login_logo_new)
                         .setTheme(R.style.LoginTheme)
                         .build(),
                 1);
