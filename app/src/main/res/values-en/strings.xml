@@ -82,10 +82,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="o">OR</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="unknown_error">An error has ocurred</string>
-
-    <string name="facebook_application_id" translatable="false">397218834007949</string>
-
+    <string name="unknown_error">An error has ocurred</string>  
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

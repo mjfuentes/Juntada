@@ -12,7 +12,7 @@
     <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
     <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
     <PreferenceCategory
-        android:title="Encuestas"
+        android:title="@string/polls"
         android:dependency="notifications"
         android:layout="@layout/preference_category"
         android:key="pref_key_storage_settings">
@@ -37,7 +37,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:dependency="notifications"
+        android:dependency="@string/notifications"
         android:layout="@layout/preference_category"
         android:title="Juntadas"
         android:key="event_notifications_category">
@@ -62,7 +62,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Mensajes"
+        android:title="@string/messages"
         android:layout="@layout/preference_category"
         android:dependency="notifications"
         android:key="pref_key_storage_settings">
