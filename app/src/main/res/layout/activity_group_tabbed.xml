@@ -22,7 +22,7 @@
             app:expandedTitleTextAppearance="@style/TextAppearance.Design.CollapsingToolbar.Expanded.Shadow"
             android:id="@+id/collapsing_toolbar"
             android:fitsSystemWindows="true"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary">
 
             <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

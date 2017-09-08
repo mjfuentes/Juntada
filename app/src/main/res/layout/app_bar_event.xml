@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             app:expandedTitleGravity="center|top"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginTop="42dp"
             app:expandedTitleTextAppearance="@style/ExtendedAppBar"

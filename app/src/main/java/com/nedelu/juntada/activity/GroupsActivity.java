@@ -70,18 +70,21 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         setContentView(R.layout.activity_groups);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() == null) {
+        User user = null;
+        userService = new UserService(GroupsActivity.this);
+        if (auth.getCurrentUser() != null) {
+            user = userService.getUserByFirebaseId(auth.getCurrentUser().getUid());
+        }
+
+        if (user == null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
             return;
         }
+        userId = user.getId();
         long startTime = System.nanoTime();
-        userService = new UserService(GroupsActivity.this);
 
-
-        User user = userService.getUserByFirebaseId(auth.getCurrentUser().getUid());
-               userId = user.getId();
         groupService = GroupService.getInstance(GroupsActivity.this);
         groupService.getUserGroups(userId, this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);

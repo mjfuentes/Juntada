@@ -28,7 +28,7 @@
     <string name="votes_saved">Votes saved!</string>
     <string name="no_date">I CAN\'T ANY DAY</string>
     <string name="confirm_event_no_caps">Confirm event</string>
-    <string name="confirm_for_day">Are you sure you want to confirm the event for the day</string>
+    <string name="confirm_for_day">Are you sure you want to confirm the event for the day </string>
     <string name="and_time">and time</string>
     <string name="confirm">CONFIRM</string>
     <string name="add_options">Add options</string>

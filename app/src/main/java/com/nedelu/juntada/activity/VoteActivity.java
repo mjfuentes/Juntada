@@ -254,7 +254,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
 
             AlertDialog.Builder builder = new AlertDialog.Builder(VoteActivity.this);
             builder.setTitle(R.string.confirm_event_no_caps);
-            builder.setMessage(getString(R.string.confirm_for_day) + dayMonthFormat.format(optionDate) + getString(R.string.and_time) + item.getOption().getTime() + "?");
+            builder.setMessage(getString(R.string.confirm_for_day) + " " + dayMonthFormat.format(optionDate) + " " + getString(R.string.and_time) + " " + item.getOption().getTime() + "?");
             builder.setPositiveButton(R.string.confirm,
                     new DialogInterface.OnClickListener() {
                         @Override

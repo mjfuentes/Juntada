@@ -420,7 +420,7 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
     public void onResume(){
         Bundle bundle = getIntent().getExtras();
 
-        if (bundle != null && !notification) {
+        if (bundle != null && !notification && (bundle.getLong("eventId",0L) != 0L)) {
             eventId = bundle.getLong("eventId");
             openMessages = bundle.getBoolean("showMessages");
         }

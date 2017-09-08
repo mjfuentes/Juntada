@@ -28,7 +28,7 @@
     <string name="votes_saved">Seleccion guardada!</string>
     <string name="no_date">NO PUEDO NINGÚN DÍA</string>
     <string name="confirm_event_no_caps">Confirmar evento</string>
-    <string name="confirm_for_day">Seguro que desea confirmar el evento para el día</string>
+    <string name="confirm_for_day">Seguro que desea confirmar el evento para el día </string>
     <string name="and_time">a la hora</string>
     <string name="confirm">CONFIRMAR</string>
     <string name="add_options">Agregar opciones</string>

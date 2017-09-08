@@ -50,7 +50,7 @@ public class PushNotificationsAdapter
         User user = userService.getUser(newNotification.getCreatorId());
         holder.title.setText(StringEscapeUtils.unescapeJava(newNotification.getTitle()));
         holder.description.setText(StringEscapeUtils.unescapeJava(newNotification.getDescription()));
-        if (user != null) {
+        if (user != null && user.getImageUrl()!= null) {
             Picasso.with(mContext).load(user.getImageUrl()).resize(150, 150).into(holder.image);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
