@@ -166,6 +166,16 @@
     <string name="o">OR</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">An error has ocurred</string>
+    <string name="new_event">Nueva Juntada</string>
+    <string name="group_deleted">Grupo eliminado</string>
+    <string name="deleted_group">ha eliminado el grupo</string>
+    <string name="new_member">New member</string>
+    <string name="joined_group">has joined the group</string>
+    <string name="group_name_updated">has updated the name of the group</string>
+    <string name="to">to</string>
+    <string name="group_image_updated">has updated the image of the group</string>
+    <string name="a_new_member">A new member</string>
+    <string name="left_group">has left the group</string>
 
 
 </resources>
