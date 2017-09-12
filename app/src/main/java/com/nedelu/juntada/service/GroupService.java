@@ -72,7 +72,7 @@ public class GroupService extends Observable {
         this.eventDao = new EventDao(context);
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
-        baseUrl = userPref.getString("server_url", "http://10.1.1.16:8080");
+        baseUrl = userPref.getString("server_url", "http://10.1.1.3:8080");
         userId = userPref.getLong("userId", 0l);
     }
 

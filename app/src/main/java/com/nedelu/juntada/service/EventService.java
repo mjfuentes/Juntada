@@ -381,7 +381,7 @@ public class EventService {
         });
     }
 
-    public void confirmEvent(Poll poll, PollOption option, final VoteActivity voteActivity) {
+    public void confirmEvent(final Poll poll, PollOption option, final VoteActivity voteActivity) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -397,6 +397,7 @@ public class EventService {
             public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
                 if (response.code() == 200) {
                     saveEvent(response.body());
+                    deletePoll(poll.getId());
                     voteActivity.pollVoted(true, response.body().getId());
                 } else {
                     Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
@@ -520,7 +521,7 @@ public class EventService {
         });
     }
 
-    public void loadEvent(Long eventId) {
+    public void loadEvent(Long eventId, final EventActivity listener) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -535,19 +536,28 @@ public class EventService {
             public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
                 if (response.code() == 200) {
                     Event event = saveEvent(response.body());
+                    if (listener != null){
+                        listener.refreshInfo(event);
+                    }
                 } else {
-                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    if (listener != null) {
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        listener.refreshInfo(null);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                if (listener != null) {
+                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    listener.refreshInfo(null);
+                }
             }
         });
     }
 
-    public void loadPoll(Long pollId) {
+    public void loadPoll(Long pollId, final VoteActivity listener) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -562,14 +572,23 @@ public class EventService {
             public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
                 if (response.code() == 200) {
                     Poll poll = savePoll(response.body());
+                    if (listener != null) {
+                        listener.refreshPoll(poll);
+                    }
                 } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    if (listener != null) {
+                        Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        listener.refreshPoll(null);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                if (listener != null) {
+                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    listener.refreshPoll(null);
+                }
             }
         });
     }

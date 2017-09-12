@@ -88,7 +88,7 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
             android:name=".activity.NewEventActivity"
-            android:label="Nueva Juntada"
+            android:label="@string/new_event"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NewPollActivity"

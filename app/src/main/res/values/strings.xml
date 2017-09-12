@@ -14,7 +14,8 @@
     <string name="yes">SI</string>
     <string name="no">NO</string>
     <string name="complete_date">dd/MM/yyyy HH:mm</string>
-    <string name="group_invitation">Te invite a mi evento de Juntada! Para ingresar usa el siguiente link:</string>
+    <string name="group_invitation">Te invite a mi grupo de Juntada! Para ingresar usa el siguiente link:</string>
+    <string name="event_invitation">Te invite a mi evento de Juntada! Para ingresar usa el siguiente link:</string>
     <string name="messages">Mensajes</string>
     <string name="expenses">Gastos</string>
     <string name="edit_name">Editar nombre</string>
@@ -151,6 +152,35 @@
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
+
+    <!-- NOTIFICATIONS -->
+
+    <string name="new_event">Nueva Juntada</string>
+    <string name="group_deleted">Grupo eliminado</string>
+    <string name="deleted_group">\u0020ha eliminado el grupo\u0020</string>
+    <string name="new_member">Nuevo miembro</string>
+    <string name="joined_group">\u0020entró al grupo\u0020</string>
+    <string name="group_name_updated">\u0020cambió el nombre del grupo\u0020</string>
+    <string name="to">to</string>
+    <string name="group_image_updated">\u0020cambió la imagen del grupo\u0020</string>
+    <string name="a_new_member">Nuevo miembro</string>
+    <string name="left_group">\u0020salió del grupo\u0020</string>
+    <string name="group_name_updated_title">Nombre de grupo actualizado</string>
+    <string name="group_image_updated_title">Imagen de grupo actualizada</string>
+    <string name="group_deleted_title">Grupo eliminado</string>
+    <string name="group_member_left">Un miembro a salido del grupo</string>
+    <string name="event_deleted">Evento eliminado</string>
+    <string name="user_deleted_event">\u0020ha eliminado el evento\u0020</string>
+    <string name="in_the_group">\u0020en el grupo\u0020</string>
+    <string name="event_updated">Evento modificado</string>
+    <string name="user_updated_event">\u0020ha modificado el evento\u0020</string>
+    <string name="user_going">\u0020marcó que asistirá al evento\u0020</string>
+    <string name="user_not_going">\u0020marcó que no asistirá al evento\u0020</string>
+    <string name="created_event">\u0020creó un evento en el grupo\u0020</string>
+    <string name="created_poll">\u0020creó una encuesta en el grupo\u0020</string>
+    <string name="user_voted_poll">\u0020ha votado en la encuesta\u0020</string>
+    <string name="confirmedEvent">\u0020ha confirmado el evento\u0020</string>
+
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notificaciones</string>
 
@@ -166,16 +196,10 @@
     <string name="o">OR</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">An error has ocurred</string>
-    <string name="new_event">Nueva Juntada</string>
-    <string name="group_deleted">Grupo eliminado</string>
-    <string name="deleted_group">ha eliminado el grupo</string>
-    <string name="new_member">New member</string>
-    <string name="joined_group">has joined the group</string>
-    <string name="group_name_updated">has updated the name of the group</string>
-    <string name="to">to</string>
-    <string name="group_image_updated">has updated the image of the group</string>
-    <string name="a_new_member">A new member</string>
-    <string name="left_group">has left the group</string>
+    <string name="new_poll">Nueva encuesta</string>
+    <string name="user_going_event">Nuevo asistente</string>
+    <string name="event_confirmed">Evento confirmado</string>
+    <string name="new_vote">Nuevo voto</string>
 
 
 </resources>

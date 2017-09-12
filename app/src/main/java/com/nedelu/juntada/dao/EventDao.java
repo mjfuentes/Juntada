@@ -7,6 +7,7 @@ import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Poll;
 import com.nedelu.juntada.model.PollOption;
 import com.nedelu.juntada.model.PollOptionVote;
+import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.model.User;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.DontKnowUsers;
@@ -298,6 +299,13 @@ public class EventDao {
             builder.where().eq("event", event.getId());
             builder.where().eq("user", userId);
             builder.delete();
+
+            DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+            pushNotificationDeleteBuilder.where().eq("type", "event").and().eq("value",String.valueOf(event.getId()));
+            pushNotificationDeleteBuilder.delete();
+
+            helper.getEventDao().delete(event);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -312,6 +320,10 @@ public class EventDao {
             DeleteBuilder<Event, Long> builder2 = helper.getEventDao().deleteBuilder();
             builder2.where().eq("id", eventId);
             builder2.delete();
+
+            DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+            pushNotificationDeleteBuilder.where().eq("type", "event").and().eq("value",String.valueOf(eventId));
+            pushNotificationDeleteBuilder.delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -345,9 +357,12 @@ public class EventDao {
 
     public void deletePoll(Long id) {
         try {
-            DeleteBuilder<Poll, Long> builder2 = helper.getPollDao().deleteBuilder();
-            builder2.where().eq("id", id);
-            builder2.delete();
+
+            DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+            pushNotificationDeleteBuilder.where().eq("type", "poll").and().eq("value",String.valueOf(id));
+            pushNotificationDeleteBuilder.delete();
+
+            helper.getPollDao().deleteById(id);
         } catch (SQLException e) {
             e.printStackTrace();
         }

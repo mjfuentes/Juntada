@@ -28,6 +28,7 @@ import com.nedelu.juntada.model.Message;
 import com.nedelu.juntada.model.MessageType;
 import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.model.User;
+import com.nedelu.juntada.service.DataUpdateService;
 import com.nedelu.juntada.service.EventService;
 import com.nedelu.juntada.service.GroupService;
 import com.nedelu.juntada.util.PushNotificationsRepository;
@@ -55,6 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private DateTimeFormatter formatter;
     private GroupService groupService;
     private EventService eventService;
+    private DataUpdateService dataUpdateService;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -84,14 +86,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Event event = eventDao.getEvent(message.getTypeId());
             User user = userDao.getUser(message.getCreatorId());
             if (user == null || event == null) {
-                eventService.loadEvent(message.getTypeId());
+                eventService.loadEvent(message.getTypeId(), null);
             } else {
                 int id = Integer.valueOf(String.valueOf(message.getType().ordinal()) + message.getTypeId());
                 String title = "";
                 String description = "";
+                String groupName;
                 Integer unread = activeNotificationsForId(id);
+                if (event.getGroup() != null){
+                    groupName = event.getGroup().getName();
+                } else {
+                    groupName = getString(R.string.invitations);
+                }
                 if (unread > 0) {
-                    title = StringEscapeUtils.unescapeJava(event.getTitle()) + " @ " + StringEscapeUtils.unescapeJava(event.getGroup().getName());
+                    title = StringEscapeUtils.unescapeJava(event.getTitle()) + " @ " + groupName;
                     description = "Nuevos mensajes sin leer";
                 } else {
                     title = StringEscapeUtils.unescapeJava(user.getFirstName() + " " + user.getLastName() + " @ " + event.getTitle());
@@ -198,14 +206,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String type = data.get("type");
         String action = data.get("action");
         Long id = Long.valueOf(data.get("type_id"));
+        Long user;
+
         switch (type) {
             case "group":
                 switch (action) {
                     case "delete":
-                        groupService.deleteGroup(id);
+                        user = Long.valueOf(data.get("user"));
+                        dataUpdateService.deleteGroup(id, user);
                         break;
                     case "update":
-                        groupService.loadGroup(id);
+                        user = Long.valueOf(data.get("user"));
+                        String field = data.get("field");
+                        switch (field) {
+                            case "name":
+                                dataUpdateService.updateGroupName(id, user);
+                                break;
+                            case "image":
+                                dataUpdateService.updateGroupImage(id, user);
+                                break;
+                            case "new_member":
+                                dataUpdateService.addGroupParticipant(id, user);
+                                break;
+                            case "member_left":
+                                dataUpdateService.removeGroupParticipant(id, user);
+                                break;
+                        }
                         break;
                     case "new":
                         groupService.loadGroup(id);
@@ -213,33 +239,71 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
                 break;
             case "event":
+                Long group_id;
                 switch (action) {
                     case "delete":
-                        eventService.deleteEvent(id);
+                        user = Long.valueOf(data.get("user"));
+                        dataUpdateService.deleteEvent(id, user);
                         break;
                     case "update":
-                        eventService.loadEvent(id);
+                        user = Long.valueOf(data.get("user"));
+                        String field = data.get("field");
+                        switch (field) {
+                            case "name":
+                                dataUpdateService.updateEvent(id, user);
+                                break;
+                            case "location":
+                                dataUpdateService.updateEvent(id, user);
+                                break;
+                            case "description":
+                                dataUpdateService.updateEvent(id, user);
+                                break;
+                            case "going":
+                                dataUpdateService.updateMemberGoing(id, user);
+                                break;
+                            case "not_going":
+                                dataUpdateService.updateMemberNotGoing(id, user);
+                                break;
+                        }
                         break;
                     case "new":
-                        eventService.loadEvent(id);
+                        group_id = Long.valueOf(data.get("group_id"));
+                        user = Long.valueOf(data.get("user"));
+                        dataUpdateService.newEvent(id,group_id, user);
                         break;
-                }
-                break;
+                    case "confirmed":
+                        group_id = Long.valueOf(data.get("group_id"));
+                        Long pollId = Long.valueOf(data.get("poll_id"));
+                        user = Long.valueOf(data.get("user"));
+                        dataUpdateService.confirmEvent(id, pollId,group_id, user);
+                        break;
+                    }
+                    break;
             case "poll":
                 switch (action) {
-                    case "delete":
-                        eventService.deletePoll(id);
+                    case "new":
+                        group_id = Long.valueOf(data.get("group_id"));
+                        user = Long.valueOf(data.get("user"));
+                        dataUpdateService.newPoll(id,group_id, user);
                         break;
                     case "update":
-                        eventService.loadPoll(id);
+                        group_id = Long.valueOf(data.get("group_id"));
+                        user = Long.valueOf(data.get("user"));
+                        String field = data.get("field");
+                        switch (field) {
+                            case "voted":
+                                dataUpdateService.updateUserVotedPoll(id,group_id, user);
+                                break;
+                        }
                         break;
-                    case "new":
-                        eventService.loadPoll(id);
-                        break;
+//                    case "delete":
+//                        eventService.deletePoll(id);
+//                        break;
                 }
 
-        }
+            }
     }
+
 
     private void handleMessage(Map<String, String> data) {
         Message message = new Message();
@@ -295,7 +359,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         eventDao = new EventDao(getBaseContext());
         groupService = GroupService.getInstance(getBaseContext());
         eventService = new EventService(getBaseContext());
-
+        dataUpdateService = new DataUpdateService(getBaseContext());
         formatter= DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
                         .withLocale( Locale.ENGLISH )
                         .withZone(ZoneId.systemDefault());

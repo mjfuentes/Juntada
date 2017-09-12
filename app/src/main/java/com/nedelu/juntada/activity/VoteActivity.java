@@ -54,6 +54,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
     private TextView buttonText;
     private View button;
     private TextView selectText;
+    private CollapsingToolbarLayout toolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,13 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
         Long pollId = userPref.getLong("pollId", 0L);
         userId = userPref.getLong("userId", 0L);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            pollId = bundle.getLong("pollId");
+        }
+
         eventService = new EventService(VoteActivity.this);
         poll = eventService.getPoll(pollId);
         buttonText = (TextView) findViewById(R.id.voting_button);
@@ -86,8 +94,7 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         }
 
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        final CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        toolbarLayout.setTitle(StringEscapeUtils.unescapeJava(poll.getTitle()));
+        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -113,92 +120,100 @@ public class VoteActivity extends AppCompatActivity implements PollOptionAdapter
         if (poll != null){
             refreshPoll(poll);
         } else {
+            eventService.loadPoll(pollId, VoteActivity.this);
             progressBar.setVisibility(View.VISIBLE);
         }
     }
 
     public void refreshPoll(final Poll poll){
         progressBar.setVisibility(View.GONE);
-        List<PollOption> options = new ArrayList<>(poll.getOptions());
-        List<VotingItem> items = new ArrayList<>();
 
-        View locationButton = findViewById(R.id.location_button);
+        if (poll != null) {
+            List<PollOption> options = new ArrayList<>(poll.getOptions());
+            List<VotingItem> items = new ArrayList<>();
 
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String map = "http://maps.google.co.in/maps?q=" + poll.getLocation();
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
-                startActivity(i);
+            View locationButton = findViewById(R.id.location_button);
+
+            locationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String map = "http://maps.google.co.in/maps?q=" + poll.getLocation();
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                    startActivity(i);
+                }
+            });
+
+            toolbarLayout.setTitle(StringEscapeUtils.unescapeJava(poll.getTitle()));
+
+            isCreator = poll.getCreator().getId().equals(userId);
+            if (isCreator) {
+                selectText.setText(R.string.choose_an_option);
+                button.setVisibility(View.INVISIBLE);
+                buttonText.setText(R.string.confirm_event);
             }
-        });
+            for (PollOption option : options) {
+                VotingItem item = new VotingItem(option);
+                if (!isCreator) {
+                    if (option.isVotedByUser(userId)) {
+                        item.setVoted(true);
+                        buttonText.setText(R.string.vote);
+                    }
+                }
+                items.add(item);
+            }
 
-        isCreator = poll.getCreator().getId().equals(userId);
-        if (isCreator) {
-            selectText.setText(R.string.choose_an_option);
-            button.setVisibility(View.INVISIBLE);
-            buttonText.setText(R.string.confirm_event);
-        }
-        for (PollOption option : options) {
-            VotingItem item = new VotingItem(option);
-            if (!isCreator) {
-                if (option.isVotedByUser(userId)) {
-                    item.setVoted(true);
-                    buttonText.setText(R.string.vote);
+            TextView pollDescription = (TextView) findViewById(R.id.poll_description);
+            pollDescription.setText(StringEscapeUtils.unescapeJava(poll.getDescription()));
+
+            TextView pollLocation = (TextView) findViewById(R.id.poll_location);
+            pollLocation.setText(poll.getLocation());
+
+            TextView pollVotes = (TextView) findViewById(R.id.votes);
+            Set<Long> users = new HashSet<>();
+            for (PollOption option : poll.getOptions()) {
+                for (PollOptionVote vote : option.getVotes()) {
+                    users.add(vote.getUser().getId());
                 }
             }
-            items.add(item);
-        }
+            pollVotes.setText(String.valueOf(users.size()));
 
-        TextView pollDescription = (TextView) findViewById(R.id.poll_description);
-        pollDescription.setText(StringEscapeUtils.unescapeJava(poll.getDescription()));
+            adapter = new PollOptionAdapter(VoteActivity.this, items, optionsList, this, isCreator);
+            optionsList.setAdapter(adapter);
 
-        TextView pollLocation = (TextView) findViewById(R.id.poll_location);
-        pollLocation.setText(poll.getLocation());
-
-        TextView pollVotes = (TextView) findViewById(R.id.votes);
-        Set<Long> users = new HashSet<>();
-        for (PollOption option : poll.getOptions()) {
-            for (PollOptionVote vote : option.getVotes()) {
-                users.add(vote.getUser().getId());
-            }
-        }
-        pollVotes.setText(String.valueOf(users.size()));
-
-        adapter = new PollOptionAdapter(VoteActivity.this, items, optionsList, this, isCreator);
-        optionsList.setAdapter(adapter);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                button.setClickable(false);
-                if (isCreator) {
-                    for (VotingItem item : adapter.getItems()) {
-                        if (item.getVoted()) {
-                            showLocationDialog(item);
-                            break;
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    button.setClickable(false);
+                    if (isCreator) {
+                        for (VotingItem item : adapter.getItems()) {
+                            if (item.getVoted()) {
+                                showLocationDialog(item);
+                                break;
+                            }
                         }
-                    }
-                } else {
-                    List<Long> options = new ArrayList<Long>();
-                    for (VotingItem item : adapter.getItems()) {
-                        if (item.getVoted()) {
-                            options.add(item.getOption().getId());
-                        }
-                    }
-                    if (options.size() > 0) {
-                        PollVoteRequest request = new PollVoteRequest();
-                        request.setOptions(options);
-                        request.setUserId(userId);
-                        eventService.votePoll(poll.getId(), request, VoteActivity.this);
-                        progressBar.setVisibility(View.VISIBLE);
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.votes_saved, Toast.LENGTH_SHORT).show();
-                        finish();
+                        List<Long> options = new ArrayList<Long>();
+                        for (VotingItem item : adapter.getItems()) {
+                            if (item.getVoted()) {
+                                options.add(item.getOption().getId());
+                            }
+                        }
+                        if (options.size() > 0) {
+                            PollVoteRequest request = new PollVoteRequest();
+                            request.setOptions(options);
+                            request.setUserId(userId);
+                            eventService.votePoll(poll.getId(), request, VoteActivity.this);
+                            progressBar.setVisibility(View.VISIBLE);
+                        } else {
+                            Toast.makeText(getApplicationContext(), R.string.votes_saved, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            finish();
+        }
     }
 
     @Override

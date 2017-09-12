@@ -172,102 +172,115 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
 //        collapsingToolbarLayout.setExpandedTitleTypeface(typeface);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+    }
 
-        Event event = eventService.getEvent(eventId);
-        if (event != null){
-            refreshInfo(event);
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            eventId = bundle.getLong("eventId");
+            openMessages = bundle.getBoolean("showMessages");
+            notification = true;
         }
+
+        super.onNewIntent(intent);
     }
 
 
     public void refreshInfo(final Event event){
         invalidateOptionsMenu();
         progressBar.setVisibility(View.GONE);
-        TextView description = (TextView) findViewById(R.id.event_description);
-        TextView location = (TextView) findViewById(R.id.event_location);
-        TextView weekday = (TextView) findViewById(R.id.event_weekday);
-        TextView date = (TextView) findViewById(R.id.event_date);
-        TextView time = (TextView) findViewById(R.id.event_time);
-        TextView participants = (TextView) findViewById(R.id.event_participants);
-        View locationButton = findViewById(R.id.location_button);
 
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String map = "http://maps.google.co.in/maps?q=" + event.getLocation();
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
-                startActivity(i);
-            }
-        });
+        if (event != null) {
+            TextView description = (TextView) findViewById(R.id.event_description);
+            TextView location = (TextView) findViewById(R.id.event_location);
+            TextView weekday = (TextView) findViewById(R.id.event_weekday);
+            TextView date = (TextView) findViewById(R.id.event_date);
+            TextView time = (TextView) findViewById(R.id.event_time);
+            TextView participants = (TextView) findViewById(R.id.event_participants);
+            View locationButton = findViewById(R.id.location_button);
 
-        SimpleDateFormat dayMonthFormat = new SimpleDateFormat(getString(R.string.day_month), Locale.ENGLISH);
-        SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(getString(R.string.locale), getString(R.string.country)));
-
-        Date optionDate = null;
-        try {
-            optionDate = completeFormat.parse(event.getDate());
-            description.setText(StringEscapeUtils.unescapeJava(event.getDescription()));
-            location.setText(event.getLocation());
-            weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0,3)));
-            date.setText(dayMonthFormat.format(optionDate));
-            time.setText(event.getTime());
-            String users = event.getConfirmedUsers().size() >= 10 ? String.valueOf(event.getConfirmedUsers().size()) : 0 + String.valueOf(event.getConfirmedUsers().size());
-            participants.setText(users);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        userAdapter.setItems(event.getConfirmedUsers());
-        userList.removeAllViews();
-        userAdapter.notifyItemRangeRemoved(0, userAdapter.getItemCount());
-        userAdapter.notifyItemRangeInserted(0, userAdapter.getItemCount());
-        userAdapter.notifyDataSetChanged();
-
-        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
-
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1) {
-                    scrollRange = appBarLayout.getTotalScrollRange();
+            locationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String map = "http://maps.google.co.in/maps?q=" + event.getLocation();
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(map));
+                    startActivity(i);
                 }
-                if (scrollRange + verticalOffset == 0) {
-                    if (collapsingToolbarLayout != null) {
-                        toolbarExpanded = false;
-                        isShow = true;
-                        if (!messagingLoaded) {
-                           mSectionsPagerAdapter.showMessages();
-                            messagingLoaded = true;
+            });
+
+            SimpleDateFormat dayMonthFormat = new SimpleDateFormat(getString(R.string.day_month), Locale.ENGLISH);
+            SimpleDateFormat completeFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", new Locale(getString(R.string.locale), getString(R.string.country)));
+
+            Date optionDate = null;
+            try {
+                optionDate = completeFormat.parse(event.getDate());
+                description.setText(StringEscapeUtils.unescapeJava(event.getDescription()));
+                location.setText(event.getLocation());
+                weekday.setText(StringUtils.upperCase(dayFormat.format(optionDate).substring(0, 3)));
+                date.setText(dayMonthFormat.format(optionDate));
+                time.setText(event.getTime());
+                String users = event.getConfirmedUsers().size() >= 10 ? String.valueOf(event.getConfirmedUsers().size()) : 0 + String.valueOf(event.getConfirmedUsers().size());
+                participants.setText(users);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            userAdapter.setItems(event.getConfirmedUsers());
+            userList.removeAllViews();
+            userAdapter.notifyItemRangeRemoved(0, userAdapter.getItemCount());
+            userAdapter.notifyItemRangeInserted(0, userAdapter.getItemCount());
+            userAdapter.notifyDataSetChanged();
+
+            appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+            collapsingToolbarLayout.setTitle(StringEscapeUtils.unescapeJava(event.getTitle()));
+
+            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                boolean isShow = false;
+                int scrollRange = -1;
+
+                @Override
+                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                    if (scrollRange == -1) {
+                        scrollRange = appBarLayout.getTotalScrollRange();
+                    }
+                    if (scrollRange + verticalOffset == 0) {
+                        if (collapsingToolbarLayout != null) {
+                            toolbarExpanded = false;
+                            isShow = true;
+                            if (!messagingLoaded) {
+                                mSectionsPagerAdapter.showMessages();
+                                messagingLoaded = true;
+                            }
+                        }
+                    } else if (isShow) {
+                        if (collapsingToolbarLayout != null) {
+                            isShow = false;
                         }
                     }
-                } else if (isShow) {
-                    if (collapsingToolbarLayout != null) {
-                        isShow = false;
-                    }
-                }
 
-                if (verticalOffset == 0){
-                    fab.setVisibility(View.VISIBLE);
-                    if (mSectionsPagerAdapter != null) {
-                        mSectionsPagerAdapter.hideMessages();
+                    if (verticalOffset == 0) {
+                        fab.setVisibility(View.VISIBLE);
+                        if (mSectionsPagerAdapter != null) {
+                            mSectionsPagerAdapter.hideMessages();
+                        }
+                        toolbarExpanded = true;
+                        messagingLoaded = false;
+                    } else {
+                        fab.setVisibility(View.GONE);
                     }
-                    toolbarExpanded = true;
-                    messagingLoaded = false;
-                } else {
-                    fab.setVisibility(View.GONE);
                 }
+            });
+
+            if (openMessages) {
+                appBarLayout.setExpanded(false);
+                openMessages = false;
             }
-        });
-
-        if (openMessages){
-            appBarLayout.setExpanded(false);
-            openMessages = false;
+        } else {
+            finish();
         }
     }
 
@@ -426,7 +439,11 @@ public class EventActivity extends AppCompatActivity implements UserAdapter.Clic
         }
 
         Event event = eventService.getEvent(eventId);
-        refreshInfo(event);
+        if (event != null) {
+            refreshInfo(event);
+        } else {
+            eventService.loadEvent(eventId, EventActivity.this);
+        }
         notification = false;
         super.onResume();
     }

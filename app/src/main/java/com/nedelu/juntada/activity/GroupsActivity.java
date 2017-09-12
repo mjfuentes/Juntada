@@ -69,6 +69,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
 
+        SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(GroupsActivity.this);
+        SharedPreferences.Editor editor = userPref.edit();
+        editor.putString("server_url", "http://10.1.1.3:8080");
+//        editor.putString("server_url", "http://www.juntada.nedelu.com");
+        editor.apply();
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         User user = null;
         userService = new UserService(GroupsActivity.this);

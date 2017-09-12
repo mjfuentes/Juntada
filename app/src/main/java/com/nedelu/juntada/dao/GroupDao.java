@@ -9,6 +9,7 @@ import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.nedelu.juntada.model.Event;
 import com.nedelu.juntada.model.Group;
+import com.nedelu.juntada.model.PushNotification;
 import com.nedelu.juntada.model.aux.ConfirmedUser;
 import com.nedelu.juntada.model.aux.GroupMember;
 import com.nedelu.juntada.model.Poll;
@@ -124,6 +125,29 @@ public class GroupDao {
                     .and()
                     .eq("group_id", group.getId());
             deleteBuilder.delete();
+
+            List<Event> events = helper.getEventDao().queryBuilder().where().eq("owner_group", group.getId()).query();
+            for (Event event : events){
+                DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+                pushNotificationDeleteBuilder.where().eq("type", "event").and().eq("value",String.valueOf(event.getId()));
+                pushNotificationDeleteBuilder.delete();
+                helper.getEventDao().delete(event);
+            }
+
+            List<Poll> polls = helper.getPollDao().queryBuilder().where().eq("group", group.getId()).query();
+            for (Poll poll : polls){
+                DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+                pushNotificationDeleteBuilder.where().eq("type", "poll").and().eq("value",String.valueOf(poll.getId()));
+                pushNotificationDeleteBuilder.delete();
+                helper.getPollDao().delete(poll);
+            }
+
+            DeleteBuilder<PushNotification, Long> pushNotificationDeleteBuilder = helper.getPushNotificationDao().deleteBuilder();
+            pushNotificationDeleteBuilder.where().eq("type", "group").and().eq("value",String.valueOf(group.getId()));
+            pushNotificationDeleteBuilder.delete();
+
+            helper.getGroupDao().delete(group);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

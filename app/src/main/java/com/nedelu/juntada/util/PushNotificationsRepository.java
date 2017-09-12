@@ -28,12 +28,13 @@ public final class PushNotificationsRepository {
         }
     }
 
-    public void savePushNotification(PushNotification notification) {
+    public PushNotification savePushNotification(PushNotification notification) {
         try {
-            helper.getPushNotificationDao().create(notification);
+            return helper.getPushNotificationDao().createIfNotExists(notification);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public interface LoadCallback {
