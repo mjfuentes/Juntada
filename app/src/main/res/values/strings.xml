@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Juntada</string>
 
+    <string name="groups">Grupos</string>
     <string name="error_user_creation">Error al crear usuario</string>
     <string name="try_juntada">Probá Juntada para Android, disponible en:</string>
     <string name="choose_app">Elegir aplicacion</string>
