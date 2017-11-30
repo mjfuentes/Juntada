@@ -37,65 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
 //        editor.putString("server_url", "http://10.1.1.3:8080");
-        editor.putString("server_url", "http://www.juntada.nedelu.com");
+//        editor.putString("server_url", "http://www.demo.juntada.nedelu.com");
         editor.apply();
-//
-//        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-//        ActivityManager.TaskDescription taskDesc = null;
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-//            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getResources().getColor(R.color.colorPrimaryDark));
-//            setTaskDescription(taskDesc);
-//        }
-//
-//        accessTokenTracker = new AccessTokenTracker() {
-//            @Override
-//            protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-//            }
-//        };
-//
-//        accessTokenTracker.startTracking();
-//
-//
-//
-//
-//
-//        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
-//        LoginButton loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
-//        loginButton.setReadPermissions("email", "public_profile");
-//        FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                if(Profile.getCurrentProfile() == null) {
-//                    profileTracker = new ProfileTracker() {
-//                        @Override
-//                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
-//                            checkUser(profile2);
-//                            profileTracker.stopTracking();
-//                        }
-//                    };
-//                }
-//                else {
-//                    Profile profile = Profile.getCurrentProfile();
-//                    checkUser(profile);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//            }
-//
-//            @Override
-//            public void onError(FacebookException e) {
-//            }
-//        };
-//        loginButton.setReadPermissions("user_friends");
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                loginClicked= true;
-//            }
-//        });
-//        loginButton.registerCallback(callbackManager, callback);
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);

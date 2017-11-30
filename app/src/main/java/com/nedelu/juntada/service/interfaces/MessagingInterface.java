@@ -19,6 +19,7 @@ import com.nedelu.juntada.model.dto.PollVoteRequest;
 import com.nedelu.juntada.model.dto.UserDTO;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -26,6 +27,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -34,8 +36,8 @@ import retrofit2.http.Path;
 public interface MessagingInterface {
 
     @POST("messages")
-    Call<Message> createMessage(@Body Message message);
+    Call<Message> createMessage(@HeaderMap Map<String, String> headers,@Body Message message);
 
     @GET("messages/{type}/{eventId}")
-    Call<List<Message>> getMessages(@Path("type") String type,@Path("eventId") Long eventId);
+    Call<List<Message>> getMessages(@HeaderMap Map<String, String> headers, @Path("type") String type, @Path("eventId") Long eventId);
 }

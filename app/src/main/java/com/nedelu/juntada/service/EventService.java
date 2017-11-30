@@ -5,10 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.EventActivity;
 import com.nedelu.juntada.activity.EventsActivity;
@@ -53,8 +58,10 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -90,31 +97,40 @@ public class EventService {
         userId = userPref.getLong("userId",0L);
     }
 
-    public void votePoll(Long pollId, final PollVoteRequest voteRequest, final ResultListener listener){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        final Call<PollDTO> call = server.votePoll(pollId, voteRequest);
-        call.enqueue(new Callback<PollDTO>() {
+    public void votePoll(final Long pollId, final PollVoteRequest voteRequest, final ResultListener listener){
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
-                if (response.code() == 200) {
-                    savePoll(response.body());
-                    listener.pollVoted(true, 0l);
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    listener.pollVoted(false, 0l);
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<PollDTO> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                listener.pollVoted(false, 0l);
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                final Call<PollDTO> call = server.votePoll(headers, pollId, voteRequest);
+                call.enqueue(new Callback<PollDTO>() {
+                    @Override
+                    public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
+                        if (response.code() == 200) {
+                            savePoll(response.body());
+                            listener.pollVoted(true, 0l);
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            listener.pollVoted(false, 0l);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PollDTO> call, Throwable t) {
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        listener.pollVoted(false, 0l);
+                    }
+                });
             }
         });
     }
@@ -348,130 +364,165 @@ public class EventService {
         return eventDao.getEvent(eventId);
     }
 
-    public void saveAssistance(Long userId, Long eventId, Assistance assistance, final EventActivity eventActivity) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-        final AssitanceRequest request = new AssitanceRequest();
-        request.setUserId(userId);
-        request.setEventId(eventId);
-        request.setAssistance(assistance);
-
-        final Call<EventDTO> call = server.saveAssistance(eventId, request);
-        call.enqueue(new Callback<EventDTO>() {
+    public void saveAssistance(final Long userId, final Long eventId, final Assistance assistance, final EventActivity eventActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                if (response.code() == 200) {
-                    Event event = saveEvent(response.body());
-                    eventActivity.assistanceSaved(event, request.getAssistance());
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    eventActivity.assistanceSaved(null, null);
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<EventDTO> call, Throwable t) {
-                eventActivity.assistanceSaved(null, null);
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-    public void confirmEvent(final Poll poll, PollOption option, final VoteActivity voteActivity) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                ServerInterface server = retrofit.create(ServerInterface.class);
+                final AssitanceRequest request = new AssitanceRequest();
+                request.setUserId(userId);
+                request.setEventId(eventId);
+                request.setAssistance(assistance);
 
-        ServerInterface server = retrofit.create(ServerInterface.class);
-        PollConfirmDTO confirm = new PollConfirmDTO();
-        confirm.setSelectedOptionId(option.getId());
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
 
-        final Call<EventDTO> call = server.confirmPoll(poll.getId(), confirm);
-        call.enqueue(new Callback<EventDTO>() {
-            @Override
-            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                if (response.code() == 200) {
-                    saveEvent(response.body());
-                    deletePoll(poll.getId());
-                    voteActivity.pollVoted(true, response.body().getId());
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    voteActivity.pollVoted(false, 0l);
-                }
-            }
+                final Call<EventDTO> call = server.saveAssistance(headers, eventId, request);
+                call.enqueue(new Callback<EventDTO>() {
+                    @Override
+                    public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                        if (response.code() == 200) {
+                            Event event = saveEvent(response.body());
+                            eventActivity.assistanceSaved(event, request.getAssistance());
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            eventActivity.assistanceSaved(null, null);
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<EventDTO> call, Throwable t) {
-                voteActivity.pollVoted(false, 0l);
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onFailure(Call<EventDTO> call, Throwable t) {
+                        eventActivity.assistanceSaved(null, null);
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
     }
 
-    public void generateToken(Long eventId, final EventActivity eventActivity) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        Call<EventTokenDTO> call = server.getEventToken(eventId);
-
-        call.enqueue(new Callback<EventTokenDTO>() {
+    public void confirmEvent(final Poll poll, final PollOption option, final VoteActivity voteActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<EventTokenDTO> call, Response<EventTokenDTO> response) {
-                if (response.code() == 200) {
-                    eventActivity.tokenGenerated(response.body().getToken());
-                } else {
-                    eventActivity.tokenGenerated(null);
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<EventTokenDTO> call, Throwable t) {
-                eventActivity.tokenGenerated(null);
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+                PollConfirmDTO confirm = new PollConfirmDTO();
+                confirm.setSelectedOptionId(option.getId());
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                final Call<EventDTO> call = server.confirmPoll(headers, poll.getId(), confirm);
+                call.enqueue(new Callback<EventDTO>() {
+                    @Override
+                    public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                        if (response.code() == 200) {
+                            saveEvent(response.body());
+                            deletePoll(poll.getId());
+                            voteActivity.pollVoted(true, response.body().getId());
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            voteActivity.pollVoted(false, 0l);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<EventDTO> call, Throwable t) {
+                        voteActivity.pollVoted(false, 0l);
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
     }
 
-    public List<Event> loadEventsForUser(Long userId, final EventsActivity eventsActivity) {
+    public void generateToken(final Long eventId, final EventActivity eventActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                Call<EventTokenDTO> call = server.getEventToken(headers, eventId);
+
+                call.enqueue(new Callback<EventTokenDTO>() {
+                    @Override
+                    public void onResponse(Call<EventTokenDTO> call, Response<EventTokenDTO> response) {
+                        if (response.code() == 200) {
+                            eventActivity.tokenGenerated(response.body().getToken());
+                        } else {
+                            eventActivity.tokenGenerated(null);
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<EventTokenDTO> call, Throwable t) {
+                        eventActivity.tokenGenerated(null);
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
+    public List<Event> loadEventsForUser(final Long userId, final EventsActivity eventsActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                Call<List<InvitedEventDTO>> call = server.getEventsForUser(headers, userId);
+
+                call.enqueue(new Callback<List<InvitedEventDTO>>() {
+                    @Override
+                    public void onResponse(Call<List<InvitedEventDTO>> call, Response<List<InvitedEventDTO>> response) {
+                        if (response.code() == 200) {
+                            new SaveEventsTask().execute(response.body(), eventsActivity);
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            eventsActivity.refreshEvents(null);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<InvitedEventDTO>> call, Throwable t) {
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        eventsActivity.refreshEvents(null);
+                    }
+                });
+
+            }
+        });
         List<Event> events = eventDao.getForUser(userId);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        Call<List<InvitedEventDTO>> call = server.getEventsForUser(userId);
-
-        call.enqueue(new Callback<List<InvitedEventDTO>>() {
-            @Override
-            public void onResponse(Call<List<InvitedEventDTO>> call, Response<List<InvitedEventDTO>> response) {
-                if (response.code() == 200) {
-                    new SaveEventsTask().execute(response.body(),eventsActivity);
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    eventsActivity.refreshEvents(null);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<InvitedEventDTO>> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                eventsActivity.refreshEvents(null);
-            }
-        });
-
         return events;
     }
 
@@ -480,182 +531,229 @@ public class EventService {
         return eventDao.getForUser(userId);
     }
 
-    public void joinEvent(final Long userId, String token, final GroupsActivity joinActivity) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        JoinEventDTO joinEvent = new JoinEventDTO();
-        joinEvent.setUserId(userId);
-        joinEvent.setEventToken(token);
-
-        Call<InvitedEventDTO> call = server.joinEvent(joinEvent);
-
-        call.enqueue(new Callback<InvitedEventDTO>() {
+    public void joinEvent(final Long userId, final String token, final GroupsActivity joinActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
-                if (response.code() == 200) {
-                    Event event = saveEvent(response.body());
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-                    Intent main = new Intent(joinActivity, EventActivity.class);
-                    SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
-                    SharedPreferences.Editor editor = userPref.edit();
-                    editor.putLong("userId", userId);
-                    editor.putLong("eventId", event.getId());
-                    editor.apply();
-                    joinActivity.startActivity(main);
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    joinActivity.finish();
-                }
-            }
+                ServerInterface server = retrofit.create(ServerInterface.class);
 
-            @Override
-            public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                joinActivity.finish();
-            }
-        });
-    }
+                JoinEventDTO joinEvent = new JoinEventDTO();
+                joinEvent.setUserId(userId);
+                joinEvent.setEventToken(token);
 
-    public void loadEvent(Long eventId, final EventActivity listener) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
 
-        ServerInterface server = retrofit.create(ServerInterface.class);
 
-        Call<InvitedEventDTO> call = server.getEvent(eventId);
+                Call<InvitedEventDTO> call = server.joinEvent(headers, joinEvent);
 
-        call.enqueue(new Callback<InvitedEventDTO>() {
-            @Override
-            public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
-                if (response.code() == 200) {
-                    Event event = saveEvent(response.body());
-                    if (listener != null){
-                        listener.refreshInfo(event);
+                call.enqueue(new Callback<InvitedEventDTO>() {
+                    @Override
+                    public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
+                        if (response.code() == 200) {
+                            Event event = saveEvent(response.body());
+
+                            Intent main = new Intent(joinActivity, EventActivity.class);
+                            SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = userPref.edit();
+                            editor.putLong("userId", userId);
+                            editor.putLong("eventId", event.getId());
+                            editor.apply();
+                            joinActivity.startActivity(main);
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            joinActivity.finish();
+                        }
                     }
-                } else {
-                    if (listener != null) {
+
+                    @Override
+                    public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
                         Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
-                        listener.refreshInfo(null);
+                        joinActivity.finish();
                     }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
-                if (listener != null) {
-                    Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    listener.refreshInfo(null);
-                }
+                });
             }
         });
     }
 
-    public void loadPoll(Long pollId, final VoteActivity listener) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        Call<PollDTO> call = server.getPoll(pollId);
-
-        call.enqueue(new Callback<PollDTO>() {
+    public void loadEvent(final Long eventId, final EventActivity listener) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
-                if (response.code() == 200) {
-                    Poll poll = savePoll(response.body());
-                    if (listener != null) {
-                        listener.refreshPoll(poll);
-                    }
-                } else {
-                    if (listener != null) {
-                        Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                        listener.refreshPoll(null);
-                    }
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<PollDTO> call, Throwable t) {
-                if (listener != null) {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    listener.refreshPoll(null);
-                }
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+
+                Call<InvitedEventDTO> call = server.getEvent(headers, eventId);
+
+                call.enqueue(new Callback<InvitedEventDTO>() {
+                    @Override
+                    public void onResponse(Call<InvitedEventDTO> call, Response<InvitedEventDTO> response) {
+                        if (response.code() == 200) {
+                            Event event = saveEvent(response.body());
+                            if (listener != null) {
+                                listener.refreshInfo(event);
+                            }
+                        } else {
+                            if (listener != null) {
+                                Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                                listener.refreshInfo(null);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<InvitedEventDTO> call, Throwable t) {
+                        if (listener != null) {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            listener.refreshInfo(null);
+                        }
+                    }
+                });
             }
         });
     }
 
-    public void updateEvent(Event event, final NewEventActivity newEventActivity) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-        EventDTO eventDTO = new EventDTO();
-        eventDTO.setTitle(event.getTitle());
-        eventDTO.setDescription(event.getDescription());
-        eventDTO.setLocation(event.getLocation());
-
-        final Call<EventDTO> call = server.updateEvent(event.getId(), eventDTO);
-        call.enqueue(new Callback<EventDTO>() {
+    public void loadPoll(final Long pollId, final VoteActivity listener) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
-                if (response.code() == 200){
-                    EventDTO eventDTO = response.body();
-                    Event event = saveEvent(eventDTO);
-                    newEventActivity.eventCreated(event);
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    newEventActivity.eventCreated(null);
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<EventDTO> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                newEventActivity.eventCreated(null);
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                Call<PollDTO> call = server.getPoll(headers, pollId);
+
+                call.enqueue(new Callback<PollDTO>() {
+                    @Override
+                    public void onResponse(Call<PollDTO> call, Response<PollDTO> response) {
+                        if (response.code() == 200) {
+                            Poll poll = savePoll(response.body());
+                            if (listener != null) {
+                                listener.refreshPoll(poll);
+                            }
+                        } else {
+                            if (listener != null) {
+                                Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                                listener.refreshPoll(null);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PollDTO> call, Throwable t) {
+                        if (listener != null) {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            listener.refreshPoll(null);
+                        }
+                    }
+                });
             }
         });
     }
 
-    public void deleteEvent(final Long eventId, final EventActivity eventActivity) { Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-        final Call<Boolean> call = server.deleteEvent(eventId);
-        call.enqueue(new Callback<Boolean>() {
+    public void updateEvent(final Event event, final NewEventActivity newEventActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                if (response.code() == 200){
-                    Boolean result = response.body();
-                    if (result){
-                        eventDao.deleteEvent(eventId);
-                        eventActivity.eventDeleted(true);
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+                EventDTO eventDTO = new EventDTO();
+                eventDTO.setTitle(event.getTitle());
+                eventDTO.setDescription(event.getDescription());
+                eventDTO.setLocation(event.getLocation());
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                final Call<EventDTO> call = server.updateEvent(headers, event.getId(), eventDTO);
+                call.enqueue(new Callback<EventDTO>() {
+                    @Override
+                    public void onResponse(Call<EventDTO> call, Response<EventDTO> response) {
+                        if (response.code() == 200) {
+                            EventDTO eventDTO = response.body();
+                            Event event = saveEvent(eventDTO);
+                            newEventActivity.eventCreated(event);
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            newEventActivity.eventCreated(null);
+                        }
                     }
-                } else {
-                    Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                    eventActivity.eventDeleted(false);
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-                Toast.makeText(context,R.string.error_connecting, Toast.LENGTH_LONG).show();
-                eventActivity.eventDeleted(false);
+                    @Override
+                    public void onFailure(Call<EventDTO> call, Throwable t) {
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        newEventActivity.eventCreated(null);
+                    }
+                });
             }
         });
+    }
 
+    public void deleteEvent(final Long eventId, final EventActivity eventActivity) {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+                final Call<Boolean> call = server.deleteEvent(headers, eventId);
+                call.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                        if (response.code() == 200) {
+                            Boolean result = response.body();
+                            if (result) {
+                                eventDao.deleteEvent(eventId);
+                                eventActivity.eventDeleted(true);
+                            }
+                        } else {
+                            Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                            eventActivity.eventDeleted(false);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable t) {
+                        Toast.makeText(context, R.string.error_connecting, Toast.LENGTH_LONG).show();
+                        eventActivity.eventDeleted(false);
+                    }
+                });
+            }
+
+        });
     }
 
     public void deleteEvent(Long id) {

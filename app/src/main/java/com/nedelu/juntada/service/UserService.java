@@ -4,8 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.nedelu.juntada.R;
 import com.nedelu.juntada.activity.LoginActivity;
 import com.nedelu.juntada.dao.UserDao;
@@ -18,7 +23,9 @@ import com.nedelu.juntada.service.interfaces.ServerInterface;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,29 +92,37 @@ public class UserService {
         return user;
     }
 
-    public User registerUserToken(User user, String token) throws IOException {
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ServerInterface server = retrofit.create(ServerInterface.class);
-
-        FirebaseRegistration registration = new FirebaseRegistration();
-        registration.setUserId(user.getId());
-        registration.setFirebaseId(token);
-        Call<UserDTO> call = server.registerFirebase(user.getId(), registration);
-        call.enqueue(new Callback<UserDTO>() {
+    public User registerUserToken(final User user, final String token) throws IOException {
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
-            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
-                if (response.code() == 200) {
-                    UserDTO userDTO = response.body();
-                }
-            }
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
 
-            @Override
-            public void onFailure(Call<UserDTO> call, Throwable t) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(baseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ServerInterface server = retrofit.create(ServerInterface.class);
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("token", task.getResult().getToken());
+
+                FirebaseRegistration registration = new FirebaseRegistration();
+                registration.setUserId(user.getId());
+                registration.setFirebaseId(token);
+                Call<UserDTO> call = server.registerFirebase(headers,user.getId(), registration);
+                call.enqueue(new Callback<UserDTO>() {
+                    @Override
+                    public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+                        if (response.code() == 200) {
+                            UserDTO userDTO = response.body();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserDTO> call, Throwable t) {
+                    }
+                });
             }
         });
 

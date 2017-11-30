@@ -123,6 +123,11 @@
     <string name="created_poll">\u0020created a poll in the group\u0020</string>
     <string name="user_voted_poll">\u0020has voted in the poll\u0020</string>
     <string name="confirmedEvent">\u0020has confirmed the event\u0020</string>
+    <string name="new_poll">New poll</string>
+    <string name="user_going_event">User going</string>
+    <string name="user_not_going_event">User not going</string>
+    <string name="event_confirmed">Event confirmed</string>
+    <string name="new_vote">New poll vote</string>
 
     <!-- Strings related to Settings -->
     <string name="pref_header_general">General</string>

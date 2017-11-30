@@ -77,7 +77,7 @@
     <string name="new_group">Nuevo grupo</string>
     <string name="notifications">Notificaciones</string>
     <string name="view_profile">Ver perfil</string>
-    <string name="voted">Votado</string>
+    <string name="voted">Votaron</string>
     <string name="going">VOY</string>
     <string name="not_going">NO VOY</string>
 
@@ -181,6 +181,11 @@
     <string name="created_poll">\u0020creó una encuesta en el grupo\u0020</string>
     <string name="user_voted_poll">\u0020ha votado en la encuesta\u0020</string>
     <string name="confirmedEvent">\u0020ha confirmado el evento\u0020</string>
+    <string name="new_poll">Nueva encuesta</string>
+    <string name="user_going_event">Usuario asistente</string>
+    <string name="user_not_going_event">Usuario no asistente</string>
+    <string name="event_confirmed">Evento confirmado</string>
+    <string name="new_vote">Nuevo voto</string>
 
     <!-- Example settings for Notifications -->
     <string name="pref_header_notifications">Notificaciones</string>
@@ -197,10 +202,7 @@
     <string name="o">OR</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">An error has ocurred</string>
-    <string name="new_poll">Nueva encuesta</string>
-    <string name="user_going_event">Nuevo asistente</string>
-    <string name="event_confirmed">Evento confirmado</string>
-    <string name="new_vote">Nuevo voto</string>
+
 
 
 </resources>

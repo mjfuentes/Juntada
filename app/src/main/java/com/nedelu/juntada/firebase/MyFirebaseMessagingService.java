@@ -106,20 +106,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     description = StringEscapeUtils.unescapeJava(message.getMessage());
                 }
 
-                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.logo)
-                        .setContentTitle(title)
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setContentIntent(pendingIntent);
+                SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(this);
+                Boolean notifications = userPref.getBoolean("notifications", true);
+                Boolean messagesNotifications = notifications && userPref.getBoolean("messages_notifications", true);
 
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                if (messagesNotifications) {
 
-                notificationManager.notify(id, notificationBuilder.build());
+                    String ringtoneUri = userPref.getString("messages_notifications_ringtone", RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.logo)
+                            .setContentTitle(title)
+                            .setAutoCancel(true)
+                            .setSound(Uri.parse(ringtoneUri))
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(description))
+                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                            .setContentIntent(pendingIntent);
+
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    notificationManager.notify(id, notificationBuilder.build());
+                }
             }
 
         }

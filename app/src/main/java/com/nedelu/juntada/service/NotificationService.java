@@ -356,7 +356,7 @@ public class NotificationService {
 
 
         String name = (user != null) ? user.getFirstName() : mContext.getString(R.string.a_new_member);
-        String title =mContext.getString(R.string.user_going_event);
+        String title =mContext.getString(R.string.user_not_going_event);
         String description = name + mContext.getString(R.string.user_not_going) + StringEscapeUtils.unescapeJava(event.getTitle()) + mContext.getString(R.string.in_the_group) + StringEscapeUtils.unescapeJava(event.getGroup().getName());
         Long notificationId = saveNotification(title, description, "event", event.getId(), user.getId());
 
