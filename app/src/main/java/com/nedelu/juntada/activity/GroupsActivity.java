@@ -71,7 +71,6 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(GroupsActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.3:8080");
         editor.putString("server_url", "http://www.juntada.nedelu.com");
         editor.apply();
 
@@ -351,7 +350,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
         if (groups.size() == 0){
-//            firstGroup.setVisibility(View.VISIBLE);
+            firstGroup.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         } else {
             firstGroup.setVisibility(View.GONE);

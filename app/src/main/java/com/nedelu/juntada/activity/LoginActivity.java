@@ -14,6 +14,7 @@ import com.facebook.ProfileTracker;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -36,8 +37,6 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = userPref.edit();
-//        editor.putString("server_url", "http://10.1.1.3:8080");
-//        editor.putString("server_url", "http://www.demo.juntada.nedelu.com");
         editor.apply();
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
@@ -55,6 +54,13 @@ public class LoginActivity extends AppCompatActivity {
                     if (user == null) {
                         if (firebaseUser.getDisplayName() != null) {
                             String photo = (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : "";
+
+                            if(firebaseUser.getProviderData().get(1).getProviderId().equals(FacebookAuthProvider.PROVIDER_ID)) {
+                                photo = "https://graph.facebook.com/" + firebaseUser.getProviderData().get(1).getUid() + "/picture?height=500";
+                            } else if (firebaseUser.getProviderData().get(1).getProviderId().equals("google.com") && photo.contains("s96-c")){
+                                photo = photo.replace("s96-c","s400-c");
+                            }
+
                             userService.createUser(LoginActivity.this, firebaseUser.getUid(), firebaseUser.getDisplayName(), "", photo);
                         } else {
                            firebaseAuth.signOut();

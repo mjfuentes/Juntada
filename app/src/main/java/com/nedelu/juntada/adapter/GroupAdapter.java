@@ -101,9 +101,9 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     private void animatePhoto(ViewHolder viewHolder) {
         viewHolder.root.setVisibility(View.VISIBLE);
         if (!lockedAnimations) {
-            if (lastAnimatedItem == viewHolder.getPosition()) {
-                setLockedAnimations(true);
-            }
+//            if (lastAnimatedItem == viewHolder.getPosition()) {
+//                setLockedAnimations(true);
+//            }
 
             long animationDelay = profileHeaderAnimationStartTime + MAX_PHOTO_ANIMATION_DELAY - System.currentTimeMillis();
             if (profileHeaderAnimationStartTime == 0) {
