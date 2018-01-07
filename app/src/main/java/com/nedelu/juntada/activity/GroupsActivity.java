@@ -350,7 +350,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
         if (groups.size() == 0){
-            firstGroup.setVisibility(View.VISIBLE);
+//              firstGroup.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         } else {
             firstGroup.setVisibility(View.GONE);
